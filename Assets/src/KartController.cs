@@ -5,6 +5,7 @@ public class KartController : MonoBehaviour
 {
 
 	public Kart kart;
+	public bool dansLesAirs = false;
 
 	// Use this for initialization
 	void Start ()
@@ -16,34 +17,63 @@ public class KartController : MonoBehaviour
 	void Update ()
 	{
 		controlPosition ();
+		if(dansLesAirs==true)
+		{
+			rigidbody.AddForce (0, -30000, 0);
+		}
 	}
 
+
+	void OnCollisionStay(Collision collision)
+	{
+		if(collision.gameObject.name=="Ground")
+		{
+			dansLesAirs = false;
+			Debug.Log (dansLesAirs);
+		}
+	}
+	void OnCollisionExit(Collision collision)
+	{
+		if(collision.gameObject.name=="Ground")
+		{
+			dansLesAirs = true;
+			Debug.Log (dansLesAirs);
+		}
+	}
+		
 	public void controlPosition()
 	{
-		if(Input.GetKey(KeyCode.S))
-		{
-			rigidbody.position+=this.transform.forward/4*kart.getCoeffVitesse();
-			if(Input.GetKey(KeyCode.D))
+			if(Input.GetKey(KeyCode.S))
 			{
-				transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
+				rigidbody.position+=this.transform.forward/4*kart.getCoeffVitesse();
+				if(Input.GetKey(KeyCode.D))
+				{
+					transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
+				}
+				if(Input.GetKey(KeyCode.Q))
+				{
+					transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
+				}
 			}
-			if(Input.GetKey(KeyCode.Q))
+			if(Input.GetKey(KeyCode.Z))
 			{
-				transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
+				rigidbody.position-=this.transform.forward/4*kart.getCoeffVitesse();
+				if(Input.GetKey(KeyCode.D))
+				{
+					transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
+				}
+				if(Input.GetKey(KeyCode.Q))
+				{
+					transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
+				}
 			}
-		}
-		if(Input.GetKey(KeyCode.Z))
-		{
-			rigidbody.position-=this.transform.forward/4*kart.getCoeffVitesse();
-			if(Input.GetKey(KeyCode.D))
+			if(Input.GetKeyUp(KeyCode.Space))
 			{
-				transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
+				if(dansLesAirs==false)
+				{
+					rigidbody.AddForce(0,600000,0);
+				}
 			}
-			if(Input.GetKey(KeyCode.Q))
-			{
-				transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
-			}
-		}
 	}
 
 }
