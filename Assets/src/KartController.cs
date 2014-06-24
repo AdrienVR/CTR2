@@ -31,7 +31,84 @@ public class KartController : MonoBehaviour
 			dansLesAirs = false;
 			Debug.Log (dansLesAirs);
 		}
+		if(collision.gameObject.name=="accelerateur")
+		{
+			if(kart.numeroJoueur==1)
+			{
+				if(Input.GetKey(KeyCode.S))
+				{
+					rigidbody.position+=this.transform.forward*2*kart.getCoeffVitesse();
+					if(Input.GetKey(KeyCode.D))
+					{
+						transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
+					}
+					if(Input.GetKey(KeyCode.Q))
+					{
+						transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
+					}
+				}
+				if(Input.GetKey(KeyCode.Z))
+				{
+					rigidbody.position-=this.transform.forward*2*kart.getCoeffVitesse();
+					if(Input.GetKey(KeyCode.D))
+					{
+						transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
+					}
+					if(Input.GetKey(KeyCode.Q))
+					{
+						transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
+					}
+				}
+				if(Input.GetKeyUp(KeyCode.Space))
+				{
+					if(dansLesAirs==false)
+					{
+						rigidbody.AddForce(0,600000,0);
+					}
+				}
+			}
+			if(kart.numeroJoueur==2)
+			{
+				if(Input.GetKey(KeyCode.K))
+				{
+					rigidbody.position+=this.transform.forward*2*kart.getCoeffVitesse();
+					if(Input.GetKey(KeyCode.L))
+					{
+						transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
+					}
+					if(Input.GetKey(KeyCode.J))
+					{
+						transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
+					}
+				}
+				if(Input.GetKey(KeyCode.I))
+				{
+					rigidbody.position-=this.transform.forward*2*kart.getCoeffVitesse();
+					if(Input.GetKey(KeyCode.L))
+					{
+						transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
+					}
+					if(Input.GetKey(KeyCode.J))
+					{
+						transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
+					}
+				}
+				if(Input.GetKeyUp(KeyCode.B))
+				{
+					if(dansLesAirs==false)
+					{
+						rigidbody.AddForce(0,600000,0);
+					}
+				}
+			}
+		}
 	}
+
+	void OnCollisionEnter(Collision collision)
+	{
+
+	}
+
 	void OnCollisionExit(Collision collision)
 	{
 		if(collision.gameObject.name=="Ground")
@@ -43,6 +120,8 @@ public class KartController : MonoBehaviour
 		
 	public void controlPosition()
 	{
+		if(kart.numeroJoueur==1)
+		{
 			if(Input.GetKey(KeyCode.S))
 			{
 				rigidbody.position+=this.transform.forward/4*kart.getCoeffVitesse();
@@ -74,6 +153,41 @@ public class KartController : MonoBehaviour
 					rigidbody.AddForce(0,600000,0);
 				}
 			}
+		}
+		if(kart.numeroJoueur==2)
+		{
+			if(Input.GetKey(KeyCode.K))
+			{
+				rigidbody.position+=this.transform.forward/4*kart.getCoeffVitesse();
+				if(Input.GetKey(KeyCode.L))
+				{
+					transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
+				}
+				if(Input.GetKey(KeyCode.J))
+				{
+					transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
+				}
+			}
+			if(Input.GetKey(KeyCode.I))
+			{
+				rigidbody.position-=this.transform.forward/4*kart.getCoeffVitesse();
+				if(Input.GetKey(KeyCode.L))
+				{
+					transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
+				}
+				if(Input.GetKey(KeyCode.J))
+				{
+					transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
+				}
+			}
+			if(Input.GetKeyUp(KeyCode.B))
+			{
+				if(dansLesAirs==false)
+				{
+					rigidbody.AddForce(0,600000,0);
+				}
+			}
+		}
 	}
 
 }
