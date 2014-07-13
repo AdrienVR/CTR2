@@ -26,7 +26,7 @@ public class Kart
 		if(j==1)
 		{
 			GameObject kart= Resources.Load("nimp") as GameObject;
-			Vector3 n = new Vector3 (0,1.3f, -5); // vecteur position
+			Vector3 n = new Vector3 (0,2, -15); // vecteur position
 			Quaternion m = new Quaternion(0,0,0,0); // quaternion rotation
 			objet = GameObject.Instantiate (kart,n,m) as GameObject;
 		}
