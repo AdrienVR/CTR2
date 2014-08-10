@@ -1,32 +1,21 @@
 fileFormatVersion: 2
-guid: 33e902e677dd36f42873e468765ca065
+guid: 4ca945a31d8a23d4c9ae65bc7ca16f01
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
-    100000: Bati
-    100002: //RootNode
-    100004: Pots
-    100006: Roue3
-    100008: Volant_001
-    400000: Bati
-    400002: //RootNode
-    400004: Pots
-    400006: Roue3
-    400008: Volant_001
-    2300000: Bati
-    2300002: Pots
-    2300004: Roue3
-    2300006: Volant_001
-    3300000: Bati
-    3300002: Pots
-    3300004: Roue3
-    3300006: Volant_001
-    4300000: Volant_001
-    4300002: Pots
-    4300004: Bati
-    4300006: Roue3
-    7400000: Default Take
+    100000: //RootNode
+    100002: Armature|BoxSize
+    100004: Box
+    400000: //RootNode
+    400002: Armature|BoxSize
+    400004: Box
+    2300000: Box
+    3300000: Box
+    4300000: Box
+    7400000: Armature|ABoxTake
+    7400002: Box|ABoxTake
     9500000: //RootNode
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -77,6 +66,6 @@ ModelImporter:
     feetSpacing: 0
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 1
   additionalBone: 0
   userData: 

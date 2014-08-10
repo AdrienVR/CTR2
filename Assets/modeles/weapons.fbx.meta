@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: bdc251304b5e4b549961442b1aa8276e
+guid: 2d19c7a6b8e915f4c8d1b3044080350e
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
     100000: Armature|WeaponSize
-    100002: WeaponBox
+    100002: Box
     100004: //RootNode
     400000: Armature|WeaponSize
-    400002: WeaponBox
+    400002: Box
     400004: //RootNode
-    2300000: WeaponBox
-    3300000: WeaponBox
-    4300000: WeaponBox
+    2300000: Box
+    3300000: Box
+    4300000: Box
     7400000: Armature|BoxTake
-    7400002: WeaponBox|BoxTake
+    7400002: Box|BoxTake
     9500000: //RootNode
     11100000: //RootNode
   materials:
@@ -30,7 +30,39 @@ ModelImporter:
     animationScaleError: .5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Box|BoxTake
+      takeName: Box|BoxTake
+      firstFrame: 0
+      lastFrame: 89
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature|WeaponSize
+        weight: 1
+      - path: Box
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
     isReadable: 1
   meshes:
     lODScreenPercentages: []
