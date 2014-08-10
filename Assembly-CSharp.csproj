@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\WeaponBoxScript.cs" />
      <Compile Include="Assets\src\Camera1Controller.cs" />
      <Compile Include="Assets\src\Kart.cs" />
      <Compile Include="Assets\src\KartController.cs" />
