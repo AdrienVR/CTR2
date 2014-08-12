@@ -46,11 +46,12 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\WeaponBoxScript.cs" />
+     <Compile Include="Assets\src\BoxExplosionScript.cs" />
      <Compile Include="Assets\src\Camera1Controller.cs" />
      <Compile Include="Assets\src\Kart.cs" />
      <Compile Include="Assets\src\KartController.cs" />
      <Compile Include="Assets\src\Main.cs" />
+     <Compile Include="Assets\src\WeaponBoxScript.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
