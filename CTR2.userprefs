@@ -1,9 +1,9 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\src\Main.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\src\ExplosionScript.cs">
     <Files>
-      <File FileName="CTR2.sln" Line="1" Column="1" />
-      <File FileName="Assets\src\Main.cs" Line="1" Column="1" />
+      <File FileName="Assets\src\WeaponBoxScript.cs" Line="9" Column="3" />
+      <File FileName="Assets\src\ExplosionScript.cs" Line="21" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
