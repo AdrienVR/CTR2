@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b9c11194ae5a6c245b6f5cfdb74ef87a
+guid: 3531044b80ed7f548a5085ac17303b8b
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
@@ -32,43 +32,11 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|BombeRotation
-      takeName: Armature|BombeRotation
-      firstFrame: 0
-      lastFrame: 28
-      wrapMode: 2
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: Armature|Bone
-        weight: 1
-      - path: Bombe
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
-    - serializedVersion: 16
       name: Bombe|BombeRotation
       takeName: Bombe|BombeRotation
       firstFrame: 0
       lastFrame: 28
-      wrapMode: 0
+      wrapMode: 2
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
