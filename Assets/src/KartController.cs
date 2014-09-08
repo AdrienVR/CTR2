@@ -19,7 +19,7 @@ public class KartController : MonoBehaviour
 		controlPosition ();
 		if(dansLesAirs==true)
 		{
-			rigidbody.AddForce (0, -30000, 0);
+			//rigidbody.AddForce (0, -30000, 0);
 		}
 	}
 
