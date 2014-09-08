@@ -7,7 +7,11 @@ public class Camera1Controller : MonoBehaviour
 	public KartController kc;
 
 	// Use this for initialization
-	void Start () {
+	void Start () { 
+		for(int i=1;i<200;i++)
+		{
+			Debug.Log("PD!"); // t'es content ?
+		}
 	}
 	
 
