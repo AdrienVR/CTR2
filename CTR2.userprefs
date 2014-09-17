@@ -1,9 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\src\KartController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\src\Camera1Controller.cs">
     <Files>
-      <File FileName="Assets\src\Kart.cs" Line="17" Column="20" />
-      <File FileName="Assets\src\KartController.cs" Line="73" Column="6" />
+      <File FileName="Assets\src\KartController.cs" Line="8" Column="34" />
+      <File FileName="Assets\src\Camera1Controller.cs" Line="27" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

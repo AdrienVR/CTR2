@@ -3,18 +3,46 @@ using System.Collections;
 
 public class KartController : MonoBehaviour
 {
-
+	
 	public Kart kart;
 	public bool dansLesAirs = false;
-
+	
+	private float ky;
+	
 	// Use this for initialization
 	void Start ()
 	{
 		rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
 	}
 	
+	void Update()
+	{
+		float limit = 0.2f;
+		if (rigidbody.velocity.y>limit || rigidbody.velocity.y<-limit)
+			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-9f,rigidbody.velocity.z);
+		else
+			rigidbody.velocity = new Vector3(rigidbody.velocity.x,0f,rigidbody.velocity.z);
+		
+		rigidbody.angularVelocity = Vector3.zero;
+		
+		/*if (rigidbody.transform.rotation.eulerAngles.z > 30f) {
+			Quaternion q = rigidbody.transform.rotation;
+			float z = 30f;
+			Vector3 vz = new Vector3(0,0,1f);
+			q.ToAngleAxis(out z, out vz);
+			rigidbody.transform.rotation = q;
+				}
+		if (rigidbody.transform.rotation.eulerAngles.x>30) {
+			Quaternion q = rigidbody.transform.rotation;
+			float z = 30f;
+			Vector3 vz = new Vector3(1f,0,0);
+			q.ToAngleAxis(out z, out vz);
+			rigidbody.transform.rotation = q;
+		}//*/
+	}
+	
 	// Update is called once per frame
-	void Update ()
+	void FixedUpdate ()
 	{
 		controlPosition ();
 		if(dansLesAirs==true)
@@ -22,14 +50,14 @@ public class KartController : MonoBehaviour
 			//rigidbody.AddForce (0, -30000, 0);
 		}
 	}
-
-
+	
+	
 	void OnCollisionStay(Collision collision)
 	{
 		if(collision.gameObject.name=="Ground")
 		{
 			dansLesAirs = false;
-			Debug.Log (dansLesAirs);
+			//Debug.Log (dansLesAirs);
 		}
 		if(collision.gameObject.name=="accelerateur")
 		{
@@ -103,28 +131,41 @@ public class KartController : MonoBehaviour
 			}
 		}
 	}
-
+	
 	void OnCollisionEnter(Collision collision)
 	{
-
+		//rigidbody.velocity = Vector3.zero;
+		//rigidbody.angularVelocity = Vector3.zero;
 	}
-
+	
 	void OnCollisionExit(Collision collision)
 	{
 		if(collision.gameObject.name=="Ground")
 		{
 			dansLesAirs = true;
-			Debug.Log (dansLesAirs);
+			//Debug.Log (dansLesAirs);
 		}
 	}
-		
+	
+	public Vector3 normalizeVector(Vector3 a)
+	{
+		float div = Mathf.Sqrt (a.x * a.x + a.y * a.y + a.z * a.z);
+		a.x /= div;
+		a.y /= div;
+		a.z /= div;
+		return a;
+	}
+	
 	public void controlPosition()
 	{
+		Vector3 forwardNormal = rigidbody.transform.forward;
+		forwardNormal.y = 0;
+		forwardNormal = normalizeVector (forwardNormal);
 		if(kart.numeroJoueur==1)
 		{
 			if(Input.GetKey(KeyCode.S))
 			{
-				rigidbody.position+=this.transform.forward/4*kart.getCoeffVitesse();
+				rigidbody.position+=forwardNormal/4*kart.getCoeffVitesse();
 				if(Input.GetKey(KeyCode.D))
 				{
 					transform.Rotate(0,-0.5f*kart.getCoeffManiabilite(),0);
@@ -136,7 +177,7 @@ public class KartController : MonoBehaviour
 			}
 			if(Input.GetKey(KeyCode.Z))
 			{
-				rigidbody.position-=this.transform.forward/4*kart.getCoeffVitesse();
+				rigidbody.position-=forwardNormal/4*kart.getCoeffVitesse();
 				if(Input.GetKey(KeyCode.D))
 				{
 					transform.Rotate(0,0.5f*kart.getCoeffManiabilite(),0);
@@ -189,5 +230,5 @@ public class KartController : MonoBehaviour
 			}
 		}
 	}
-
+	
 }
