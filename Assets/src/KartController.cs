@@ -9,15 +9,17 @@ public class KartController : MonoBehaviour
 	public static List<bool> controllerEnabled;
 
 	public bool j1enabled=false;
+	public bool j2enabled=false;
 	public float coeffVitesse=2f;
 	public float coeffManiabilite=4f;
-	
+
+	public List<string> state;
 	public Dictionary <string, KeyCode> keyMap;
+
 	private Kart kart;
 	private bool dansLesAirs = true;
 	private Dictionary <string, string> axisMap;
 	private float ky;
-
 	
 	// Use this for initialization
 	void Start ()
@@ -26,32 +28,13 @@ public class KartController : MonoBehaviour
 		{
 			controllerEnabled = new List<bool>();
 			controllerEnabled.Add(j1enabled);
-			controllerEnabled.Add(false);
+			controllerEnabled.Add(j2enabled);
 			controllerEnabled.Add(false);
 			controllerEnabled.Add(false);
 		}
 		if (playersMapping == null)
 			InitMapping ();
 		InitSelfMapping ();
-	}
-	
-	void InitSelfMapping()
-	{
-		Dictionary <string, string> ps1_axis = new Dictionary<string, string> {
-			{"turn","J1_TurnAxis"}, {"stop","J1_StopAxis"}		};
-		Dictionary <string, string> ps2_axis = new Dictionary<string, string> {
-			{"turn","J2_TurnAxis"}, {"stop","J2_StopAxis"}		};
-		Dictionary <string, string> ps3_axis = new Dictionary<string, string> {
-			{"turn","J3_TurnAxis"}, {"stop","J3_StopAxis"}		};
-		Dictionary <string, string> ps4_axis = new Dictionary<string, string> {
-			{"turn","J4_TurnAxis"}, {"stop","J4_StopAxis"}		};
-		List<Dictionary <string, string> > l_axis = new List<Dictionary<string, string>> {
-			ps1_axis,ps2_axis,ps3_axis,ps4_axis	};
-
-		if (controllerEnabled [kart.numeroJoueur-1])
-			axisMap = l_axis[kart.numeroJoueur-1];
-
-		keyMap = playersMapping [kart.numeroJoueur];
 	}
 	
 	void Update()
@@ -94,7 +77,6 @@ public class KartController : MonoBehaviour
 		controlPosition ();
 	}
 	
-	
 	void OnCollisionStay(Collision collision)
 	{
 		if(collision.gameObject.name=="Ground")
@@ -102,13 +84,6 @@ public class KartController : MonoBehaviour
 
 		if(collision.gameObject.name=="accelerateur")
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x*3,rigidbody.velocity.y*3,rigidbody.velocity.z*3);
-
-	}
-	
-	void OnCollisionEnter(Collision collision)
-	{
-		//rigidbody.velocity = Vector3.zero;
-		//rigidbody.angularVelocity = Vector3.zero;
 	}
 	
 	void OnCollisionExit(Collision collision)
@@ -117,6 +92,45 @@ public class KartController : MonoBehaviour
 		{
 			dansLesAirs = true;
 		}
+	}
+
+	public bool isArmed()
+	{
+		return state.IndexOf("armed")!=-1;
+	}
+	
+	public void setWeapon()
+	{
+		state.Add ("armed");
+	}
+
+	public void die()
+	{
+		if (state.IndexOf("invincible")!=-1)
+			return;
+		state.Add ("invincible");
+		StartCoroutine (Transparence());
+	}
+	
+	IEnumerator Transparence()
+	{
+		renderer.enabled = false;
+		float time = 0f;
+		float last_time = 0f;
+		float clignotement = 0.3f;
+		while (time < 3f) {
+			yield return new WaitForSeconds (0.1f);
+			time += 0.1f;
+			if ((time - last_time) > clignotement)
+			{
+				last_time = time;
+				clignotement /= 2;
+				renderer.enabled = !renderer.enabled;
+			}
+		}
+		renderer.enabled = true;
+		state.Remove ("invincible");
+
 	}
 	
 	public void SetKart (Kart k)
@@ -177,10 +191,29 @@ public class KartController : MonoBehaviour
 			transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
 		}
 	}
+	
+	void InitSelfMapping()
+	{
+		Dictionary <string, string> ps1_axis = new Dictionary<string, string> {
+			{"turn","J1_TurnAxis"}, {"stop","J1_StopAxis"}		};
+		Dictionary <string, string> ps2_axis = new Dictionary<string, string> {
+			{"turn","J2_TurnAxis"}, {"stop","J2_StopAxis"}		};
+		Dictionary <string, string> ps3_axis = new Dictionary<string, string> {
+			{"turn","J3_TurnAxis"}, {"stop","J3_StopAxis"}		};
+		Dictionary <string, string> ps4_axis = new Dictionary<string, string> {
+			{"turn","J4_TurnAxis"}, {"stop","J4_StopAxis"}		};
+		List<Dictionary <string, string> > l_axis = new List<Dictionary<string, string>> {
+			ps1_axis,ps2_axis,ps3_axis,ps4_axis	};
+		
+		if (controllerEnabled [kart.numeroJoueur-1])
+			axisMap = l_axis[kart.numeroJoueur-1];
+		
+		keyMap = playersMapping [kart.numeroJoueur];
+	}
 
 	void InitMapping()
 	{
-		// local variables : to be destroid at the end of function = memory'll be free.
+		// constructs the static playersMapping => all 4 saved
 		Dictionary <string, KeyCode> pc1 = new Dictionary<string, KeyCode> {
 			{"moveForward",KeyCode.Z}, {"moveBack",KeyCode.S},
 			{"turnRight",KeyCode.Q}, {"turnLeft",KeyCode.D},

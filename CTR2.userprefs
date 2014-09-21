@@ -1,6 +1,12 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\src\KartController.cs">
+    <Files>
+      <File FileName="Assets\src\ExplosionScript.cs" Line="18" Column="3" />
+      <File FileName="Assets\src\KartController.cs" Line="121" Column="18" />
+      <File FileName="Assets\src\WeaponBoxScript.cs" Line="95" Column="5" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

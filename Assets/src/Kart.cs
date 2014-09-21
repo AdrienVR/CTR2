@@ -8,8 +8,6 @@ public class Kart
 	private static int nbPlayers;
 
 	public int numeroJoueur;
-	public GameObject objet;
-	public GameObject camera;
 
 	private KartController kc;
 	private CameraController cm1c;
@@ -23,17 +21,6 @@ public class Kart
 		initCamera ();
 	}
 
-	
-	void Update()
-	{
-		
-		if (Input.GetKey (kc.keyMap ["bip"])) {
-			Debug.Log ("kikoo");
-		}
-	}
-
-
-
 	public static void SetNbPlayers(int n)
 	{
 		nbPlayers = n;
@@ -45,7 +32,7 @@ public class Kart
 		Dictionary <int, string> prefabMap = new Dictionary <int, string>{{1,"crash_prefab"},{2,"coco_prefab"},{3,"crash_prefab"},{4,"crash_prefab"}};
 
 		GameObject kart= Resources.Load(prefabMap[j]) as GameObject;
-		objet = GameObject.Instantiate (kart, pos, q) as GameObject;
+		GameObject objet = GameObject.Instantiate (kart, pos, q) as GameObject;
 		//objet.transform.localScale = new Vector3 (5f, 5f, 5f);
 		kc = (KartController)objet.GetComponent ("KartController");
 		kc.SetKart(this);
@@ -53,7 +40,7 @@ public class Kart
 
 	public void initCamera()
 	{
-		camera = new GameObject ();
+		GameObject camera = new GameObject ();
 		camera.AddComponent ("Camera");
 		
 		if (cameraMap == null) {
@@ -72,6 +59,10 @@ public class Kart
 		cm1c = (CameraController)camera.GetComponent ("CameraController");
 		cm1c.SetKartController(kc);
 		camera.AddComponent ("GUILayer");
+		GUILayer guiLayer = (GUILayer)camera.GetComponent ("GUILayer");
+		//camera.camera.cullingMask = numeroJoueur;
+		//guiLayer.
+
 	}
 
 }

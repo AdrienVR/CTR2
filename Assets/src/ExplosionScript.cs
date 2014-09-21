@@ -13,6 +13,8 @@ public class ExplosionScript : MonoBehaviour {
 	void OnTriggerEnter(Collider other)
 	{
 		StartCoroutine (Explode());
+		KartController touched = (KartController)other.GetComponent ("KartController");
+		touched.die ();
 	}
 
 	IEnumerator Explode()

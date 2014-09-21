@@ -5,11 +5,9 @@ public class CameraController : MonoBehaviour
 {
 	
 	private KartController kc;
-	//private GUIText gText;
 
 	// Use this for initialization
 	void Start () { 
-		//gText = Resources.Load("GUI_Text") as GUIText;
 	}
 
 	public void SetKartController(KartController k)
