@@ -46,7 +46,8 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\src\Camera1Controller.cs" />
+     <Compile Include="Assets\src\AppleBoxScript.cs" />
+     <Compile Include="Assets\src\CameraController.cs" />
      <Compile Include="Assets\src\ExplosionScript.cs" />
      <Compile Include="Assets\src\Kart.cs" />
      <Compile Include="Assets\src\KartController.cs" />
