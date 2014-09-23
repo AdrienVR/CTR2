@@ -26,9 +26,12 @@ public class WeaponBoxScript : MonoBehaviour {
 		StartCoroutine (ComputeTime());
 		StartCoroutine (Take());
 //		Debug.Log ("j'ai touché une caisse");
-		
+		if (other.name[0] != 'c')
+						return;
 		taker = (KartController)other.GetComponent ("KartController");
-		if (taker.isArmed ())
+		if (taker.name == null)
+						return;
+		if (taker.IsArmed ())
 			return;
 		StartCoroutine(AnimArmes());
 		StartCoroutine(PlaySound());
@@ -73,7 +76,7 @@ public class WeaponBoxScript : MonoBehaviour {
 		{
 			float nb = Random.Range(1, 15);
 			GameObject Arme = Instantiate(Resources.Load("arme"+((int)nb).ToString()), new Vector3(0.025f,0.55f,0), Quaternion.identity) as GameObject;
-			taker.setWeapon();
+			taker.SetWeapon("bomb");
 			nbImgArmes = 0;
 		}
 		yield return new WaitForSeconds(0.01f);

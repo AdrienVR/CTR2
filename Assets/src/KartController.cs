@@ -14,23 +14,29 @@ public class KartController : MonoBehaviour
 	public float coeffManiabilite=4f;
 
 	public List<string> state;
+	public List<string> weapons;
 	public Dictionary <string, KeyCode> keyMap;
 
 	private Kart kart;
 	private bool dansLesAirs = true;
 	private Dictionary <string, string> axisMap;
 	private float ky;
+
+	private ExplosionScript arme;
+	public bool pipi;
 	
 	// Use this for initialization
 	void Start ()
 	{
+		pipi = false;
+		weapons = new List<string>();
 		if (controllerEnabled == null)
 		{
 			controllerEnabled = new List<bool>();
-			controllerEnabled.Add(j1enabled);
-			controllerEnabled.Add(j2enabled);
-			controllerEnabled.Add(false);
-			controllerEnabled.Add(false);
+			controllerEnabled.Add(true);
+			controllerEnabled.Add(true);
+			controllerEnabled.Add(true);
+			controllerEnabled.Add(true);
 		}
 		if (playersMapping == null)
 			InitMapping ();
@@ -94,17 +100,27 @@ public class KartController : MonoBehaviour
 		}
 	}
 
-	public bool isArmed()
+	public bool IsArmed()
 	{
 		return state.IndexOf("armed")!=-1;
 	}
 	
-	public void setWeapon()
+	public void SetWeapon(string w)
 	{
 		state.Add ("armed");
+		weapons.Add (w);
 	}
 
-	public void die()
+	public void UseWeapon()
+	{
+		GameObject arme1 = Instantiate(Resources.Load("bomb"), transform.position-new Vector3(transform.forward.x*10f,transform.forward.y*10f-1f,transform.forward.z*10f), transform.rotation) as GameObject;
+		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
+		arme.owner = rigidbody.gameObject;
+		pipi = true;
+		arme.vitesseInitiale = rigidbody.velocity;
+	}
+
+	public void Die()
 	{
 		if (state.IndexOf("invincible")!=-1)
 			return;
@@ -190,6 +206,16 @@ public class KartController : MonoBehaviour
 			rigidbody.position += Input.GetAxis (axisMap ["stop"]) * forwardNormal / 4 * coeffVitesse;
 			transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
 		}
+		
+		if (Input.GetKeyDown (keyMap ["action"]))
+				if (!pipi)
+				UseWeapon ();
+				else {
+						Debug.Log("kikoo");
+			pipi = false;
+			arme.ActionExplosion();
+				}
+
 	}
 	
 	void InitSelfMapping()
@@ -203,7 +229,7 @@ public class KartController : MonoBehaviour
 		Dictionary <string, string> ps4_axis = new Dictionary<string, string> {
 			{"turn","J4_TurnAxis"}, {"stop","J4_StopAxis"}		};
 		List<Dictionary <string, string> > l_axis = new List<Dictionary<string, string>> {
-			ps1_axis,ps2_axis,ps3_axis,ps4_axis	};
+			ps1_axis,ps3_axis,ps3_axis,ps4_axis	};
 		
 		if (controllerEnabled [kart.numeroJoueur-1])
 			axisMap = l_axis[kart.numeroJoueur-1];
@@ -260,7 +286,7 @@ public class KartController : MonoBehaviour
 		if (controllerEnabled [1])
 			pc2 = ps2;
 
-		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,pc1},{2,pc2},{3,ps3},{4,ps4}};
+		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,pc1},{2,ps3},{3,ps2},{4,ps4}};
 	}
 	
 }

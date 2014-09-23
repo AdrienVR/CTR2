@@ -29,7 +29,7 @@ public class Kart
 	public void initObjet(Vector3 pos, Quaternion q)
 	{
 		int j = numeroJoueur;
-		Dictionary <int, string> prefabMap = new Dictionary <int, string>{{1,"crash_prefab"},{2,"coco_prefab"},{3,"crash_prefab"},{4,"crash_prefab"}};
+		Dictionary <int, string> prefabMap = new Dictionary <int, string>{{1,"crash_prefab"},{2,"crash_prefab"},{3,"crash_prefab"},{4,"crash_prefab"}};
 
 		GameObject kart= Resources.Load(prefabMap[j]) as GameObject;
 		GameObject objet = GameObject.Instantiate (kart, pos, q) as GameObject;
