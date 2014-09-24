@@ -14,7 +14,6 @@ public class ExplosionScript : MonoBehaviour {
 	
 	public void ActionExplosion()
 	{
-		Debug.Log ("BOUM");
 		CapsuleCollider cc = (CapsuleCollider)GetComponent ("CapsuleCollider");
 		cc.radius = 6.5f;
 		StartCoroutine (Explode());
@@ -46,6 +45,6 @@ public class ExplosionScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (rigidbody != null)
-			rigidbody.velocity = -rigidbody.transform.forward*50f;
+			rigidbody.velocity = -((KartController)owner.GetComponent ("KartController")).facteurSens*rigidbody.transform.forward*50f;
 	}
 }

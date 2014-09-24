@@ -24,6 +24,7 @@ public class KartController : MonoBehaviour
 
 	private ExplosionScript arme;
 	public bool pipi;
+	public float facteurSens ;
 	
 	// Use this for initialization
 	void Start ()
@@ -113,19 +114,35 @@ public class KartController : MonoBehaviour
 
 	public void UseWeapon()
 	{
-		GameObject arme1 = Instantiate(Resources.Load("bomb"), transform.position-new Vector3(transform.forward.x*10f,transform.forward.y*10f-1f,transform.forward.z*10f), transform.rotation) as GameObject;
+		GameObject arme1 = Instantiate(Resources.Load("bomb"), transform.position-4f*(new Vector3(facteurSens*transform.forward.x, transform.forward.y-0.5f,facteurSens*transform.forward.z)), transform.rotation) as GameObject;
 		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
 		arme.owner = rigidbody.gameObject;
 		pipi = true;
-		arme.vitesseInitiale = rigidbody.velocity;
+		arme.vitesseInitiale =  rigidbody.velocity;
 	}
 
 	public void Die()
 	{
-		if (state.IndexOf("invincible")!=-1)
-			return;
-		state.Add ("invincible");
-		StartCoroutine (Transparence());
+		if (state.IndexOf ("invincible") == -1) {
+						state.Add ("invincible");
+						StartCoroutine (Transparence ());
+		}
+		if (state.IndexOf ("DieAnimation") == -1) {
+			state.Add ("DieAnimation");
+			StartCoroutine (DieAnimation ());
+		}
+	}
+	
+	IEnumerator DieAnimation()
+	{
+		renderer.enabled = false;
+		float time = 0f;
+		while (time < 1.5f) {
+			yield return new WaitForSeconds (0.1f);
+			time += 0.1f;
+		}
+		state.Remove ("DieAnimation");
+		
 	}
 	
 	IEnumerator Transparence()
@@ -207,13 +224,24 @@ public class KartController : MonoBehaviour
 			transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
 		}
 		
-		if (Input.GetKeyDown (keyMap ["action"]))
-				if (!pipi)
-				UseWeapon ();
-				else {
-						Debug.Log("kikoo");
-			pipi = false;
-			arme.ActionExplosion();
+		if (Input.GetKeyDown (keyMap ["action"])) {
+			Debug.Log ("BOUM"+rigidbody.transform.position);
+			if (state.IndexOf ("DieAnimation") != -1)
+			    return;
+						if (controllerEnabled [kart.numeroJoueur - 1] && Input.GetAxis (axisMap ["stop"]) < 0)
+								facteurSens = 1f;
+			else if (Input.GetKey(keyMap["moveBack"]))
+			         facteurSens = 1f;
+			else
+				facteurSens = -1f;
+
+
+						if (!pipi)
+								UseWeapon ();
+						else {
+								pipi = false;
+								arme.ActionExplosion ();
+						}
 				}
 
 	}
@@ -229,9 +257,9 @@ public class KartController : MonoBehaviour
 		Dictionary <string, string> ps4_axis = new Dictionary<string, string> {
 			{"turn","J4_TurnAxis"}, {"stop","J4_StopAxis"}		};
 		List<Dictionary <string, string> > l_axis = new List<Dictionary<string, string>> {
-			ps1_axis,ps3_axis,ps3_axis,ps4_axis	};
+			ps1_axis,ps2_axis,ps3_axis,ps4_axis	};
 		
-		if (controllerEnabled [kart.numeroJoueur-1])
+		//if (controllerEnabled [kart.numeroJoueur-1])
 			axisMap = l_axis[kart.numeroJoueur-1];
 		
 		keyMap = playersMapping [kart.numeroJoueur];
@@ -286,7 +314,7 @@ public class KartController : MonoBehaviour
 		if (controllerEnabled [1])
 			pc2 = ps2;
 
-		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,pc1},{2,ps3},{3,ps2},{4,ps4}};
+		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,pc1},{2,ps2},{3,ps2},{4,ps4}};
 	}
 	
 }
