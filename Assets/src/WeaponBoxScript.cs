@@ -6,10 +6,8 @@ public class WeaponBoxScript : MonoBehaviour {
 	public AudioClip randomMusic;
 	public AudioClip endMusic;
 
-	private bool exited=true;
 	private int nbImgArmes=0;
 	private KartController taker;
-	private float delay;
 
 	// Use this for initialization
 	void Start () {
@@ -17,15 +15,10 @@ public class WeaponBoxScript : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other)
 	{
-		exited = false;
-		if (animation.isPlaying || delay > 0)
-			return;
+		collider.enabled = false;
 		audio.Play ();
-		delay += 3f;
-		
-		StartCoroutine (ComputeTime());
+
 		StartCoroutine (Take());
-//		Debug.Log ("j'ai touché une caisse");
 		if (other.name[0] != 'c')
 						return;
 		taker = (KartController)other.GetComponent ("KartController");
@@ -41,7 +34,7 @@ public class WeaponBoxScript : MonoBehaviour {
 	{
 		while (nbImgArmes<25 && nbImgArmes>0) {
 			audio.PlayOneShot(randomMusic);
-			yield return new WaitForSeconds (randomMusic.length);
+			yield return new WaitForSeconds (randomMusic.length-randomMusic.length/4);
 		}
 		audio.PlayOneShot(endMusic);
 	}
@@ -88,20 +81,8 @@ public class WeaponBoxScript : MonoBehaviour {
 		animation.Play ("boxDisappear");
 		yield return new WaitForSeconds (3f);
 		animation.Play ("boxGrow");
-	}
-
-	IEnumerator ComputeTime()
-	{
-		while (delay>0f) {
-			yield return new WaitForSeconds (0.1f);
-			if (exited)
-				delay -= 0.1f;
-		}
-	}
-
-	void OnTriggerExit(Collider other)
-	{
-		exited = true;
+		yield return new WaitForSeconds (2f);
+		collider.enabled = true;
 	}
 	
 	// Update is called once per frame

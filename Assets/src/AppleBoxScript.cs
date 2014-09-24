@@ -2,8 +2,7 @@
 using System.Collections;
 
 public class AppleBoxScript : MonoBehaviour {
-	
-	private bool exited=true;
+	private int nb = 0;
 	
 	// Use this for initialization
 	void Start () {
@@ -11,13 +10,12 @@ public class AppleBoxScript : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider other)
 	{
-		exited = false;
-		if (animation.isPlaying)
-			return;
+		collider.enabled = false;
+		Debug.Log ("collision"+nb);
+		nb++;
 		audio.Play ();
 		
 		StartCoroutine (Take());
-		//		Debug.Log ("j'ai touché une caisse");
 		StartCoroutine(animPommes());
 	}
 	
@@ -30,14 +28,9 @@ public class AppleBoxScript : MonoBehaviour {
 	{
 		animation.Play ("boxDisappear");
 		yield return new WaitForSeconds (3f);
-		while (!exited)
-			yield return new WaitForSeconds (0.2f);
 		animation.Play ("boxGrow");
-	}
-	
-	void OnTriggerExit(Collider other)
-	{
-		exited = true;
+		yield return new WaitForSeconds (2f);
+		collider.enabled = true;
 	}
 	
 	// Update is called once per frame

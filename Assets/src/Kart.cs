@@ -8,13 +8,14 @@ public class Kart
 	private static int nbPlayers;
 
 	public int numeroJoueur;
-
+	public int nbPoints;
 	private KartController kc;
-	private CameraController cm1c;
+	public CameraController cm1c;
 	private static Dictionary <int, List<Rect>> cameraMap;
 
 	public Kart(Vector3 pos, Quaternion q)
 	{
+		nbPoints = 0;
 		nPlayer++;
 		numeroJoueur = nPlayer;
 		initObjet (pos, q);
@@ -65,6 +66,11 @@ public class Kart
 
 	}
 
+	public void addPoint()
+	{
+		nbPoints++;
+		Debug.Log (numeroJoueur + " a " + nbPoints + " points !");
+	}
 }
 
 
