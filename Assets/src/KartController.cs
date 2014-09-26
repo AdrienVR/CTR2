@@ -13,6 +13,13 @@ public class KartController : MonoBehaviour
 	public float coeffVitesse=2f;
 	public float coeffManiabilite=4f;
 
+	private bool pressX=false;
+	private bool pressFleche=false;
+	private bool pressR1=false;
+	private bool pressL1=false;
+	private bool pressXAndFleche = false;
+	private bool pressXAndFlecheAndR1 = false;
+
 	private Vector3 velocityToApplyByJonathan;
 
 	public List<string> state;
@@ -141,7 +148,7 @@ public class KartController : MonoBehaviour
 	{
 		renderer.enabled = false;
 		float time = 0f;
-		while (time < 3.5f) {
+		while (time < 2.5f) {
 			yield return new WaitForSeconds (0.1f);
 			time += 0.1f;
 		}
@@ -155,7 +162,7 @@ public class KartController : MonoBehaviour
 		float time = 0f;
 		float last_time = 0f;
 		float clignotement = 0.3f;
-		while (time < 5f) {
+		while (time < 4f) {
 			yield return new WaitForSeconds (0.1f);
 			time += 0.1f;
 			if ((time - last_time) > clignotement)
@@ -213,6 +220,68 @@ public class KartController : MonoBehaviour
 					transform.Rotate(0,0.5f*coeffManiabilite,0);
 			}
 		}
+		if(Input.GetKeyDown(keyMap["moveForward"]))
+		{
+			pressX=true;
+		}
+		if(Input.GetKeyUp(keyMap["moveForward"]))
+		{
+			pressX=false;
+			pressXAndFleche=false;
+			pressXAndFlecheAndR1=false;
+			coeffManiabilite=2;
+			coeffVitesse=3;
+		}
+		if(Input.GetAxis(axisMap["turn"])==-1 || Input.GetAxis(axisMap["turn"])== 1)
+		{
+			pressFleche=true;
+		}
+		if(Input.GetAxis(axisMap["turn"])!= -1 && Input.GetAxis(axisMap["turn"])!= 1)
+		{
+			pressFleche=false;
+
+			coeffManiabilite=2;
+			coeffVitesse=3;
+		}
+		if(Input.GetKeyDown(keyMap["jump"]))
+		{
+			pressR1=true;
+		}
+		if(Input.GetKeyUp(keyMap["jump"]))
+		{
+			pressR1=false;
+			pressXAndFlecheAndR1=false;
+			coeffManiabilite=2;
+			coeffVitesse=3;
+		}
+		if(Input.GetKeyDown(keyMap["jump2"]))
+		{
+			pressL1=true;
+		}
+		if(Input.GetKeyUp(keyMap["jump2"]))
+		{
+			pressL1=false;
+		}
+		if(pressX && pressFleche)
+		{
+			pressXAndFleche=true;
+		}
+		if(pressXAndFleche && pressR1)
+		{
+			pressXAndFlecheAndR1=true;
+		}
+		if(pressXAndFlecheAndR1)
+		{
+			Debug.Log("JE DERAPE");
+			coeffManiabilite=4;
+			coeffVitesse=3;
+		}
+
+		if(!pressXAndFlecheAndR1 || !pressL1)
+		{
+			Debug.Log("JE DERAPE PAS");
+		}
+
 		if(Input.GetKey(keyMap["moveForward"]))
 		{
 			nonJonathan-=forwardNormal*coeffVitesse;

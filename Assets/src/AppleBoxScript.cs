@@ -2,7 +2,6 @@
 using System.Collections;
 
 public class AppleBoxScript : MonoBehaviour {
-	private int nb = 0;
 	
 	// Use this for initialization
 	void Start () {
@@ -11,8 +10,6 @@ public class AppleBoxScript : MonoBehaviour {
 	void OnTriggerEnter(Collider other)
 	{
 		collider.enabled = false;
-		Debug.Log ("collision"+nb);
-		nb++;
 		audio.Play ();
 		
 		StartCoroutine (Take());
