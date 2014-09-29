@@ -4,9 +4,10 @@ using System.Collections.Generic;
 
 public class ExplosionScript : MonoBehaviour {
 	
-	public AnimationClip explosionClip;
+	public AudioClip explosionClip;
 	public Color explosionColor;
 	public Vector3 vitesseInitiale;
+	public AudioClip bombExplose; // ceci est un attribut
 	public GameObject owner;
 	public bool isAlive;
 	private bool dansLesAirs;
@@ -45,9 +46,14 @@ public class ExplosionScript : MonoBehaviour {
 		((KartController)owner.GetComponent ("KartController")).pipi = false;
 		if (explosionClip != null)
 			animation.Play (explosionClip.name);
+
 		gameObject.light.color = explosionColor;
+		audio.PlayOneShot(bombExplose); // ceci ne marche pas
+		audio.Play (); // ceci ne marche pas
 		yield return new WaitForSeconds (0.1f);
+		Debug.Log ("boum!"); // ceci marche (mais ne fait pas de bruit ..)
 		Destroy(gameObject);
+
 	}
 
 	
