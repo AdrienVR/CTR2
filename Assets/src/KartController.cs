@@ -44,8 +44,8 @@ public class KartController : MonoBehaviour
 		if (controllerEnabled == null)
 		{
 			controllerEnabled = new List<bool>();
-			controllerEnabled.Add(true);
-			controllerEnabled.Add(true);
+			controllerEnabled.Add(j1enabled);
+			controllerEnabled.Add(j2enabled);
 			controllerEnabled.Add(true);
 			controllerEnabled.Add(true);
 		}
@@ -232,17 +232,6 @@ public class KartController : MonoBehaviour
 			coeffManiabilite=2;
 			coeffVitesse=3;
 		}
-		if(Input.GetAxis(axisMap["turn"])==-1 || Input.GetAxis(axisMap["turn"])== 1)
-		{
-			pressFleche=true;
-		}
-		if(Input.GetAxis(axisMap["turn"])!= -1 && Input.GetAxis(axisMap["turn"])!= 1)
-		{
-			pressFleche=false;
-
-			coeffManiabilite=2;
-			coeffVitesse=3;
-		}
 		if(Input.GetKeyDown(keyMap["jump"]))
 		{
 			pressR1=true;
@@ -338,6 +327,20 @@ public class KartController : MonoBehaviour
 								arme.ActionExplosion ();
 						}
 				}
+
+		
+		if (controllerEnabled [kart.numeroJoueur - 1]) {
+						if (Input.GetAxis (axisMap ["turn"]) == -1 || Input.GetAxis (axisMap ["turn"]) == 1) {
+								pressFleche = true;
+						}
+						if (Input.GetAxis (axisMap ["turn"]) != -1 && Input.GetAxis (axisMap ["turn"]) != 1) {
+								pressFleche = false;
+			
+								coeffManiabilite = 2;
+								coeffVitesse = 3;
+						}
+				}
+
 		float max = 3f;
 		Vector3 veloce = rigidbody.velocity;
 		veloce += nonJonathan;
@@ -366,7 +369,8 @@ public class KartController : MonoBehaviour
 		List<Dictionary <string, string> > l_axis = new List<Dictionary<string, string>> {
 			ps1_axis,ps2_axis,ps3_axis,ps4_axis	};
 		
-		//if (controllerEnabled [kart.numeroJoueur-1])
+
+		if (controllerEnabled [kart.numeroJoueur-1])
 			axisMap = l_axis[kart.numeroJoueur-1];
 		
 		keyMap = playersMapping [kart.numeroJoueur];
@@ -378,14 +382,18 @@ public class KartController : MonoBehaviour
 		Dictionary <string, KeyCode> pc1 = new Dictionary<string, KeyCode> {
 			{"moveForward",KeyCode.Z}, {"moveBack",KeyCode.S},
 			{"turnRight",KeyCode.Q}, {"turnLeft",KeyCode.D},
-			{"jump",KeyCode.Space}, {"action",KeyCode.A},
-			{"start",KeyCode.Escape}, {"viewChange",KeyCode.F1},
-			{"bip",KeyCode.F2}
+			{"jump",KeyCode.Space}, {"jump2",KeyCode.F5}, 
+			{"action",KeyCode.A}, {"start",KeyCode.Escape}, 
+			{"viewChange",KeyCode.F1}, {"viewInverse",KeyCode.F2},
+			{"bip",KeyCode.F3}, {"bip2",KeyCode.F4}
 		};
 		Dictionary <string, KeyCode> pc2 = new Dictionary<string, KeyCode> {
 			{"moveForward",KeyCode.I}, {"moveBack",KeyCode.K},
 			{"turnRight",KeyCode.J}, {"turnLeft",KeyCode.L},
-			{"jump",KeyCode.B}, {"action",KeyCode.U}
+			{"jump",KeyCode.B}, {"jump2",KeyCode.F11}, 
+			{"action",KeyCode.U}, {"start",KeyCode.Escape}, 
+			{"viewChange",KeyCode.F7}, {"viewInverse",KeyCode.F8},
+			{"bip",KeyCode.F9}, {"bip2",KeyCode.F10}
 		};
 		Dictionary <string, KeyCode> ps1 = new Dictionary<string, KeyCode> {
 			{"moveForward",KeyCode.Joystick1Button2}, {"moveBack",KeyCode.Joystick1Button3},
@@ -421,7 +429,7 @@ public class KartController : MonoBehaviour
 		if (controllerEnabled [1])
 			pc2 = ps2;
 
-		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,pc1},{2,ps2},{3,ps2},{4,ps4}};
+		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,pc1},{2,pc2},{3,ps2},{4,ps4}};
 	}
 	
 }
