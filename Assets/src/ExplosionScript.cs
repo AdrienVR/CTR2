@@ -17,7 +17,7 @@ public class ExplosionScript : MonoBehaviour {
 		targets = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
 		dansLesAirs = true;
 	}
-
+	
 	
 	public void ActionExplosion()
 	{
@@ -25,12 +25,12 @@ public class ExplosionScript : MonoBehaviour {
 		cc.radius = 6.5f;
 		StartCoroutine (Explode());
 	}
-
+	
 	void OnTriggerEnter(Collider other)
 	{
 		StartCoroutine (Explode());
 		if (targets.IndexOf (other.name) == -1)
-						return;
+			return;
 		KartController touched = (KartController)other.GetComponent ("KartController");
 		if(touched.gameObject!=owner.gameObject &&  touched.state.IndexOf("invincible") == -1)
 		{
@@ -40,27 +40,26 @@ public class ExplosionScript : MonoBehaviour {
 			touched.Die ();
 		ActionExplosion ();
 	}
-
+	
 	IEnumerator Explode()
 	{
+
 		((KartController)owner.GetComponent ("KartController")).pipi = false;
 		if (explosionClip != null)
 			animation.Play (explosionClip.name);
-
+		audio.PlayOneShot (bombExplose);
 		gameObject.light.color = explosionColor;
-		audio.PlayOneShot(bombExplose); // ceci ne marche pas
-		audio.Play (); // ceci ne marche pas
 		yield return new WaitForSeconds (0.1f);
-		Debug.Log ("boum!"); // ceci marche (mais ne fait pas de bruit ..)
+		yield return new WaitForSeconds (3f);
 		Destroy(gameObject);
-
+		
 	}
-
+	
 	
 	void OnTriggerExit(Collider other)
 	{
 	}
-
+	
 	
 	void OnCollisionStay(Collision collision)
 	{
@@ -75,7 +74,7 @@ public class ExplosionScript : MonoBehaviour {
 			dansLesAirs = true;
 		}
 	}
-
+	
 	// Update is called once per frame
 	void Update () {
 		if (rigidbody != null)
