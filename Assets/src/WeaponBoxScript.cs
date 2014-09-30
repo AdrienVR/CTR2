@@ -9,6 +9,14 @@ public class WeaponBoxScript : MonoBehaviour {
 	private int nbImgArmes=0;
 	private KartController taker;
 
+	// src : http://crashbandicoot.wikia.com/wiki/Crash_Team_Racing
+	private static Dictionary <int, string> normalWeapons =  new Dictionary<int, string> {
+		{1,"greenBeaker"},{2,"greenShield"},{3,"bomb"},{4,"tripleBombs"},{5,"tripleMissiles"},
+		{6,"Aku-Aku"},{7,"TNT"},{8,"turbo"}	};
+	private static Dictionary <int, string> superWeapons = new Dictionary<int, string> {
+		{1,"redBeaker"},{2,"redShield"},{3,"superBomb"},{4,"superTripleBombs"},{5,"superTripleMissiles"},
+		{6,"superAku-Aku"},{7,"nitro"},{8,"superTurbo"}	};
+
 	// Use this for initialization
 	void Start () {
 	}
