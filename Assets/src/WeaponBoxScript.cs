@@ -28,15 +28,28 @@ public class WeaponBoxScript : MonoBehaviour {
 		audio.Play ();
 
 		StartCoroutine (Take());
-		if (other.name[0] != 'c')
-						return;
-		taker = (KartController)other.GetComponent ("KartController");
-		if (taker.name == null)
-						return;
-		if (taker.IsArmed ())
-			return;
-		StartCoroutine(AnimArmes());
-		StartCoroutine(PlaySound());
+		if (other.name[0] == 'c') // si c'est un kart
+		{
+			taker = (KartController)other.GetComponent ("KartController");
+			if (taker.name == null)
+							return;
+			if (taker.IsArmed ())
+				return;
+			StartCoroutine(AnimArmes());
+			StartCoroutine(PlaySound());
+		}
+		else if(other.name[0] == 'b') // si c'est une bombe
+		{
+			ExplosionScript es = (ExplosionScript)other.GetComponent ("ExplosionScript");
+			GameObject owner =es.owner;
+			taker = (KartController)owner.GetComponent ("KartController");
+			if (taker.name == null)
+				return;
+			if (taker.IsArmed ())
+				return;
+			StartCoroutine(AnimArmes());
+			StartCoroutine(PlaySound());
+		}
 	}
 	
 	IEnumerator PlaySound()
