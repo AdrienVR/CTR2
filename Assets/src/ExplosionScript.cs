@@ -9,13 +9,12 @@ public class ExplosionScript : MonoBehaviour {
 	public Vector3 vitesseInitiale;
 	public GameObject owner;
 	public bool isAlive;
-	private bool dansLesAirs;
+	private bool dansLesAirs = true;
 	private bool exploded=false;
-	public List<string> targets;
+	public static List<string> targets = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
+	public static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
 	// Use this for initialization
 	void Start () {
-		targets = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
-		dansLesAirs = true;
 	}
 	
 	
@@ -27,6 +26,8 @@ public class ExplosionScript : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider other)
 	{
+		if(boxes.IndexOf(other.name)!=-1 || exploded)
+			return;
 		StartCoroutine (Explode());
 		if (targets.IndexOf (other.name) == -1)
 			return;
