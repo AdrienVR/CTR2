@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public class ExplosionScript : MonoBehaviour {
 	
-	public AudioClip explosionClip;
+	public AnimationClip explosionClip;
 	public Color explosionColor;
 	public Vector3 vitesseInitiale;
-	public AudioClip bombExplose; // ceci est un attribut
 	public GameObject owner;
 	public bool isAlive;
 	private bool dansLesAirs;
+	private bool exploded=false;
 	public List<string> targets;
 	// Use this for initialization
 	void Start () {
@@ -23,7 +23,6 @@ public class ExplosionScript : MonoBehaviour {
 	{
 		CapsuleCollider cc = (CapsuleCollider)GetComponent ("CapsuleCollider");
 		cc.radius = 6.5f;
-		StartCoroutine (Explode());
 	}
 	
 	void OnTriggerEnter(Collider other)
@@ -47,9 +46,12 @@ public class ExplosionScript : MonoBehaviour {
 		((KartController)owner.GetComponent ("KartController")).pipi = false;
 		if (explosionClip != null)
 			animation.Play (explosionClip.name);
-		audio.PlayOneShot (bombExplose);
+		audio.Play ();
+		exploded = true;
+		gameObject.transform.localScale = new Vector3 ();
 		gameObject.light.color = explosionColor;
 		yield return new WaitForSeconds (0.1f);
+		gameObject.light.color = new Color();
 		yield return new WaitForSeconds (3f);
 		Destroy(gameObject);
 		
@@ -79,8 +81,9 @@ public class ExplosionScript : MonoBehaviour {
 	void Update () {
 		if (rigidbody != null)
 			rigidbody.velocity = -((KartController)owner.GetComponent ("KartController")).facteurSens*rigidbody.transform.forward*50f;
-		
 		if (dansLesAirs)
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-9.81f,rigidbody.velocity.z);
+		if (exploded)
+			rigidbody.velocity = new Vector3();
 	}
 }
