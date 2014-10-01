@@ -31,6 +31,7 @@ public class KartController : MonoBehaviour
 	private bool dansLesAirs = true;
 	private Dictionary <string, string> axisMap;
 	private float ky;
+	private bool baddie = false;
 
 	private ExplosionScript arme;
 	public bool pipi;
@@ -118,6 +119,13 @@ public class KartController : MonoBehaviour
 	
 	public void SetWeapon(string w)
 	{
+		if (w == "Aku-Aku" )
+			if (baddie)
+				w = "Uka-Uka";
+		else if (w == "superAku-Aku")
+			if (baddie)
+				w = "superUka-Uka";
+
 		state.Add ("armed");
 		weapons.Add (w);
 	}
@@ -268,7 +276,6 @@ public class KartController : MonoBehaviour
 
 		if(!pressXAndFlecheAndR1 || !pressL1)
 		{
-			Debug.Log("JE DERAPE PAS");
 		}
 
 		if(Input.GetKey(keyMap["moveForward"]))
@@ -429,7 +436,7 @@ public class KartController : MonoBehaviour
 		if (controllerEnabled [1])
 			pc2 = ps2;
 
-		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,pc1},{2,pc2},{3,ps2},{4,ps4}};
+		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,pc1},{2,pc2},{3,ps3},{4,ps4}};
 	}
 	
 }

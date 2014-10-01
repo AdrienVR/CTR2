@@ -34,7 +34,7 @@ public class ExplosionScript : MonoBehaviour {
 		KartController touched = (KartController)other.GetComponent ("KartController");
 		if(touched.gameObject!=owner.gameObject &&  touched.state.IndexOf("invincible") == -1)
 		{
-			((KartController)owner.GetComponent ("KartController")).GetKart().addPoint ();
+			((KartController)owner.GetComponent ("KartController")).GetKart().AddPoint ();
 		}
 		if (other.gameObject != owner)
 			touched.Die ();
