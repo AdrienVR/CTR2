@@ -7,8 +7,6 @@ public class WeaponBoxScript : MonoBehaviour {
 	public AudioClip randomMusic;
 	public AudioClip endMusic;
 
-	private int nPlayer = 1;
-
 	private int nbImgArmes=0;
 	private KartController taker;
 
@@ -21,12 +19,14 @@ public class WeaponBoxScript : MonoBehaviour {
 	private static Dictionary <int, string> superWeapons = new Dictionary<int, string> {
 		{1,"redBeaker"},{2,"blueShield"},{3,"superBomb"},{4,"superTripleBombs"},{5,"superTripleMissiles"},
 		{6,"superAku-Aku"},{7,"nitro"},{8,"superTurbo"}	};
+	private Dictionary <int, string> weapons;
 	
 	private static List<string> characters = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
 	private static List<string> launchWeapons = new List<string>() {"missile", "bomb", "bomb(Clone)"};
 
 	// Use this for initialization
 	void Start () {
+		weapons = normalWeapons;
 	}
 
 	void OnTriggerEnter(Collider other)
@@ -68,20 +68,16 @@ public class WeaponBoxScript : MonoBehaviour {
 
 	IEnumerator AnimArmes()
 	{
-		GameObject arme = Instantiate (Resources.Load ("arme"), new Vector3 (0.025f, 0.55f, 0), Quaternion.identity) as GameObject;
-		arme.layer = LayerMask.NameToLayer ("layer_j" + taker.GetKart().numeroJoueur);
+		int nb = 1;
 		while (nbImgArmes < 25) {
-			int nb = Random.Range (1, 9);
-			WeaponScript ws = (WeaponScript)arme.GetComponent ("WeaponScript");
-			ws.SetTextureN(nb);
+			nb = Random.Range (1, 9);
+			taker.GetKart().ws.SetTextureN(nb);
 			nbImgArmes++;
 			yield return new WaitForSeconds (0.08f);
-
 		}
-		taker.SetWeapon("bomb");
+		taker.SetWeapon(weapons[nb]);
 		nbImgArmes = 0;
 	}
-
 	
 	IEnumerator Take()
 	{
@@ -90,10 +86,5 @@ public class WeaponBoxScript : MonoBehaviour {
 		animation.Play ("boxGrow");
 		yield return new WaitForSeconds (2f);
 		collider.enabled = true;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 }

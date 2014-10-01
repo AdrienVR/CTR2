@@ -12,11 +12,6 @@ public class WeaponScript : MonoBehaviour {
 
 	public void SetTextureN( int n)
 	{
-		gameObject.guiTexture.texture = textureList[n-1];
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+		guiTexture.texture = textureList[n-1];
 	}
 }

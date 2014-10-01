@@ -8,6 +8,9 @@ public class Kart
 	public CameraController cm1c;
 	public int numeroJoueur;
 
+	public GameObject armeGui;
+	public WeaponScript ws;
+
 	private static int nbPlayers;
 	private int nbPoints = 0;
 	private KartController kc;
@@ -27,6 +30,7 @@ public class Kart
 		numeroJoueur = nPlayer;
 		InitObjet (pos, q);
 		InitCamera ();
+		InitGuiLayer ();
 	}
 
 	public static void SetNbPlayers(int n)
@@ -53,7 +57,13 @@ public class Kart
 		cm1c = (CameraController) camera.AddComponent ("CameraController");
 		cm1c.SetKartController(kc);
 		camera.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer_j"+numeroJoueur));
-		//camera.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer_j"+1));
+	}
+	
+	public void InitGuiLayer()
+	{
+		armeGui = GameObject.Instantiate (Resources.Load ("arme"), new Vector3 (0.025f, 0.55f, 0), Quaternion.identity) as GameObject;
+		armeGui.layer = LayerMask.NameToLayer ("layer_j" + numeroJoueur);
+		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
 	}
 
 	public void AddPoint()

@@ -34,13 +34,13 @@ public class KartController : MonoBehaviour
 	private bool baddie = false;
 
 	private ExplosionScript arme;
-	public bool pipi;
+	public bool explosiveWeapon;
 	public float facteurSens ;
 	
 	// Use this for initialization
 	void Start ()
 	{
-		pipi = false;
+		explosiveWeapon = false;
 		weapons = new List<string>();
 		if (controllerEnabled == null)
 		{
@@ -127,15 +127,23 @@ public class KartController : MonoBehaviour
 				w = "superUka-Uka";
 
 		state.Add ("armed");
-		weapons.Add (w);
+		//weapons.Add (w);
+		weapons.Add ("bomb");
 	}
 
 	public void UseWeapon()
 	{
+		if (weapons.Count == 0)
+			return;
+		weapons.RemoveAt (0);
+		if (weapons.Count == 0) {
+			state.Remove ("armed");
+			GetKart().ws.guiTexture.texture = null;
+		}
 		GameObject arme1 = Instantiate(Resources.Load("bomb"), transform.position-4f*(new Vector3(facteurSens*transform.forward.x, transform.forward.y-0.6f,facteurSens*transform.forward.z)), transform.rotation) as GameObject;
 		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
 		arme.owner = rigidbody.gameObject;
-		pipi = true;
+		explosiveWeapon = true;
 		arme.vitesseInitiale =  rigidbody.velocity;
 	}
 
@@ -207,7 +215,7 @@ public class KartController : MonoBehaviour
 	
 	public void controlPosition()
 	{
-		Vector3 nonJonathan = new Vector3 ();
+		Vector3 postForce = new Vector3 ();
 		Vector3 forwardNormal = rigidbody.transform.forward;
 		forwardNormal.y = 0;
 		forwardNormal = normalizeVector (forwardNormal);
@@ -215,7 +223,7 @@ public class KartController : MonoBehaviour
 		{
 			if (!controllerEnabled[kart.numeroJoueur-1])
 			{
-				nonJonathan+=forwardNormal/8*coeffVitesse;
+				postForce+=forwardNormal/8*coeffVitesse;
 				//rigidbody.position+=forwardNormal/200*coeffVitesse;
 			}
 			if (controllerEnabled[kart.numeroJoueur-1])
@@ -280,7 +288,7 @@ public class KartController : MonoBehaviour
 
 		if(Input.GetKey(keyMap["moveForward"]))
 		{
-			nonJonathan-=forwardNormal*coeffVitesse;
+			postForce-=forwardNormal*coeffVitesse;
 			rigidbody.position-=forwardNormal/4*coeffVitesse;
 			if (controllerEnabled[kart.numeroJoueur-1])
 				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
@@ -311,7 +319,7 @@ public class KartController : MonoBehaviour
 			}
 		}
 		if (controllerEnabled [kart.numeroJoueur - 1] && Input.GetAxis (axisMap ["stop"]) > 0) {
-			nonJonathan += Input.GetAxis (axisMap ["stop"]) * forwardNormal / 4 * coeffVitesse;
+			postForce += Input.GetAxis (axisMap ["stop"]) * forwardNormal / 4 * coeffVitesse;
 			rigidbody.position+=Input.GetAxis (axisMap ["stop"]) * forwardNormal/4*coeffVitesse;
 			transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
 		}
@@ -319,21 +327,22 @@ public class KartController : MonoBehaviour
 		if (Input.GetKeyDown (keyMap ["action"])) {
 			if (state.IndexOf ("DieAnimation") != -1)
 			    return;
-						if (controllerEnabled [kart.numeroJoueur - 1] && Input.GetAxis (axisMap ["stop"]) < 0)
-								facteurSens = 1f;
+			if (controllerEnabled [kart.numeroJoueur - 1] && Input.GetAxis (axisMap ["stop"]) < 0)
+				facteurSens = 1f;
 			else if (Input.GetKey(keyMap["moveBack"]))
-			         facteurSens = 1f;
+				facteurSens = -1f;
+			else if (!controllerEnabled [kart.numeroJoueur - 1])
+				facteurSens = 1f;
 			else
 				facteurSens = -1f;
 
-
-						if (!pipi)
-								UseWeapon ();
-						else {
-								pipi = false;
-								arme.ActionExplosion ();
-						}
-				}
+			if (!explosiveWeapon)
+					UseWeapon ();
+			else {
+					explosiveWeapon = false;
+					arme.ActionExplosion ();
+			}
+		}
 
 		
 		if (controllerEnabled [kart.numeroJoueur - 1]) {
@@ -350,7 +359,7 @@ public class KartController : MonoBehaviour
 
 		float max = 3f;
 		Vector3 veloce = rigidbody.velocity;
-		veloce += nonJonathan;
+		veloce += postForce;
 		if (veloce.x > max)
 			veloce.x = max;
 		else if (veloce.x < -max)

@@ -43,8 +43,7 @@ public class ExplosionScript : MonoBehaviour {
 	
 	IEnumerator Explode()
 	{
-
-		((KartController)owner.GetComponent ("KartController")).pipi = false;
+		((KartController)owner.GetComponent ("KartController")).explosiveWeapon = false;
 		if (explosionClip != null)
 			animation.Play (explosionClip.name);
 		audio.Play ();
