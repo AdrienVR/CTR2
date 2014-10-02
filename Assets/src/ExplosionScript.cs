@@ -26,7 +26,7 @@ public class ExplosionScript : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider other)
 	{
-		if(boxes.IndexOf(other.name)!=-1 || exploded)
+		if((boxes.IndexOf(other.name)!=-1 && targets.IndexOf(other.name)!=-1))
 			return;
 		StartCoroutine (Explode());
 		if (targets.IndexOf (other.name) == -1)
