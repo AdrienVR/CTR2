@@ -14,11 +14,11 @@ public class WeaponBoxScript : MonoBehaviour {
 
 	// src : http://crashbandicoot.wikia.com/wiki/Crash_Team_Racing
 	private static Dictionary <int, string> normalWeapons =  new Dictionary<int, string> {
-		{1,"greenBeaker"},{2,"greenShield"},{3,"bomb"},{4,"tripleBombs"},{5,"tripleMissiles"},
+		{1,"greenBeaker"},{2,"greenShield"},{3,"bomb"},{4,"triple_bomb"},{5,"triple_missile"},
 		{6,"Aku-Aku"},{7,"TNT"},{8,"turbo"}	};
-	private static Dictionary <int, string> superWeapons = new Dictionary<int, string> {
+	/*private static Dictionary <int, string> superWeapons = new Dictionary<int, string> {
 		{1,"redBeaker"},{2,"blueShield"},{3,"superBomb"},{4,"superTripleBombs"},{5,"superTripleMissiles"},
-		{6,"superAku-Aku"},{7,"nitro"},{8,"superTurbo"}	};
+		{6,"superAku-Aku"},{7,"nitro"},{8,"superTurbo"}	};*/
 	private Dictionary <int, string> weapons;
 	
 	private static List<string> characters = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
@@ -70,7 +70,7 @@ public class WeaponBoxScript : MonoBehaviour {
 	{
 		int nb = 1;
 		while (nbImgArmes < 25) {
-			nb = Random.Range (1, 9);
+			nb = Random.Range (1, 8);
 			taker.GetKart().ws.SetTextureN(nb);
 			nbImgArmes++;
 			yield return new WaitForSeconds (0.08f);

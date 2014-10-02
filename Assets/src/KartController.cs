@@ -126,25 +126,35 @@ public class KartController : MonoBehaviour
 			if (baddie)
 				w = "superUka-Uka";
 
-		state.Add ("armed");
-		//weapons.Add (w);
-		weapons.Add ("bomb");
+		if (w.IndexOf("triple") != -1 )
+			for(int i=0;i<3;i++)
+				weapons.Add (w.Split('_')[w.Split('_').Length - 1]);
+		else
+			weapons.Add (w);
+
+
 	}
 
 	public void UseWeapon()
 	{
 		if (weapons.Count == 0)
 			return;
+		string w = weapons [0];
+		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position-4f*(new Vector3(facteurSens*transform.forward.x, transform.forward.y-0.6f,facteurSens*transform.forward.z)), transform.rotation) as GameObject;
+		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
+		arme.owner = rigidbody.gameObject;
+		if (w == "bomb") {
+			explosiveWeapon = true;
+			arme.vitesseInitiale =  rigidbody.velocity;
+		}
+		else if (w == "missile")
+			arme.vitesseInitiale =  2*rigidbody.velocity;
+
 		weapons.RemoveAt (0);
 		if (weapons.Count == 0) {
 			state.Remove ("armed");
 			GetKart().ws.guiTexture.texture = null;
 		}
-		GameObject arme1 = Instantiate(Resources.Load("bomb"), transform.position-4f*(new Vector3(facteurSens*transform.forward.x, transform.forward.y-0.6f,facteurSens*transform.forward.z)), transform.rotation) as GameObject;
-		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
-		arme.owner = rigidbody.gameObject;
-		explosiveWeapon = true;
-		arme.vitesseInitiale =  rigidbody.velocity;
 	}
 
 	public void Die()

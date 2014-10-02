@@ -20,8 +20,10 @@ public class ExplosionScript : MonoBehaviour {
 	
 	public void ActionExplosion()
 	{
-		CapsuleCollider cc = (CapsuleCollider)GetComponent ("CapsuleCollider");
-		cc.radius = 6.5f;
+		if (name[0] == 'b') {
+			CapsuleCollider cc = (CapsuleCollider)GetComponent ("CapsuleCollider");
+			cc.radius = 6.5f;
+		}
 	}
 	
 	void OnTriggerEnter(Collider other)
@@ -79,6 +81,8 @@ public class ExplosionScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (rigidbody == null)
+						return;
 		if (rigidbody != null)
 			rigidbody.velocity = -((KartController)owner.GetComponent ("KartController")).facteurSens*rigidbody.transform.forward*50f;
 		if (dansLesAirs)

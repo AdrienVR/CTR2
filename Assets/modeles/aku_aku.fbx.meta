@@ -1,14 +1,23 @@
 fileFormatVersion: 2
-guid: 3385c831b2395314fb683a9b39cac394
+guid: f7dfc3b5245b750489b70db2da18c6f2
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
     100000: //RootNode
+    100002: aku_aku.001
+    100004: aku_aku_arm|head_aku
     400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: bouclier
+    400002: aku_aku.001
+    400004: aku_aku_arm|head_aku
+    2300000: aku_aku.001
+    3300000: aku_aku.001
+    4300000: aku_aku.001
+    7400000: aku_aku_arm|aku_aku_rotate
+    7400002: aku_aku_arm|rotate
+    7400004: aku_aku.001|aku_aku_rotate
+    7400006: aku_aku.001|rotate
     9500000: //RootNode
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -24,7 +33,39 @@ ModelImporter:
     animationScaleError: .5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: aku_aku.001|rotate
+      takeName: aku_aku.001|rotate
+      firstFrame: 0
+      lastFrame: 21
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: aku_aku.001
+        weight: 1
+      - path: aku_aku_arm|head_aku
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
     isReadable: 1
   meshes:
     lODScreenPercentages: []
@@ -60,6 +101,6 @@ ModelImporter:
     feetSpacing: 0
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 1
   additionalBone: 0
   userData: 
