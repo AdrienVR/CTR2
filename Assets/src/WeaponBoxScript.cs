@@ -22,7 +22,7 @@ public class WeaponBoxScript : MonoBehaviour {
 	private Dictionary <int, string> weapons;
 	
 	private static List<string> characters = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
-	private static List<string> launchWeapons = new List<string>() {"missile", "bomb", "bomb(Clone)"};
+	private static List<string> launchWeapons = new List<string>() {"missile", "missile(Clone)", "bomb", "bomb(Clone)"};
 
 	// Use this for initialization
 	void Start () {

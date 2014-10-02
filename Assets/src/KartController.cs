@@ -36,6 +36,7 @@ public class KartController : MonoBehaviour
 	private ExplosionScript arme;
 	public bool explosiveWeapon;
 	public float facteurSens ;
+	private static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker"};
 	
 	// Use this for initialization
 	void Start ()
@@ -131,8 +132,7 @@ public class KartController : MonoBehaviour
 				weapons.Add (w.Split('_')[w.Split('_').Length - 1]);
 		else
 			weapons.Add (w);
-
-
+		state.Add ("armed");
 	}
 
 	public void UseWeapon()
@@ -140,15 +140,26 @@ public class KartController : MonoBehaviour
 		if (weapons.Count == 0)
 			return;
 		string w = weapons [0];
-		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position-4f*(new Vector3(facteurSens*transform.forward.x, transform.forward.y-0.6f,facteurSens*transform.forward.z)), transform.rotation) as GameObject;
+		Vector3 posToAdd ;
+		if (w == "bomb")
+			posToAdd = 4f * (new Vector3 (facteurSens * transform.forward.x, transform.forward.y - 0.6f, facteurSens * transform.forward.z));
+		else if (poseWeapons.IndexOf(w) != -1)
+			posToAdd = 6f * (new Vector3 (-1 * transform.forward.x, transform.forward.y - 0.6f, -1 * transform.forward.z));
+		else
+			posToAdd = 6f * (new Vector3 (transform.forward.x, transform.forward.y - 0.6f, transform.forward.z));
+		
+		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position-posToAdd, transform.rotation) as GameObject;
 		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
-		arme.owner = rigidbody.gameObject;
-		if (w == "bomb") {
-			explosiveWeapon = true;
-			arme.vitesseInitiale =  rigidbody.velocity;
+		if (arme!=null)	{
+			arme.owner = rigidbody.gameObject;
+
+			if (w == "bomb") {
+				explosiveWeapon = true;
+				arme.vitesseInitiale =  rigidbody.velocity;
+			}
+			else if (w == "missile")
+				arme.vitesseInitiale =  2f*rigidbody.velocity;
 		}
-		else if (w == "missile")
-			arme.vitesseInitiale =  2*rigidbody.velocity;
 
 		weapons.RemoveAt (0);
 		if (weapons.Count == 0) {
