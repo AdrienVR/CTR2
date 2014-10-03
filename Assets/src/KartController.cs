@@ -142,9 +142,9 @@ public class KartController : MonoBehaviour
 		string w = weapons [0];
 		Vector3 posToAdd ;
 		if (w == "bomb")
-			posToAdd = 4f * (new Vector3 (facteurSens * transform.forward.x, transform.forward.y - 0.6f, facteurSens * transform.forward.z));
+			posToAdd = 6f * (new Vector3 (facteurSens * transform.forward.x, transform.forward.y - 0.6f, facteurSens * transform.forward.z));
 		else if (poseWeapons.IndexOf(w) != -1)
-			posToAdd = 6f * (new Vector3 (-1 * transform.forward.x, transform.forward.y - 0.6f, -1 * transform.forward.z));
+			posToAdd = 3f * (new Vector3 (-1 * transform.forward.x, transform.forward.y - 0.6f, -1 * transform.forward.z));
 		else
 			posToAdd = 6f * (new Vector3 (transform.forward.x, transform.forward.y - 0.6f, transform.forward.z));
 		
@@ -155,10 +155,10 @@ public class KartController : MonoBehaviour
 
 			if (w == "bomb") {
 				explosiveWeapon = true;
-				arme.vitesseInitiale =  rigidbody.velocity;
+				arme.vitesseInitiale =  2f*rigidbody.velocity;
 			}
 			else if (w == "missile")
-				arme.vitesseInitiale =  2f*rigidbody.velocity;
+				arme.vitesseInitiale =  3.5f*rigidbody.velocity;
 		}
 
 		weapons.RemoveAt (0);

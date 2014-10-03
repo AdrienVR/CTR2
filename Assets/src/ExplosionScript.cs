@@ -36,10 +36,7 @@ public class ExplosionScript : MonoBehaviour {
 	{
 		if((boxes.IndexOf(other.name)!=-1 && launchWeapons.IndexOf(name)!=-1) || protectWeapons.IndexOf(name) != -1)
 			return;
-		Debug.Log(other.name + "has been destroyed mouahaha !");
-		if (name [0] == 'b' && exploded) {
-				}
-		else
+		if (!(name [0] == 'b' && exploded)) 
 			StartCoroutine (Explode());
 		if (targets.IndexOf (other.name) == -1)
 			return;
