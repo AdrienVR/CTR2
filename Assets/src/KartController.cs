@@ -6,12 +6,12 @@ using System.Collections.Generic;
 public class KartController : MonoBehaviour
 {
 	public static Dictionary <int, Dictionary<string, KeyCode>> playersMapping;
-	public static List<bool> controllerEnabled;
+	public static int nControllers = 0;
 
-	public bool j1enabled=false;
-	public bool j2enabled=false;
 	public float coeffVitesse=2f;
 	public float coeffManiabilite=4f;
+
+	private bool hasAxis = true;
 
 	private bool pressX=false;
 	private bool pressFleche=false;
@@ -43,16 +43,10 @@ public class KartController : MonoBehaviour
 	{
 		explosiveWeapon = false;
 		weapons = new List<string>();
-		if (controllerEnabled == null)
-		{
-			controllerEnabled = new List<bool>();
-			controllerEnabled.Add(j1enabled);
-			controllerEnabled.Add(j2enabled);
-			controllerEnabled.Add(true);
-			controllerEnabled.Add(true);
-		}
 		if (playersMapping == null)
 			InitMapping ();
+		if (kart.numeroJoueur == nControllers + 1 || kart.numeroJoueur == nControllers + 2)
+			hasAxis = false;
 		InitSelfMapping ();
 	}
 	
@@ -88,9 +82,9 @@ public class KartController : MonoBehaviour
 	{
 		if (keyMap == null)
 			return;
-		if (keyMap ["moveForward"] == KeyCode.Joystick3Button2 && !controllerEnabled [2])
+		if (keyMap ["moveForward"] == KeyCode.Joystick3Button2 && !hasAxis)
 			return;
-		if (keyMap ["moveForward"] == KeyCode.Joystick4Button2 && !controllerEnabled [3])
+		if (keyMap ["moveForward"] == KeyCode.Joystick4Button2 && !hasAxis)
 			return;
 
 		controlPosition ();
@@ -242,12 +236,12 @@ public class KartController : MonoBehaviour
 		forwardNormal = normalizeVector (forwardNormal);
 		if(Input.GetKey(keyMap["moveBack"]))
 		{
-			if (!controllerEnabled[kart.numeroJoueur-1])
+			if (!hasAxis)
 			{
 				postForce+=forwardNormal/8*coeffVitesse;
 				//rigidbody.position+=forwardNormal/200*coeffVitesse;
 			}
-			if (controllerEnabled[kart.numeroJoueur-1])
+			if (hasAxis)
 				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
 			else
 			{
@@ -311,7 +305,7 @@ public class KartController : MonoBehaviour
 		{
 			postForce-=forwardNormal*coeffVitesse;
 			rigidbody.position-=forwardNormal/4*coeffVitesse;
-			if (controllerEnabled[kart.numeroJoueur-1])
+			if (hasAxis)
 				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
 			else
 			{
@@ -339,7 +333,7 @@ public class KartController : MonoBehaviour
 				rigidbody.AddForce(0,600000,0);
 			}
 		}
-		if (controllerEnabled [kart.numeroJoueur - 1] && Input.GetAxis (axisMap ["stop"]) > 0) {
+		if (hasAxis && Input.GetAxis (axisMap ["stop"]) > 0) {
 			postForce += Input.GetAxis (axisMap ["stop"]) * forwardNormal / 4 * coeffVitesse;
 			rigidbody.position+=Input.GetAxis (axisMap ["stop"]) * forwardNormal/4*coeffVitesse;
 			transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
@@ -348,11 +342,11 @@ public class KartController : MonoBehaviour
 		if (Input.GetKeyDown (keyMap ["action"])) {
 			if (state.IndexOf ("DieAnimation") != -1)
 			    return;
-			if (controllerEnabled [kart.numeroJoueur - 1] && Input.GetAxis (axisMap ["stop"]) < 0)
+			if (hasAxis && Input.GetAxis (axisMap ["stop"]) < 0)
 				facteurSens = 1f;
 			else if (Input.GetKey(keyMap["moveBack"]))
 				facteurSens = -1f;
-			else if (!controllerEnabled [kart.numeroJoueur - 1])
+			else if (!hasAxis)
 				facteurSens = 1f;
 			else
 				facteurSens = -1f;
@@ -366,7 +360,7 @@ public class KartController : MonoBehaviour
 		}
 
 		
-		if (controllerEnabled [kart.numeroJoueur - 1]) {
+		if (hasAxis) {
 						if (Input.GetAxis (axisMap ["turn"]) == -1 || Input.GetAxis (axisMap ["turn"]) == 1) {
 								pressFleche = true;
 						}
@@ -407,7 +401,7 @@ public class KartController : MonoBehaviour
 			ps1_axis,ps2_axis,ps3_axis,ps4_axis	};
 		
 
-		if (controllerEnabled [kart.numeroJoueur-1])
+		if (hasAxis)
 			axisMap = l_axis[kart.numeroJoueur-1];
 		
 		keyMap = playersMapping [kart.numeroJoueur];
@@ -460,13 +454,15 @@ public class KartController : MonoBehaviour
 			{"viewChange",KeyCode.Joystick4Button4}, {"viewInverse",KeyCode.Joystick4Button5},
 			{"bip",KeyCode.Joystick4Button10}, {"bip2",KeyCode.Joystick4Button11}
 		};
-		
-		if (controllerEnabled [0])
-			pc1 = ps1;
-		if (controllerEnabled [1])
-			pc2 = ps2;
 
-		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,pc1},{2,pc2},{3,ps3},{4,ps4}};
+		nControllers = Input.GetJoystickNames ().Length;
+		if (nControllers > 4)
+						nControllers = 4;
+
+		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,ps1},{2,ps2},{3,ps3},{4,ps4}};
+		playersMapping[nControllers + 1] = pc1;
+		playersMapping[nControllers + 2] = pc2;
+
 	}
 	
 }

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 180dd89cbb190f747a4ffe5643892fd6
+guid: 42d623f05a6f8d14db4ecb9eddd1ea15
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
@@ -9,7 +9,6 @@ ModelImporter:
     3300000: //RootNode
     4300000: Liquide
     9500000: //RootNode
-    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -18,6 +17,7 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
+    motionNodeName: 
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
@@ -60,6 +60,6 @@ ModelImporter:
     feetSpacing: 0
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 1
+  animationType: 0
   additionalBone: 0
   userData: 
