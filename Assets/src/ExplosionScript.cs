@@ -8,11 +8,11 @@ public class ExplosionScript : MonoBehaviour {
 	public Color explosionColor;
 	public Vector3 vitesseInitiale;
 	public GameObject owner;
+	public float lifeTime = 12.0f;
 
 	private bool isAlive;
 	private bool dansLesAirs = true;
 	private bool exploded=false;
-	private float lifeTime = 12.0f;
 
 	private static List<string> targets = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
 	private static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
@@ -54,23 +54,18 @@ public class ExplosionScript : MonoBehaviour {
 			if (launchWeapons.IndexOf(name)!=-1)
 				StartCoroutine (Explode());
 
-		// don't kill if it's not a target
-		if (targets.IndexOf (other.name) == -1)
+		// not a target
+		if (targets.IndexOf (other.name) == -1 ) {
+			if (poseWeapons.IndexOf(name)!=-1)
+				StartCoroutine (Explode());
 			return;
+		}
 
 		//find the KartController target
 		KartController touched = (KartController)other.GetComponent ("KartController");
 
-		// for Aku-Aku and shields
-		if (protectWeapons.IndexOf (name) != -1) {
-			if (other.gameObject != owner){
-				touched.Die (owner);
-				if (name[0] != 'A')
-					Destroy(gameObject);
-			}
-		}
 		// for bombs, missiles and launched shields
-		else if (launchWeapons.IndexOf(name)!=-1) {
+		if (launchWeapons.IndexOf(name)!=-1) {
 			if (other.gameObject != owner)
 				touched.Die (owner);
 			if (name[0] == 'b')
@@ -82,6 +77,25 @@ public class ExplosionScript : MonoBehaviour {
 		else if (poseWeapons.IndexOf(name)!=-1) {
 			touched.Die (owner);
 			StartCoroutine (Explode());
+		}
+	}
+	
+	void OnTriggerStay(Collider other)
+	{
+		// don't kill if it's not a target
+		if (targets.IndexOf (other.name) == -1)
+			return;
+		
+		//find the KartController target
+		KartController touched = (KartController)other.GetComponent ("KartController");
+		
+		// for Aku-Aku and shields
+		if (protectWeapons.IndexOf (name) != -1) {
+			if (other.gameObject != owner){
+				touched.Die (owner);
+				if (name[0] != 'A')
+					Destroy(gameObject);
+			}
 		}
 	}
 	
@@ -131,20 +145,13 @@ public class ExplosionScript : MonoBehaviour {
 	void Update () {
 		// for bombs, missiles and launched shields
 		if (launchWeapons.IndexOf(name) != -1) {
-			rigidbody.velocity = new Vector3(vitesseInitiale.x,-9.81f,vitesseInitiale.z);
+			rigidbody.velocity = new Vector3(vitesseInitiale.x,-19.81f,vitesseInitiale.z);
 			if (exploded && name[0] == 'b')
 				rigidbody.velocity = new Vector3();
 		}
 		// for Aku-Aku and shields
 		else if (protectWeapons.IndexOf(name) != -1) {
 			transform.position = owner.rigidbody.transform.position;
-		}
-		//for anything else=nothing)
-		else {
-			if (dansLesAirs)
-				rigidbody.velocity = new Vector3(vitesseInitiale.x,-9.81f,vitesseInitiale.z);
-			else
-				rigidbody.velocity = new Vector3();
 		}
 	}
 }

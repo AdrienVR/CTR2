@@ -23,6 +23,7 @@ public class KartController : MonoBehaviour
 	private Vector3 velocityToApplyByJonathan;
 	private WeaponBoxScript takenWeaponBox;
 	private ExplosionScript shield;
+	private ExplosionScript protection;
 
 	public List<string> state;
 	public List<string> weapons;
@@ -54,25 +55,10 @@ public class KartController : MonoBehaviour
 	
 	void Update()
 	{
-		//limiter les rotations a 60 degrés
-		float limitz1 = 0f;
-		float limitz2 = -limitz1;
-		/*if(transform.localEulerAngles.x > limit)
-			transform.localEulerAngles = new Vector3(limit, transform.localEulerAngles.y, transform.localEulerAngles.z);
-		else if(transform.localEulerAngles.x < -limit)
-			transform.localEulerAngles = new Vector3(-limit, transform.localEulerAngles.y, transform.localEulerAngles.z);*/
-		if(rigidbody.transform.localEulerAngles.z > limitz1)
-			rigidbody.transform.localEulerAngles = new Vector3(rigidbody.transform.localEulerAngles.x, rigidbody.transform.localEulerAngles.y, limitz1);
-		else if(rigidbody.transform.localEulerAngles.z < limitz2)
-			rigidbody.transform.localEulerAngles = new Vector3(rigidbody.transform.localEulerAngles.x, rigidbody.transform.localEulerAngles.y, limitz2);
+		transform.rotation = new Quaternion (transform.rotation.x, transform.rotation.y,
+		                                    transform.rotation.z, transform.rotation.w);
 
-
-		if (dansLesAirs)
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-9.81f,rigidbody.velocity.z);
-		/*
-		else
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x,rigidbody.velocity.y/2,rigidbody.velocity.z);
-			*/
+		rigidbody.velocity = new Vector3(rigidbody.velocity.x,-9.81f,rigidbody.velocity.z);
 
 		// INDISPENSABLE : annule la possibilité de CONTROLER la rotation z
 		rigidbody.angularVelocity = Vector3.zero;
@@ -173,6 +159,7 @@ public class KartController : MonoBehaviour
 			shield.activePhysics();
 			shield.transform.localScale = new Vector3(0.66f,0.75f,0.66f);
 			shield = null;
+			return;
 		}
 
 		if (weapons.Count == 0)
@@ -181,7 +168,7 @@ public class KartController : MonoBehaviour
 		if (w == "bomb")
 			posToAdd = 6f * (new Vector3 (-facteurSens * forwardNormal.x, forwardNormal.y - 0.6f, -facteurSens * forwardNormal.z));
 		else if (poseWeapons.IndexOf(w) != -1)
-			posToAdd = 3f * (new Vector3 (forwardNormal.x, forwardNormal.y - 0.6f, forwardNormal.z));
+			posToAdd = 4f * (new Vector3 (forwardNormal.x, forwardNormal.y - 0.6f, forwardNormal.z));
 		else
 			posToAdd = 6f * (new Vector3 (-1 * forwardNormal.x, forwardNormal.y - 0.6f, -1* forwardNormal.z));
 
@@ -202,6 +189,13 @@ public class KartController : MonoBehaviour
 				arme.vitesseInitiale =  100f*forwardNormal;
 			else if (w == "greenShield")
 				shield = arme;
+			else if (w == "Aku-Aku") {
+				if (protection!=null){
+					arme.lifeTime = 12f;
+					Destroy(protection.gameObject);
+				}
+				protection = arme;
+			}
 		}
 
 		weapons.RemoveAt (0);
@@ -213,6 +207,12 @@ public class KartController : MonoBehaviour
 
 	public void Die(GameObject killer)
 	{
+		if (shield != null) {
+				Destroy (shield.gameObject);
+				return;
+		}
+		if (protection != null)
+				return;
 		// si on est pas invincible : on meurt
 		if (state.IndexOf ("invincible") == -1) {
 			StartCoroutine (Transparence ());
@@ -337,20 +337,17 @@ public class KartController : MonoBehaviour
 	public void controlPosition()
 	{
 		Vector3 postForce = new Vector3 ();
-		Vector3 forwardNormal = rigidbody.transform.forward;
+		rigidbody.position = transform.position;
+		Vector3 forwardNormal = transform.forward;
 		forwardNormal.y = 0;
 		forwardNormal = normalizeVector (forwardNormal);
-		if(Input.GetKey(keyMap["moveBack"]))
-		{
-			if (!hasAxis)
-			{
-				postForce-=forwardNormal/8*coeffVitesse;
-				//rigidbody.position+=forwardNormal/200*coeffVitesse;
-			}
+
+		if(Input.GetKey(keyMap["moveBack"])) {
 			if (hasAxis)
 				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
-			else
-			{
+				//postForce = new Vector3 ();
+			else {
+				postForce-=forwardNormal*coeffVitesse;
 				if(Input.GetKey(keyMap["turnLeft"]))
 					transform.Rotate(0,-0.5f*coeffManiabilite,0);
 				if(Input.GetKey(keyMap["turnRight"]))
@@ -361,7 +358,6 @@ public class KartController : MonoBehaviour
 		if(Input.GetKey(keyMap["moveForward"]))
 		{
 			postForce+=forwardNormal*coeffVitesse;
-			rigidbody.position+=forwardNormal/4*coeffVitesse;
 			if (hasAxis)
 				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
 			else
@@ -387,12 +383,11 @@ public class KartController : MonoBehaviour
 		{
 			if(dansLesAirs==false)
 			{
-				rigidbody.AddForce(0,600000,0);
+				rigidbody.position += new Vector3(0,2f,0);
 			}
 		}
 		if (hasAxis && Input.GetAxis (axisMap ["stop"]) > 0) {
-			postForce -= Input.GetAxis (axisMap ["stop"]) * forwardNormal / 4 * coeffVitesse;
-			rigidbody.position-=Input.GetAxis (axisMap ["stop"]) * forwardNormal/4*coeffVitesse;
+			postForce -= Input.GetAxis (axisMap ["stop"]) * forwardNormal * coeffVitesse;
 			transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
 		}
 		
@@ -416,31 +411,7 @@ public class KartController : MonoBehaviour
 			}
 		}
 
-		
-		if (hasAxis) {
-						if (Input.GetAxis (axisMap ["turn"]) == -1 || Input.GetAxis (axisMap ["turn"]) == 1) {
-								pressFleche = true;
-						}
-						if (Input.GetAxis (axisMap ["turn"]) != -1 && Input.GetAxis (axisMap ["turn"]) != 1) {
-								pressFleche = false;
-			
-								coeffManiabilite = 2;
-								coeffVitesse = 3;
-						}
-				}
-
-		float max = 3f;
-		Vector3 veloce = rigidbody.velocity;
-		veloce += postForce;
-		if (veloce.x > max)
-			veloce.x = max;
-		else if (veloce.x < -max)
-			veloce.x = -max;
-		if (veloce.z > max)
-			veloce.z = max;
-		else if (veloce.z < -max)
-			veloce.z = -max;
-		rigidbody.velocity = veloce;
+		rigidbody.position += postForce;
 
 	}
 	
