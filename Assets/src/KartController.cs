@@ -21,6 +21,8 @@ public class KartController : MonoBehaviour
 	private bool pressXAndFlecheAndR1 = false;
 
 	private Vector3 velocityToApplyByJonathan;
+	private WeaponBoxScript takenWeaponBox;
+	private ExplosionScript shield;
 
 	public List<string> state;
 	public List<string> weapons;
@@ -111,7 +113,25 @@ public class KartController : MonoBehaviour
 	{
 		return state.IndexOf("armed")!=-1;
 	}
-	
+
+	public void SetWeaponBox(WeaponBoxScript wp)
+	{
+		takenWeaponBox = wp;
+	}
+
+	public bool IsWaitingWeapon()
+	{
+		return state.IndexOf("waiting")!=-1;
+	}
+
+	public void setWaitingWeapon(bool t)
+	{
+		if (t)
+			state.Add("waiting");
+		else
+			state.Remove("waiting");
+	}
+
 	public void SetWeapon(string w)
 	{
 		if (w == "Aku-Aku" )
@@ -127,32 +147,61 @@ public class KartController : MonoBehaviour
 		else
 			weapons.Add (w);
 		state.Add ("armed");
+		takenWeaponBox = null;
 	}
 
 	public void UseWeapon()
 	{
+		// stop the random searching of weapon from WeaponBox
+		if (takenWeaponBox != null){
+			takenWeaponBox.selectRandomWeapon ();
+			return;
+		}
+		
+		Vector3 forwardNormal = transform.forward;
+		if (transform.forward.y>0)
+			forwardNormal.y = 0;
+		forwardNormal = normalizeVector (forwardNormal);
+		Vector3 posToAdd ;
+		//launch the shield
+		if (shield != null) {
+			shield.vitesseInitiale =  100f*forwardNormal;
+			shield.name = "bomb";
+			posToAdd = transform.position - 6f * (new Vector3 (-facteurSens * forwardNormal.x, forwardNormal.y - 0.6f, -facteurSens * forwardNormal.z));
+			shield.transform.position = posToAdd;
+			shield.transform.rotation = new Quaternion();
+			shield.activePhysics();
+			shield.transform.localScale = new Vector3(0.66f,0.75f,0.66f);
+			shield = null;
+		}
+
 		if (weapons.Count == 0)
 			return;
 		string w = weapons [0];
-		Vector3 posToAdd ;
 		if (w == "bomb")
-			posToAdd = 6f * (new Vector3 (facteurSens * transform.forward.x, transform.forward.y - 0.6f, facteurSens * transform.forward.z));
+			posToAdd = 6f * (new Vector3 (-facteurSens * forwardNormal.x, forwardNormal.y - 0.6f, -facteurSens * forwardNormal.z));
 		else if (poseWeapons.IndexOf(w) != -1)
-			posToAdd = 3f * (new Vector3 (-1 * transform.forward.x, transform.forward.y - 0.6f, -1 * transform.forward.z));
+			posToAdd = 3f * (new Vector3 (forwardNormal.x, forwardNormal.y - 0.6f, forwardNormal.z));
 		else
-			posToAdd = 6f * (new Vector3 (transform.forward.x, transform.forward.y - 0.6f, transform.forward.z));
-		
-		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position-posToAdd, transform.rotation) as GameObject;
+			posToAdd = 6f * (new Vector3 (-1 * forwardNormal.x, forwardNormal.y - 0.6f, -1* forwardNormal.z));
+
+		Quaternion q = new Quaternion (0,transform.rotation.y,0,transform.rotation.w);
+		if (poseWeapons.IndexOf(w) != -1)
+			q = transform.rotation;
+
+		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position-posToAdd, q) as GameObject;
 		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
 		if (arme!=null)	{
-			arme.owner = rigidbody.gameObject;
+			arme.owner = gameObject;
 
 			if (w == "bomb") {
 				explosiveWeapon = true;
-				arme.vitesseInitiale =  2f*rigidbody.velocity;
+				arme.vitesseInitiale =  60f*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
 			}
 			else if (w == "missile")
-				arme.vitesseInitiale =  3.5f*rigidbody.velocity;
+				arme.vitesseInitiale =  100f*forwardNormal;
+			else if (w == "greenShield")
+				shield = arme;
 		}
 
 		weapons.RemoveAt (0);
@@ -162,33 +211,36 @@ public class KartController : MonoBehaviour
 		}
 	}
 
-	public void Die()
+	public void Die(GameObject killer)
 	{
-
+		// si on est pas invincible : on meurt
 		if (state.IndexOf ("invincible") == -1) {
-						state.Add ("invincible");
-						StartCoroutine (Transparence ());
-		}
-		if (state.IndexOf ("DieAnimation") == -1) {
-			state.Add ("DieAnimation");
-			StartCoroutine (DieAnimation ());
+			StartCoroutine (Transparence ());
+			// mise en etat empechant de tirer : 
+			if (state.IndexOf ("UnableToShoot") == -1)
+				StartCoroutine (UnableToShoot ());
+			if (killer==gameObject)
+				kart.AddPoint(-1);
+			else
+				((KartController)killer.GetComponent ("KartController")).kart.AddPoint(1);
 		}
 	}
 	
-	IEnumerator DieAnimation()
+	IEnumerator UnableToShoot()
 	{
-		renderer.enabled = false;
+		state.Add ("UnableToShoot");
 		float time = 0f;
 		while (time < 2.5f) {
 			yield return new WaitForSeconds (0.1f);
 			time += 0.1f;
 		}
-		state.Remove ("DieAnimation");
-		
+		state.Remove ("UnableToShoot");
 	}
 	
 	IEnumerator Transparence()
 	{
+		//clignotment, invincibilité temporaire
+		state.Add ("invincible");
 		renderer.enabled = false;
 		float time = 0f;
 		float last_time = 0f;
@@ -227,30 +279,10 @@ public class KartController : MonoBehaviour
 		a.z /= div;
 		return a;
 	}
-	
-	public void controlPosition()
+
+	public void controlDerapage()
 	{
-		Vector3 postForce = new Vector3 ();
-		Vector3 forwardNormal = rigidbody.transform.forward;
-		forwardNormal.y = 0;
-		forwardNormal = normalizeVector (forwardNormal);
-		if(Input.GetKey(keyMap["moveBack"]))
-		{
-			if (!hasAxis)
-			{
-				postForce+=forwardNormal/8*coeffVitesse;
-				//rigidbody.position+=forwardNormal/200*coeffVitesse;
-			}
-			if (hasAxis)
-				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
-			else
-			{
-				if(Input.GetKey(keyMap["turnLeft"]))
-					transform.Rotate(0,-0.5f*coeffManiabilite,0);
-				if(Input.GetKey(keyMap["turnRight"]))
-					transform.Rotate(0,0.5f*coeffManiabilite,0);
-			}
-		}
+		
 		if(Input.GetKeyDown(keyMap["moveForward"]))
 		{
 			pressX=true;
@@ -296,15 +328,40 @@ public class KartController : MonoBehaviour
 			coeffManiabilite=4;
 			coeffVitesse=3;
 		}
-
+		
 		if(!pressXAndFlecheAndR1 || !pressL1)
 		{
+		}
+	}
+	
+	public void controlPosition()
+	{
+		Vector3 postForce = new Vector3 ();
+		Vector3 forwardNormal = rigidbody.transform.forward;
+		forwardNormal.y = 0;
+		forwardNormal = normalizeVector (forwardNormal);
+		if(Input.GetKey(keyMap["moveBack"]))
+		{
+			if (!hasAxis)
+			{
+				postForce-=forwardNormal/8*coeffVitesse;
+				//rigidbody.position+=forwardNormal/200*coeffVitesse;
+			}
+			if (hasAxis)
+				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
+			else
+			{
+				if(Input.GetKey(keyMap["turnLeft"]))
+					transform.Rotate(0,-0.5f*coeffManiabilite,0);
+				if(Input.GetKey(keyMap["turnRight"]))
+					transform.Rotate(0,0.5f*coeffManiabilite,0);
+			}
 		}
 
 		if(Input.GetKey(keyMap["moveForward"]))
 		{
-			postForce-=forwardNormal*coeffVitesse;
-			rigidbody.position-=forwardNormal/4*coeffVitesse;
+			postForce+=forwardNormal*coeffVitesse;
+			rigidbody.position+=forwardNormal/4*coeffVitesse;
 			if (hasAxis)
 				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
 			else
@@ -334,13 +391,13 @@ public class KartController : MonoBehaviour
 			}
 		}
 		if (hasAxis && Input.GetAxis (axisMap ["stop"]) > 0) {
-			postForce += Input.GetAxis (axisMap ["stop"]) * forwardNormal / 4 * coeffVitesse;
-			rigidbody.position+=Input.GetAxis (axisMap ["stop"]) * forwardNormal/4*coeffVitesse;
+			postForce -= Input.GetAxis (axisMap ["stop"]) * forwardNormal / 4 * coeffVitesse;
+			rigidbody.position-=Input.GetAxis (axisMap ["stop"]) * forwardNormal/4*coeffVitesse;
 			transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
 		}
 		
 		if (Input.GetKeyDown (keyMap ["action"])) {
-			if (state.IndexOf ("DieAnimation") != -1)
+			if (state.IndexOf ("UnableToShoot") != -1)
 			    return;
 			if (hasAxis && Input.GetAxis (axisMap ["stop"]) < 0)
 				facteurSens = 1f;

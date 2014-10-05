@@ -66,9 +66,9 @@ public class Kart
 		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
 	}
 
-	public void AddPoint()
+	public void AddPoint(int n)
 	{
-		nbPoints++;
+		nbPoints+=n;
 		Debug.Log (numeroJoueur + " a " + nbPoints + " points !");
 	}
 }

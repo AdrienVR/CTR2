@@ -7,7 +7,9 @@ public class WeaponBoxScript : MonoBehaviour {
 	public AudioClip randomMusic;
 	public AudioClip endMusic;
 
-	private int nbImgArmes=0;
+	private int nbImgArmes;
+	private float timeLookingWeapon;
+
 	private KartController taker;
 
 	public bool baddie = false;
@@ -50,8 +52,10 @@ public class WeaponBoxScript : MonoBehaviour {
 		else return;
 		if (taker.name == null)
 			return;
-		if (taker.IsArmed())
+		if (taker.IsArmed() || taker.IsWaitingWeapon())
 			return;
+		taker.setWaitingWeapon (true);
+		taker.SetWeaponBox(this);
 		//animation of giving weapon
 		StartCoroutine(AnimArmes());
 		StartCoroutine(PlaySound());
@@ -66,16 +70,26 @@ public class WeaponBoxScript : MonoBehaviour {
 		audio.PlayOneShot(endMusic);
 	}
 
+	public void selectRandomWeapon()
+	{
+		if(timeLookingWeapon>1f)
+			nbImgArmes = 25;
+	}
+
 	IEnumerator AnimArmes()
 	{
+		nbImgArmes = 0;
+		timeLookingWeapon = 0;
 		int nb = 1;
 		while (nbImgArmes < 25) {
 			nb = Random.Range (1, 8);
 			taker.GetKart().ws.SetTextureN(nb);
 			nbImgArmes++;
 			yield return new WaitForSeconds (0.08f);
+			timeLookingWeapon += 0.08f;
 		}
 		taker.SetWeapon(weapons[nb]);
+		taker.setWaitingWeapon (false);
 		nbImgArmes = 0;
 	}
 	

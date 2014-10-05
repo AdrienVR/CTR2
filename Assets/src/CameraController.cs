@@ -21,7 +21,7 @@ public class CameraController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		Vector3 t= kc.transform.position+ new Vector3(0f,4f,0f) + positionForward*6*kc.transform.forward;
+		Vector3 t= kc.transform.position + new Vector3(0f,4f,0f) - positionForward*6*kc.transform.forward;
 		transform.position = t;
 		transform.LookAt (kc.transform.position + new Vector3(0f,2f,0f));
 	}

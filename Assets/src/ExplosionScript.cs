@@ -8,55 +8,90 @@ public class ExplosionScript : MonoBehaviour {
 	public Color explosionColor;
 	public Vector3 vitesseInitiale;
 	public GameObject owner;
-	public bool isAlive;
+
+	private bool isAlive;
 	private bool dansLesAirs = true;
 	private bool exploded=false;
 	private float lifeTime = 12.0f;
-	public static List<string> targets = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
-	public static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
+
+	private static List<string> targets = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
+	private static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
 	private static List<string> launchWeapons = new List<string>() {"missile", "missile(Clone)", "bomb", "bomb(Clone)"};
 	private static List<string> protectWeapons = new List<string>() {"Aku-Aku", "Aku-Aku(Clone)", "greenShield", "greenShield(Clone)"};
+	private static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker", "nitro(Clone)", 
+																		"TNT(Clone)", "greenBeaker(Clone)", "redBeaker(Clone)"};
+
+
 	// Use this for initialization
 	void Start () {
 		if (protectWeapons.IndexOf(name) != -1)
 			StartCoroutine (TimeToLive());
-
 	}
-	
-	
+
+	public void SetName(string n)
+	{
+		name = n;
+	}
+
+	public void activePhysics()
+	{
+		CapsuleCollider cc = (CapsuleCollider)GetComponent ("CapsuleCollider");
+		cc.enabled = true;
+	}
+
 	public void ActionExplosion()
 	{
-		if (name[0] == 'b') {
-			CapsuleCollider cc = (CapsuleCollider)GetComponent ("CapsuleCollider");
-			cc.radius = 6.5f;
-		}
+		CapsuleCollider cc = (CapsuleCollider)GetComponent ("CapsuleCollider");
+		cc.radius = 6.5f;
 	}
 	
 	void OnTriggerEnter(Collider other)
 	{
-		if((boxes.IndexOf(other.name)!=-1 && launchWeapons.IndexOf(name)!=-1) || protectWeapons.IndexOf(name) != -1)
+		// check if other is a valid target, else return
+		if((boxes.IndexOf(other.name)!=-1 && launchWeapons.IndexOf(name)!=-1))
 			return;
-		if (!(name [0] == 'b' && exploded)) 
-			StartCoroutine (Explode());
+		if (other.name == "Ground")
+			if (launchWeapons.IndexOf(name)!=-1)
+				StartCoroutine (Explode());
+
+		// don't kill if it's not a target
 		if (targets.IndexOf (other.name) == -1)
 			return;
+
+		//find the KartController target
 		KartController touched = (KartController)other.GetComponent ("KartController");
-		if(touched.gameObject!=owner.gameObject &&  touched.state.IndexOf("invincible") == -1)
-		{
-			((KartController)owner.GetComponent ("KartController")).GetKart().AddPoint ();
+
+		// for Aku-Aku and shields
+		if (protectWeapons.IndexOf (name) != -1) {
+			if (other.gameObject != owner){
+				touched.Die (owner);
+				if (name[0] != 'A')
+					Destroy(gameObject);
+			}
 		}
-		if (other.gameObject != owner)
-			touched.Die ();
-		ActionExplosion ();
+		// for bombs, missiles and launched shields
+		else if (launchWeapons.IndexOf(name)!=-1) {
+			if (other.gameObject != owner)
+				touched.Die (owner);
+			if (name[0] == 'b')
+				ActionExplosion ();
+			if (!exploded)
+				StartCoroutine (Explode());
+		}
+		// nitro tnt, beakers
+		else if (poseWeapons.IndexOf(name)!=-1) {
+			touched.Die (owner);
+			StartCoroutine (Explode());
+		}
 	}
 	
 	IEnumerator Explode()
 	{
+		exploded = true;
 		((KartController)owner.GetComponent ("KartController")).explosiveWeapon = false;
 		if (explosionClip != null)
 			animation.Play (explosionClip.name);
 		audio.Play ();
-		exploded = true;
 		gameObject.transform.localScale = new Vector3 ();
 		gameObject.light.color = explosionColor;
 		yield return new WaitForSeconds (0.1f);
@@ -72,8 +107,10 @@ public class ExplosionScript : MonoBehaviour {
 			yield return new WaitForSeconds (0.05f);
 			lifeTime -= 0.05f;
 		}
-		Destroy(gameObject);
-		
+		//maybe not clean but works...
+		//do not delete the shield if it's launched
+		if (launchWeapons.IndexOf(name)==-1)
+			Destroy(gameObject);
 	}
 	
 	void OnCollisionStay(Collision collision)
@@ -92,23 +129,20 @@ public class ExplosionScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (launchWeapons.IndexOf(name) != -1)
-		{
-			if (rigidbody != null)
-				rigidbody.velocity = -((KartController)owner.GetComponent ("KartController")).facteurSens*rigidbody.transform.forward*50f;
-			if (dansLesAirs)
-				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-9.81f,rigidbody.velocity.z);
+		// for bombs, missiles and launched shields
+		if (launchWeapons.IndexOf(name) != -1) {
+			rigidbody.velocity = new Vector3(vitesseInitiale.x,-9.81f,vitesseInitiale.z);
 			if (exploded && name[0] == 'b')
 				rigidbody.velocity = new Vector3();
 		}
-		else if (protectWeapons.IndexOf(name) != -1)
-		{
+		// for Aku-Aku and shields
+		else if (protectWeapons.IndexOf(name) != -1) {
 			transform.position = owner.rigidbody.transform.position;
 		}
-		else
-		{
+		//for anything else=nothing)
+		else {
 			if (dansLesAirs)
-				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-9.81f,rigidbody.velocity.z);
+				rigidbody.velocity = new Vector3(vitesseInitiale.x,-9.81f,vitesseInitiale.z);
 			else
 				rigidbody.velocity = new Vector3();
 		}
