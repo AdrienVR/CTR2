@@ -83,7 +83,6 @@ public class WeaponBoxScript : MonoBehaviour {
 		int nb = 1;
 		while (nbImgArmes < 25) {
 			nb = Random.Range (1, 8);
-			nb=6;
 			taker.GetKart().ws.SetTextureN(nb);
 			nbImgArmes++;
 			yield return new WaitForSeconds (0.08f);
