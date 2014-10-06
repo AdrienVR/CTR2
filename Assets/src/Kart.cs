@@ -11,10 +11,11 @@ public class Kart
 	public GameObject armeGui;
 	public WeaponScript ws;
 	private GUIText pointText;
+	public GUIText pommeText;
 
 	private static int nbPlayers;
 	private int nbPoints = 0;
-	private int nbApples = 0;
+	public int nbApples = 0;
 	private KartController kc;
 	private static Dictionary <int, List<Rect>> cameraMap = new Dictionary <int, List<Rect>>{
 		{1, new List<Rect>(){new Rect(0, 0, 1, 1)}},
@@ -79,12 +80,19 @@ public class Kart
 		if (nbPlayers > 2)
 			pointText.transform.position = new Vector3(0.8f,pointText.transform.position.y,pointText.transform.position.z) ;
 		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
+<<<<<<< HEAD
 		Transform pomme = null;
 		foreach (Transform child in kc.transform)
 			if (child.name == "apple")
 				pomme = child;
 		pomme.gameObject.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 
+=======
+		GameObject nbAppleGui = GameObject.Instantiate (Resources.Load ("pommeText")) as GameObject;
+		nbAppleGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
+		pommeText = (GUIText)nbAppleGui.GetComponent ("GUIText");
+		pommeText.text = "x 0";
+>>>>>>> bfac1e25bda02be992410c19d80fde8bbe2e47f4
 	}
 
 	public void AddPoint(int n)
@@ -92,21 +100,6 @@ public class Kart
 		nbPoints+=n;
 		//Debug.Log (numeroJoueur + " a " + nbPoints + " points !");
 		pointText.text = nbPoints.ToString();
-	}
-	public void addApples()
-	{
-		int n = Random.Range (4, 8);
-		int nb = nbApples + n;
-		if( nb == 10 ) nbApples=10;
-		else if( nb > 10 ) nbApples=10;
-		else nbApples+=n;
-		Debug.Log ("Joueur "+numeroJoueur + " a " + nbApples + " pommes !");
-	}
-	public void rmApples(int n)
-	{
-		if (n > nbApples) nbApples = 0;
-		else nbApples -= n;
-		Debug.Log ("Joueur "+numeroJoueur + " a " + nbApples + " pommes !");
 	}
 }
 

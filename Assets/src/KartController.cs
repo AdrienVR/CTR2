@@ -225,12 +225,11 @@ public class KartController : MonoBehaviour
 					kart.AddPoint(-1);
 				else
 					((KartController)killer.GetComponent ("KartController")).kart.AddPoint(1);
-			Debug.Log(weapon);
 			if (weapon=="greenBeaker" || weapon== "redBeaker") // pour retirer des pommes
 			{
-				kart.rmApples(1);
+				rmApples(1);
 			}
-			else kart.rmApples(3);
+			else rmApples(3);
 		}
 	}
 	
@@ -267,7 +266,48 @@ public class KartController : MonoBehaviour
 		state.Remove ("invincible");
 
 	}
-	
+
+	public void addApples()
+	{
+		int nbApplesFinal = kart.nbApples;
+		int n = Random.Range (4, 8);
+		int nb = kart.nbApples + n;
+		if( nb == 10 ) nbApplesFinal=10;
+		else if( nb > 10 ) nbApplesFinal=10;
+		else nbApplesFinal+=n;
+		StartCoroutine(animAddApples(nbApplesFinal));
+	}
+
+	public void rmApples(int n)
+	{
+		int nbApplesFinal = kart.nbApples;
+		if (n > kart.nbApples) nbApplesFinal = 0;
+		else nbApplesFinal -= n;
+		StartCoroutine(animRmApples(nbApplesFinal));
+	}
+
+	IEnumerator animAddApples(int nbToGet)
+	{
+		while(kart.nbApples<nbToGet)
+		{
+			kart.nbApples+=1;
+			kart.pommeText.text ="x " + kart.nbApples.ToString();
+			GameObject soundGetApple = GameObject.Instantiate (Resources.Load ("getApple")) as GameObject;
+			yield return new WaitForSeconds (0.27f);
+			Destroy(soundGetApple);
+		}
+	}
+
+	IEnumerator animRmApples(int nbToGet)
+	{
+		while(kart.nbApples>nbToGet)
+		{
+			kart.nbApples-=1;
+			kart.pommeText.text ="x " + kart.nbApples.ToString();
+			yield return new WaitForSeconds (0.27f);
+		}
+	}
+
 	public void SetKart (Kart k)
 	{
 		kart = k;
