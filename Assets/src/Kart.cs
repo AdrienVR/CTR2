@@ -18,8 +18,8 @@ public class Kart
 	private static Dictionary <int, List<Rect>> cameraMap = new Dictionary <int, List<Rect>>{
 		{1, new List<Rect>(){new Rect(0, 0, 1, 1)}},
 		{2, new List<Rect>(){new Rect(0, 0.51f, 1, 0.49f), new Rect(0, 0, 1, 0.49f)}},
-		{3, new List<Rect>(){new Rect(0, 0.51f, 0.49f, 0.49f), new Rect(0, 0, 0.49f, 0.49f), 
-				new Rect(0.51f, 0, 1, 0.49f)}},
+		{3, new List<Rect>(){new Rect(0, 0.51f, 1, 1), new Rect(0, 0, 0.495f, 0.49f), 
+				new Rect(0.505f, 0, 1, 0.49f)}},
 		{4, new List<Rect>(){new Rect(0, 0.51f, 0.49f, 1), new Rect(0, 0, 0.49f, 0.49f), 
 				new Rect(0.51f, 0.51f, 1, 1), new Rect(0.51f, 0, 1, 0.49f)}}
 	};
@@ -64,10 +64,12 @@ public class Kart
 	{
 		armeGui = GameObject.Instantiate (Resources.Load ("arme"), new Vector3 (0.025f, 0.55f, 0), Quaternion.identity) as GameObject;
 		armeGui.layer = LayerMask.NameToLayer ("layer_j" + numeroJoueur);
-		GameObject pointGui = GameObject.Instantiate (Resources.Load ("pointTexture"), new Vector3 (0.9f,0.05F, 0), Quaternion.identity) as GameObject;
+		GameObject pointGui = GameObject.Instantiate (Resources.Load ("pointTexture")) as GameObject;
 		pointGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
 		pointText = (GUIText)pointGui.GetComponent ("GUIText");
 		pointText.text="0";
+		if (nbPlayers > 2)
+			pointText.transform.position = new Vector3(0.8f,pointText.transform.position.y,pointText.transform.position.z) ;
 		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
 	}
 
