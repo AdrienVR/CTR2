@@ -14,7 +14,8 @@ public class Main : MonoBehaviour
 
 	public bool inPause=false;
 	public float normalTime;
-
+	public GUIStyle gs;
+	public GUIStyle gs2;
 	void Start()
 	{
 		Debug.Log ("Demarrage !");
@@ -23,6 +24,7 @@ public class Main : MonoBehaviour
 		
 		CreateNPersos(nbPlayer);
 		normalTime = Time.timeScale;
+
 	}
 	void Update()
 	{
@@ -40,6 +42,7 @@ public class Main : MonoBehaviour
 			Time.timeScale=0f;
 			inPause=true;
 			AudioListener.pause = true;
+
 		}
 		else
 		{
@@ -54,15 +57,36 @@ public class Main : MonoBehaviour
 	{
 		if(inPause)
 		{
-			float widthLabel=200;
-			float heightLabel=50;
-			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2-heightLabel/2, widthLabel, heightLabel),"QUITTER" ))
+			float widthLabel=400;
+			float heightLabel=35;
+			GUI.TextArea(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-5*heightLabel, widthLabel, heightLabel), "Pause",gs2);
+			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-4*heightLabel, widthLabel, heightLabel), "REPRENDRE",gs))
+			{
+				Pause();
+			}
+			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-3*heightLabel, widthLabel, heightLabel), "RECOMMENCER",gs))
+			{
+				//Application.LoadLevel(Application.loadedLevel);
+			}
+			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-2*heightLabel, widthLabel, heightLabel),"CHANGER PERSONNAGE" ,gs))
+			{
+
+			}
+			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-1*heightLabel, widthLabel, heightLabel), "CHANGER NIVEAU",gs))
+			{
+
+			}
+			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2+0*heightLabel, widthLabel, heightLabel), "CHANGER CONFIG.",gs))
+			{
+
+			}
+			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2+1*heightLabel, widthLabel, heightLabel),"QUITTER" ,gs))
 			{
 				Application.Quit();
 			}
-			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2-heightLabel/2-heightLabel, widthLabel, heightLabel), "REPRENDRE"))
+			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2+2*heightLabel, widthLabel, heightLabel),"OPTIONS" ,gs))
 			{
-				Pause();
+
 			}
 		}
 	}

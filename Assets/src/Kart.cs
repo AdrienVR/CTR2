@@ -56,6 +56,8 @@ public class Kart
 	{
 		GameObject camera = Resources.Load("Camera_prefab") as GameObject;
 		camera = GameObject.Instantiate (camera) as GameObject;
+		Debug.Log ("test 1 "+nbPlayers);
+		Debug.Log ("test 2 "+(numeroJoueur-1));
 		camera.camera.rect = cameraMap[nbPlayers][numeroJoueur-1];
 		cm1c = (CameraController) camera.AddComponent ("CameraController");
 		cm1c.SetKartController(kc);
