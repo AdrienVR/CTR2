@@ -86,8 +86,7 @@ public class Kart
 		int nb = nbApples + n;
 		if( nb == 10 ) nbApples=10;
 		else if( nb > 10 ) nbApples=10;
-		else if (nb <= 0) nbApples = 0;
-		else nbApples+=nb;
+		else nbApples+=n;
 		Debug.Log ("Joueur "+numeroJoueur + " a " + nbApples + " pommes !");
 	}
 	public void rmApples(int n)
