@@ -288,7 +288,7 @@ public class KartController : MonoBehaviour
 
 	IEnumerator animAddApples(int nbToGet)
 	{
-		while(kart.nbApples!=nbToGet)
+		while(kart.nbApples<nbToGet)
 		{
 			kart.nbApples+=1;
 			kart.pommeText.text ="x " + kart.nbApples.ToString();
@@ -300,7 +300,7 @@ public class KartController : MonoBehaviour
 
 	IEnumerator animRmApples(int nbToGet)
 	{
-		while(kart.nbApples!=nbToGet)
+		while(kart.nbApples>nbToGet)
 		{
 			kart.nbApples-=1;
 			kart.pommeText.text ="x " + kart.nbApples.ToString();
