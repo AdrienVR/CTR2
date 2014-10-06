@@ -10,6 +10,7 @@ public class Kart
 
 	public GameObject armeGui;
 	public WeaponScript ws;
+	private GUIText pointText;
 
 	private static int nbPlayers;
 	private int nbPoints = 0;
@@ -63,13 +64,18 @@ public class Kart
 	{
 		armeGui = GameObject.Instantiate (Resources.Load ("arme"), new Vector3 (0.025f, 0.55f, 0), Quaternion.identity) as GameObject;
 		armeGui.layer = LayerMask.NameToLayer ("layer_j" + numeroJoueur);
+		GameObject pointGui = GameObject.Instantiate (Resources.Load ("pointTexture"), new Vector3 (0.9f,0.05F, 0), Quaternion.identity) as GameObject;
+		pointGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
+		pointText = (GUIText)pointGui.GetComponent ("GUIText");
+		pointText.text="0";
 		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
 	}
 
 	public void AddPoint(int n)
 	{
 		nbPoints+=n;
-		Debug.Log (numeroJoueur + " a " + nbPoints + " points !");
+		//Debug.Log (numeroJoueur + " a " + nbPoints + " points !");
+		pointText.text = nbPoints.ToString();
 	}
 }
 
