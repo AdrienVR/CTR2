@@ -80,19 +80,18 @@ public class Kart
 		if (nbPlayers > 2)
 			pointText.transform.position = new Vector3(0.8f,pointText.transform.position.y,pointText.transform.position.z) ;
 		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
-<<<<<<< HEAD
+
 		Transform pomme = null;
 		foreach (Transform child in kc.transform)
 			if (child.name == "apple")
 				pomme = child;
 		pomme.gameObject.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
-
-=======
+		
 		GameObject nbAppleGui = GameObject.Instantiate (Resources.Load ("pommeText")) as GameObject;
 		nbAppleGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
 		pommeText = (GUIText)nbAppleGui.GetComponent ("GUIText");
 		pommeText.text = "x 0";
->>>>>>> bfac1e25bda02be992410c19d80fde8bbe2e47f4
+
 	}
 
 	public void AddPoint(int n)
