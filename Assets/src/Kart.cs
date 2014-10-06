@@ -59,6 +59,13 @@ public class Kart
 		cm1c = (CameraController) camera.AddComponent ("CameraController");
 		cm1c.SetKartController(kc);
 		camera.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer_j"+numeroJoueur));
+
+		Camera c2d = null;
+		foreach (Transform child in kc.transform)
+			if (child.name == "Camera2D")
+				c2d = (Camera)child.gameObject.GetComponent("Camera");
+		c2d.cullingMask |= (1 << LayerMask.NameToLayer("layer2d_j"+numeroJoueur));
+		c2d.rect = cameraMap[nbPlayers][numeroJoueur-1];
 	}
 	
 	public void InitGuiLayer()
@@ -72,6 +79,12 @@ public class Kart
 		if (nbPlayers > 2)
 			pointText.transform.position = new Vector3(0.8f,pointText.transform.position.y,pointText.transform.position.z) ;
 		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
+		Transform pomme = null;
+		foreach (Transform child in kc.transform)
+			if (child.name == "apple")
+				pomme = child;
+		pomme.gameObject.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
+
 	}
 
 	public void AddPoint(int n)
