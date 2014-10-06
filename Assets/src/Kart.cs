@@ -11,6 +11,7 @@ public class Kart
 	public GameObject armeGui;
 	public WeaponScript ws;
 	private GUIText pointText;
+	public GUIText pommeText;
 
 	private static int nbPlayers;
 	private int nbPoints = 0;
@@ -72,6 +73,10 @@ public class Kart
 		if (nbPlayers > 2)
 			pointText.transform.position = new Vector3(0.8f,pointText.transform.position.y,pointText.transform.position.z) ;
 		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
+		GameObject nbAppleGui = GameObject.Instantiate (Resources.Load ("pommeText")) as GameObject;
+		nbAppleGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
+		pommeText = (GUIText)nbAppleGui.GetComponent ("GUIText");
+		pommeText.text = "x 0";
 	}
 
 	public void AddPoint(int n)
@@ -87,13 +92,14 @@ public class Kart
 		if( nb == 10 ) nbApples=10;
 		else if( nb > 10 ) nbApples=10;
 		else nbApples+=n;
-		Debug.Log ("Joueur "+numeroJoueur + " a " + nbApples + " pommes !");
+		pommeText.text ="x " + nbApples.ToString();
 	}
 	public void rmApples(int n)
 	{
 		if (n > nbApples) nbApples = 0;
 		else nbApples -= n;
 		Debug.Log ("Joueur "+numeroJoueur + " a " + nbApples + " pommes !");
+		pommeText.text = "x " + nbApples.ToString();
 	}
 }
 
