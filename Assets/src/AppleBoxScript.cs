@@ -27,7 +27,7 @@ public class AppleBoxScript : MonoBehaviour {
 		else return;
 		if (taker.name == null)
 			return;
-		taker.GetKart().addApples ();
+		taker.addApples ();
 		StartCoroutine (Take());
 		StartCoroutine(animPommes());
 	}
