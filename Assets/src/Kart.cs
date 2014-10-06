@@ -14,6 +14,7 @@ public class Kart
 
 	private static int nbPlayers;
 	private int nbPoints = 0;
+	private int nbApples = 0;
 	private KartController kc;
 	private static Dictionary <int, List<Rect>> cameraMap = new Dictionary <int, List<Rect>>{
 		{1, new List<Rect>(){new Rect(0, 0, 1, 1)}},
@@ -78,6 +79,22 @@ public class Kart
 		nbPoints+=n;
 		//Debug.Log (numeroJoueur + " a " + nbPoints + " points !");
 		pointText.text = nbPoints.ToString();
+	}
+	public void addApples()
+	{
+		int n = Random.Range (4, 8);
+		int nb = nbApples + n;
+		if( nb == 10 ) nbApples=10;
+		else if( nb > 10 ) nbApples=10;
+		else if (nb <= 0) nbApples = 0;
+		else nbApples+=nb;
+		Debug.Log ("Joueur "+numeroJoueur + " a " + nbApples + " pommes !");
+	}
+	public void rmApples(int n)
+	{
+		if (n > nbApples) nbApples = 0;
+		else nbApples -= n;
+		Debug.Log ("Joueur "+numeroJoueur + " a " + nbApples + " pommes !");
 	}
 }
 

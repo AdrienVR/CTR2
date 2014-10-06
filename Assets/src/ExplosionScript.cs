@@ -67,7 +67,7 @@ public class ExplosionScript : MonoBehaviour {
 		// for bombs, missiles and launched shields
 		if (launchWeapons.IndexOf(name)!=-1) {
 			if (other.gameObject != owner)
-				touched.Die (owner);
+				touched.Die (owner, name.Split('(')[0]);
 			if (name[0] == 'b')
 				ActionExplosion ();
 			if (!exploded)
@@ -75,7 +75,7 @@ public class ExplosionScript : MonoBehaviour {
 		}
 		// nitro tnt, beakers
 		else if (poseWeapons.IndexOf(name)!=-1) {
-			touched.Die (owner);
+			touched.Die (owner,name.Split('(')[0]);
 			StartCoroutine (Explode());
 		}
 	}
@@ -92,7 +92,7 @@ public class ExplosionScript : MonoBehaviour {
 		// for Aku-Aku and shields
 		if (protectWeapons.IndexOf (name) != -1) {
 			if (other.gameObject != owner){
-				touched.Die (owner);
+				touched.Die (owner,name.Split('(')[0]);
 				if (name[0] != 'A')
 					Destroy(gameObject);
 			}

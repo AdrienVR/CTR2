@@ -205,24 +205,32 @@ public class KartController : MonoBehaviour
 		}
 	}
 
-	public void Die(GameObject killer)
+	public void Die(GameObject killer, string weapon)
 	{
-		if (shield != null) {
+		if (shield != null)
+		{
 				Destroy (shield.gameObject);
 				return;
 		}
 		if (protection != null)
 				return;
 		// si on est pas invincible : on meurt
-		if (state.IndexOf ("invincible") == -1) {
-			StartCoroutine (Transparence ());
-			// mise en etat empechant de tirer : 
-			if (state.IndexOf ("UnableToShoot") == -1)
-				StartCoroutine (UnableToShoot ());
-			if (killer==gameObject)
-				kart.AddPoint(-1);
-			else
-				((KartController)killer.GetComponent ("KartController")).kart.AddPoint(1);
+		if (state.IndexOf ("invincible") == -1)
+		{
+				StartCoroutine (Transparence ());
+				// mise en etat empechant de tirer : 
+				if (state.IndexOf ("UnableToShoot") == -1)
+					StartCoroutine (UnableToShoot ());
+				if (killer==gameObject)
+					kart.AddPoint(-1);
+				else
+					((KartController)killer.GetComponent ("KartController")).kart.AddPoint(1);
+			Debug.Log(weapon);
+			if (weapon=="greenBeaker" || weapon== "redBeaker") // pour retirer des pommes
+			{
+				kart.rmApples(1);
+			}
+			else kart.rmApples(3);
 		}
 	}
 	
