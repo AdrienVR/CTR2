@@ -16,7 +16,7 @@ public class Main : MonoBehaviour
 	public float normalTime;
 	public GUIStyle gs; //normal button pause style
 	public GUIStyle gs2; //title "pause" style
-	public GUIStyle gs3; // hover button pause style (for keyboard)
+	public GUIStyle gs3; // over button pause style (for keyboard)
 	private List<GUIStyle> b; // blank styles for pause button
 	delegate void func();
 	public bool initPause=false;
@@ -35,11 +35,13 @@ public class Main : MonoBehaviour
 	}
 	void Update()
 	{
-		bool start = (Input.GetKeyDown (KartController.playersMapping [1] ["start"]) || Input.GetKeyDown (KartController.playersMapping [2] ["start"]) || Input.GetKeyDown (KartController.playersMapping [3] ["start"]) || Input.GetKeyDown (KartController.playersMapping [4] ["start"]));
+		//if any player push on start : pause event
+		bool start = false;
+		for (int i = 1; i<5; i++)
+			start |= Input.GetKeyDown (KartController.playersMapping [i] ["start"]) ;
 		if(start)
-		{
 			Pause ();
-		}
+
 		keyboardMenu ();
 	}
 
@@ -75,17 +77,16 @@ public class Main : MonoBehaviour
 
 		if(inPause)
 		{
-			if(b[0]==gs3 && !initPause)
-			{
-				b.Add(gs); //lol
-				b.Add(gs);
-				b.Add(gs);
-				b.Add(gs);
-				b.Add(gs);
-				b.Add(gs);
+			// si on vient d'arrive en pause
+			if(b[0]==gs3 && !initPause)	{
+				for (int i = 0; i< 6 ; i++)
+					b.Add(gs); //lol
 				initPause=true;
 			}
-			bool down = (Input.GetKeyDown (KartController.playersMapping [1] ["moveBack"]) || Input.GetKeyDown (KartController.playersMapping [2] ["moveBack"]) || Input.GetKeyDown (KartController.playersMapping [3] ["moveBack"]) || Input.GetKeyDown (KartController.playersMapping [4] ["moveBack"]));
+			bool down = false;
+			// down means 1 player 
+			for (int i = 1; i<5; i++)
+				down |= Input.GetKeyDown (KartController.playersMapping [i] ["moveBack"]) ;
 			if(down)
 			{
 				int r = b.IndexOf(gs3);
