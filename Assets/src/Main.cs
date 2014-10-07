@@ -20,6 +20,9 @@ public class Main : MonoBehaviour
 	private List<GUIStyle> b; // blank styles for pause button
 	delegate void func();
 	public bool initPause=false;
+	private static Dictionary <int, string> menuDispostion =  new Dictionary<int, string> {
+		{0,"REPRENDRE"},{1,"RECOMMENCER"},{2,"CHANGER PERSONNAGE"},{3,"CHANGER NIVEAU"},{4,"CHANGER CONFIG"},{5,"QUITTER"},{6,"OPTIONS"}
+	};
 
 	void Start()
 	{
@@ -96,7 +99,12 @@ public class Main : MonoBehaviour
 					b[r+1]=gs3;
 				}
 			}
-			bool up = (Input.GetAxis (KartController.axisMapping[1]["stop"]) > 0 || Input.GetKeyDown(KeyCode.W) || Input.GetAxis (KartController.axisMapping[2]["stop"]) > 0 );
+			bool up = false;
+			for (int i = 1; i<5; i++)
+			{
+				up |= (Input.GetAxis (KartController.axisMapping[i]["stop"]) > 0 && KartController.controllersEnabled[i]);
+				up |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveForward"]) && !KartController.controllersEnabled[i]);
+			}
 			if(up)
 			{
 				int r = b.IndexOf(gs3);
@@ -106,7 +114,12 @@ public class Main : MonoBehaviour
 					b[r-1]=gs3;
 				}
 			}
-			bool ok = (Input.GetKeyDown (KartController.playersMapping [1] ["moveForward"]) || Input.GetKeyDown (KartController.playersMapping [2] ["moveForward"]) || Input.GetKeyDown (KartController.playersMapping [3] ["moveForward"]) || Input.GetKeyDown (KartController.playersMapping [4] ["moveForward"]));
+			bool ok = false;
+			for (int i = 1; i<5; i++)
+			{
+				ok |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveForward"]) && KartController.controllersEnabled[i]);
+				ok |= (Input.GetKeyDown (KartController.playersMapping [i] ["action"]) && !KartController.controllersEnabled[i]);
+			}
 			if(ok)
 			{
 				int r = b.IndexOf(gs3);
@@ -131,35 +144,18 @@ public class Main : MonoBehaviour
 		{
 			float widthLabel=400;
 			float heightLabel=35;
+
 			GUI.TextArea(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-5*heightLabel, widthLabel, heightLabel), "Pause",gs2);
 		
-			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-4*heightLabel, widthLabel, heightLabel), "REPRENDRE",b[0]))
+			for (int i = 0; i<menuDispostion.Count; i++)
 			{
-				Pause();
-			}
-			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-3*heightLabel, widthLabel, heightLabel), "RECOMMENCER",b[1]))
-			{
-				//Application.LoadLevel(Application.loadedLevel);
-			}
-			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-2*heightLabel, widthLabel, heightLabel),"CHANGER PERSONNAGE" ,b[2]))
-			{
-
-			}
-			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-1*heightLabel, widthLabel, heightLabel), "CHANGER NIVEAU",b[3]))
-			{
-
-			}
-			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2+0*heightLabel, widthLabel, heightLabel), "CHANGER CONFIG.",b[4]))
-			{
-
-			}
-			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2+1*heightLabel, widthLabel, heightLabel),"QUITTER" ,b[5]))
-			{
-				Application.Quit();
-			}
-			if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2+2*heightLabel, widthLabel, heightLabel),"OPTIONS" ,b[6]))
-			{
-
+				if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-(4-i)*heightLabel, widthLabel, heightLabel), menuDispostion[i],b[i]))
+				{
+					if (menuDispostion[i]=="REPRENDRE")
+						Pause();
+					else if (menuDispostion[i]=="QUITTER")
+						Application.Quit();
+				}
 			}
 		}
 	}

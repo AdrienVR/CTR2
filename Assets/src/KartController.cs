@@ -7,6 +7,9 @@ public class KartController : MonoBehaviour
 {
 	public static Dictionary <int, Dictionary<string, KeyCode>> playersMapping;
 	public static Dictionary <int, Dictionary<string, string>> axisMapping;
+	public static Dictionary <int, bool> controllersEnabled = new Dictionary <int, bool> {
+		{1,true},{2,true},{3,true},{4,true},{5,true},{6,true}
+	};
 	public static int nControllers = 0;
 
 	public float coeffVitesse=2f;
@@ -49,8 +52,11 @@ public class KartController : MonoBehaviour
 		weapons = new List<string>();
 		if (playersMapping == null)
 			InitMapping ();
-		if (kart.numeroJoueur == nControllers + 1 || kart.numeroJoueur == nControllers + 2)
+		// clavier pour joueur n°3 si 2 manettes deja connectees.
+		if (kart.numeroJoueur == nControllers + 1 || kart.numeroJoueur == nControllers + 2) {
 			hasAxis = false;
+			controllersEnabled[kart.numeroJoueur] = false;
+		}
 		InitSelfMapping ();
 	}
 	
