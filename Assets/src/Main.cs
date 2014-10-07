@@ -28,7 +28,7 @@ public class Main : MonoBehaviour
 	}
 	void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.P))
+		if(Input.GetKeyDown(KartController.playersMapping[1]["start"]) || Input.GetKeyDown(KartController.playersMapping[2]["start"]) )
 		{
 			Pause ();
 		}
