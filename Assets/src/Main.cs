@@ -23,7 +23,6 @@ public class Main : MonoBehaviour
 	private static Dictionary <int, string> menuDispostion =  new Dictionary<int, string> {
 		{0,"REPRENDRE"},{1,"RECOMMENCER"},{2,"CHANGER PERSONNAGE"},{3,"CHANGER NIVEAU"},{4,"CHANGER CONFIG"},{5,"QUITTER"},{6,"OPTIONS"}
 	};
-
 	void Start()
 	{
 		Debug.Log ("Demarrage !");
@@ -34,7 +33,7 @@ public class Main : MonoBehaviour
 		normalTime = Time.timeScale;
 		b=new List<GUIStyle>();
 		b.Add(gs3);
-
+		GameObject feux_start = Instantiate(Resources.Load("feux_depart")) as GameObject;
 	}
 	void Update()
 	{
