@@ -88,8 +88,12 @@ public class Main : MonoBehaviour
 			}
 			bool down = false;
 			// down means 1 player 
+			Debug.Log(Input.GetAxis (KartController.axisMapping[1]["stop"]));
 			for (int i = 1; i<5; i++)
-				down |= Input.GetKeyDown (KartController.playersMapping [i] ["moveBack"]) ;
+			{
+				down |= (Input.GetAxis (KartController.axisMapping[i]["stop"]) == 1 && KartController.controllersEnabled[i]);
+				down |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveBack"]) && !KartController.controllersEnabled[i]);
+			}
 			if(down)
 			{
 				int r = b.IndexOf(gs3);
@@ -102,7 +106,7 @@ public class Main : MonoBehaviour
 			bool up = false;
 			for (int i = 1; i<5; i++)
 			{
-				up |= (Input.GetAxis (KartController.axisMapping[i]["stop"]) > 0 && KartController.controllersEnabled[i]);
+				up |= (Input.GetAxis (KartController.axisMapping[i]["stop"]) == -1 && KartController.controllersEnabled[i]);
 				up |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveForward"]) && !KartController.controllersEnabled[i]);
 			}
 			if(up)
