@@ -13,6 +13,9 @@ public class Kart
 	private GUIText pointText;
 	public GUIText pommeText;
 
+	public GameObject camera;
+	public Camera c2d;
+
 	private static int nbPlayers;
 	private int nbPoints = 0;
 	public int nbApples = 0;
@@ -41,6 +44,18 @@ public class Kart
 		nbPlayers = n;
 	}
 
+	public void blackScreen()
+	{
+		camera.camera.enabled = false;
+		c2d.camera.enabled = false;
+	}
+
+	public void normalScreen()
+	{
+		camera.camera.enabled = true;
+		c2d.camera.enabled = true;
+	}
+
 	public void InitObjet(Vector3 pos, Quaternion q)
 	{
 		int j = numeroJoueur;
@@ -54,7 +69,7 @@ public class Kart
 
 	public void InitCamera()
 	{
-		GameObject camera = Resources.Load("Camera_prefab") as GameObject;
+		camera = Resources.Load("Camera_prefab") as GameObject;
 		camera = GameObject.Instantiate (camera) as GameObject;
 		Debug.Log ("test 1 "+nbPlayers);
 		Debug.Log ("test 2 "+(numeroJoueur-1));
@@ -63,7 +78,7 @@ public class Kart
 		cm1c.SetKartController(kc);
 		camera.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer_j"+numeroJoueur));
 
-		Camera c2d = null;
+		c2d = null;
 		foreach (Transform child in kc.transform)
 			if (child.name == "Camera2D")
 				c2d = (Camera)child.gameObject.GetComponent("Camera");

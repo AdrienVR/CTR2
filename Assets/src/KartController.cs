@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class KartController : MonoBehaviour
 {
 	public static Dictionary <int, Dictionary<string, KeyCode>> playersMapping;
+	public static Dictionary <int, Dictionary<string, string>> axisMapping;
 	public static int nControllers = 0;
 
 	public float coeffVitesse=2f;
@@ -481,6 +482,7 @@ public class KartController : MonoBehaviour
 			axisMap = l_axis[kart.numeroJoueur-1];
 		
 		keyMap = playersMapping [kart.numeroJoueur];
+		axisMapping = new Dictionary<int, Dictionary<string, string>> {{1,ps1_axis},{2,ps2_axis},{3,ps3_axis},{4,ps4_axis}};
 	}
 
 	void InitMapping()
@@ -498,7 +500,7 @@ public class KartController : MonoBehaviour
 			{"moveForward",KeyCode.I}, {"moveBack",KeyCode.K},
 			{"turnRight",KeyCode.J}, {"turnLeft",KeyCode.L},
 			{"jump",KeyCode.B}, {"jump2",KeyCode.F11}, 
-			{"action",KeyCode.U}, {"start",KeyCode.Escape}, 
+			{"action",KeyCode.U}, {"start",KeyCode.F12}, 
 			{"viewChange",KeyCode.F7}, {"viewInverse",KeyCode.F8},
 			{"bip",KeyCode.F9}, {"bip2",KeyCode.F10}
 		};
@@ -536,6 +538,7 @@ public class KartController : MonoBehaviour
 						nControllers = 4;
 
 		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,ps1},{2,ps2},{3,ps3},{4,ps4}};
+
 		playersMapping[nControllers + 1] = pc1;
 		playersMapping[nControllers + 2] = pc2;
 
