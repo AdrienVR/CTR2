@@ -296,6 +296,7 @@ public class KartController : MonoBehaviour
 		while(kart.nbApplesFinal != kart.nbApples)
 		{
 			kart.nbApples ++;
+			audio.Play();
 			kart.pommeText.text = "x "+kart.nbApples.ToString();
 			GameObject soundGetApple = GameObject.Instantiate (Resources.Load ("getApple")) as GameObject;
 			yield return new WaitForSeconds (0.27f);
