@@ -66,7 +66,7 @@ public class KartController : MonoBehaviour
 		transform.rotation = new Quaternion (transform.rotation.x, transform.rotation.y,
 		                                    transform.rotation.z, transform.rotation.w);
 		if (dansLesAirs)
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-9.81f,rigidbody.velocity.z);
+			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-16f,rigidbody.velocity.z);
 
 		// INDISPENSABLE : annule la possibilité de CONTROLER la rotation z
 		rigidbody.angularVelocity = Vector3.zero;
@@ -427,7 +427,7 @@ public class KartController : MonoBehaviour
 		{
 			if(dansLesAirs==false)
 			{
-				rigidbody.position += new Vector3(0,2f,0);
+				rigidbody.position += new Vector3(0,3f,0);
 			}
 		}
 		if (hasAxis && Input.GetAxis (axisMap ["stop"]) > 0) {
