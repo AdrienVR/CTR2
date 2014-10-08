@@ -33,7 +33,7 @@ public class Main : MonoBehaviour
 		normalTime = Time.timeScale;
 		b=new List<GUIStyle>();
 		b.Add(gs3);
-		GameObject feux_start = Instantiate(Resources.Load("feux_depart")) as GameObject;
+		Instantiate (Resources.Load ("feux_depart"));
 	}
 	void Update()
 	{
@@ -51,7 +51,6 @@ public class Main : MonoBehaviour
 	{
 		if(!inPause)
 		{
-			Debug.Log("En pause");
 			Time.timeScale=0f;
 			inPause=true;
 			AudioListener.pause = true;
@@ -63,7 +62,6 @@ public class Main : MonoBehaviour
 		}
 		else
 		{
-			Debug.Log("Reprise");
 			Time.timeScale=normalTime;
 			inPause=false;
 			AudioListener.pause = false;
@@ -87,7 +85,6 @@ public class Main : MonoBehaviour
 			}
 			bool down = false;
 			// down means 1 player 
-			Debug.Log(Input.GetAxis (KartController.axisMapping[1]["stop"]));
 			for (int i = 1; i<5; i++)
 			{
 				down |= (Input.GetAxis (KartController.axisMapping[i]["stop"]) == 1 && KartController.controllersEnabled[i]);
@@ -131,7 +128,12 @@ public class Main : MonoBehaviour
 				case 0:
 					Pause ();
 					break;
-				case 6:
+				case 1:
+					Application.LoadLevel(Application.loadedLevel);
+					Kart.nPlayer=0;
+					Pause();
+					break;
+				case 5:
 					Application.Quit();
 					break;
 				default:
@@ -158,6 +160,8 @@ public class Main : MonoBehaviour
 						Pause();
 					else if (menuDispostion[i]=="QUITTER")
 						Application.Quit();
+					else if (menuDispostion[i] == "RECOMMENCER")
+						Application.LoadLevel(Application.loadedLevel);
 				}
 			}
 		}

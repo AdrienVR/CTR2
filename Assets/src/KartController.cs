@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+//using System;
 
 
 public class KartController : MonoBehaviour
@@ -64,8 +65,8 @@ public class KartController : MonoBehaviour
 	{
 		transform.rotation = new Quaternion (transform.rotation.x, transform.rotation.y,
 		                                    transform.rotation.z, transform.rotation.w);
-
-		rigidbody.velocity = new Vector3(rigidbody.velocity.x,-9.81f,rigidbody.velocity.z);
+		if (dansLesAirs)
+			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-9.81f,rigidbody.velocity.z);
 
 		// INDISPENSABLE : annule la possibilité de CONTROLER la rotation z
 		rigidbody.angularVelocity = Vector3.zero;
@@ -276,42 +277,29 @@ public class KartController : MonoBehaviour
 
 	public void addApples()
 	{
-		int nbApplesFinal = kart.nbApples;
 		int n = Random.Range (4, 8);
-		int nb = kart.nbApples + n;
-		if( nb == 10 ) nbApplesFinal=10;
-		else if( nb > 10 ) nbApplesFinal=10;
-		else nbApplesFinal+=n;
-		StartCoroutine(animAddApples(nbApplesFinal));
+		kart.nbApplesFinal = System.Math.Min (10, kart.nbApplesFinal+n);
+		StartCoroutine(animApplesNb());
 	}
 
 	public void rmApples(int n)
 	{
-		int nbApplesFinal = kart.nbApples;
-		if (n > kart.nbApples) nbApplesFinal = 0;
-		else nbApplesFinal -= n;
-		StartCoroutine(animRmApples(nbApplesFinal));
+		kart.nbApplesFinal -= n;
+		kart.nbApples -= n;
+		kart.nbApplesFinal = System.Math.Max (0, kart.nbApplesFinal);
+		kart.nbApples = System.Math.Max (0, kart.nbApples);
+		kart.pommeText.text = "x "+kart.nbApples.ToString();
 	}
 
-	IEnumerator animAddApples(int nbToGet)
+	IEnumerator animApplesNb()
 	{
-		while(kart.nbApples<nbToGet)
+		while(kart.nbApplesFinal != kart.nbApples)
 		{
-			kart.nbApples+=1;
-			kart.pommeText.text ="x " + kart.nbApples.ToString();
+			kart.nbApples ++;
+			kart.pommeText.text = "x "+kart.nbApples.ToString();
 			GameObject soundGetApple = GameObject.Instantiate (Resources.Load ("getApple")) as GameObject;
 			yield return new WaitForSeconds (0.27f);
 			Destroy(soundGetApple);
-		}
-	}
-
-	IEnumerator animRmApples(int nbToGet)
-	{
-		while(kart.nbApples>nbToGet)
-		{
-			kart.nbApples-=1;
-			kart.pommeText.text ="x " + kart.nbApples.ToString();
-			yield return new WaitForSeconds (0.27f);
 		}
 	}
 

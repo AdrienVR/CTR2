@@ -14,11 +14,12 @@ public class Kart
 	public GUIText pommeText;
 
 	public GameObject camera;
-	public Camera c2d;
+	public GameObject c2d;
 
-	private static int nbPlayers;
+	private static int nbPlayers=0;
 	private int nbPoints = 0;
 	public int nbApples = 0;
+	public int nbApplesFinal = 0;
 	private KartController kc;
 	private static Dictionary <int, List<Rect>> cameraMap = new Dictionary <int, List<Rect>>{
 		{1, new List<Rect>(){new Rect(0, 0, 1, 1)}},
@@ -69,21 +70,15 @@ public class Kart
 
 	public void InitCamera()
 	{
-		camera = Resources.Load("Camera_prefab") as GameObject;
-		camera = GameObject.Instantiate (camera) as GameObject;
-		Debug.Log ("test 1 "+nbPlayers);
-		Debug.Log ("test 2 "+(numeroJoueur-1));
+		camera = GameObject.Instantiate (Resources.Load("Camera_prefab")) as GameObject;
 		camera.camera.rect = cameraMap[nbPlayers][numeroJoueur-1];
+		camera.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer_j"+numeroJoueur));
 		cm1c = (CameraController) camera.AddComponent ("CameraController");
 		cm1c.SetKartController(kc);
-		camera.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer_j"+numeroJoueur));
-
-		c2d = null;
-		foreach (Transform child in kc.transform)
-			if (child.name == "Camera2D")
-				c2d = (Camera)child.gameObject.GetComponent("Camera");
-		c2d.cullingMask |= (1 << LayerMask.NameToLayer("layer2d_j"+numeroJoueur));
-		c2d.rect = cameraMap[nbPlayers][numeroJoueur-1];
+		
+		c2d = GameObject.Instantiate (Resources.Load("Camera2D_prefab")) as GameObject;
+		c2d.camera.rect = cameraMap[nbPlayers][numeroJoueur-1];
+		c2d.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer2d_j"+numeroJoueur));
 	}
 	
 	public void InitGuiLayer()
@@ -98,11 +93,9 @@ public class Kart
 			pointText.transform.position = new Vector3(0.8f,pointText.transform.position.y,pointText.transform.position.z) ;
 		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
 
-		Transform pomme = null;
-		foreach (Transform child in kc.transform)
-			if (child.name == "apple")
-				pomme = child;
-		pomme.gameObject.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
+		
+		GameObject pomme = GameObject.Instantiate (Resources.Load("apple_prefab")) as GameObject;
+		pomme.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 		
 		GameObject nbAppleGui = GameObject.Instantiate (Resources.Load ("pommeText")) as GameObject;
 		nbAppleGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);

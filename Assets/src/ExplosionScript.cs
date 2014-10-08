@@ -11,7 +11,6 @@ public class ExplosionScript : MonoBehaviour {
 	public float lifeTime = 12.0f;
 
 	private bool isAlive;
-	private bool dansLesAirs = true;
 	private bool exploded=false;
 
 	private static List<string> targets = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
@@ -126,21 +125,7 @@ public class ExplosionScript : MonoBehaviour {
 		if (launchWeapons.IndexOf(name)==-1)
 			Destroy(gameObject);
 	}
-	
-	void OnCollisionStay(Collision collision)
-	{
-		if(collision.gameObject.name=="Ground")
-			dansLesAirs = false;
-	}
-	
-	void OnCollisionExit(Collision collision)
-	{
-		if(collision.gameObject.name=="Ground")
-		{
-			dansLesAirs = true;
-		}
-	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		// for bombs, missiles and launched shields
