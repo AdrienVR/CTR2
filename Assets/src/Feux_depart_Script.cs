@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Feux_depart_Script : MonoBehaviour {
-
+	
 	public List<Texture> textureList;
 	public AudioClip bip_end;
 	// Use this for initialization
@@ -11,7 +11,7 @@ public class Feux_depart_Script : MonoBehaviour {
 	{
 		StartCoroutine(Anim());
 	}
-
+	
 	IEnumerator Anim()
 	{
 		GUITexture gt = (GUITexture)GetComponent ("GUITexture");
@@ -34,6 +34,7 @@ public class Feux_depart_Script : MonoBehaviour {
 		yield return new WaitForSeconds (0.8f);
 		gt.texture = textureList [4];
 		audio.PlayOneShot (bip_end);
+		KartController.stop = false;
 		yield return new WaitForSeconds (0.8f);
 		for(int i=0;i<1000;i++)
 		{
@@ -43,9 +44,9 @@ public class Feux_depart_Script : MonoBehaviour {
 		Destroy (gt);
 		
 	}
-
+	
 	// Update is called once per frame
 	void Update () {
-	
+		
 	}
 }

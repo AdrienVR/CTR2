@@ -12,35 +12,36 @@ public class KartController : MonoBehaviour
 		{1,true},{2,true},{3,true},{4,true},{5,true},{6,true}
 	};
 	public static int nControllers = 0;
-
+	public static bool stop = true;
+	
 	public float coeffVitesse=2f;
 	public float coeffManiabilite=4f;
-
+	
 	private bool hasAxis = true;
-
+	
 	private bool pressX=false;
 	private bool pressFleche=false;
 	private bool pressR1=false;
 	private bool pressL1=false;
 	private bool pressXAndFleche = false;
 	private bool pressXAndFlecheAndR1 = false;
-
+	
 	private Vector3 velocityToApplyByJonathan;
 	private WeaponBoxScript takenWeaponBox;
 	private ExplosionScript shield;
 	private ExplosionScript protection;
-
+	
 	public List<string> state;
 	public List<string> weapons;
 	public Dictionary <string, KeyCode> keyMap;
-
+	
 	private bool cameraReversed=false;
 	private Kart kart;
 	private bool dansLesAirs = true;
 	private Dictionary <string, string> axisMap;
 	private float ky;
 	private bool baddie = false;
-
+	
 	private ExplosionScript arme;
 	public bool explosiveWeapon;
 	public float facteurSens ;
@@ -63,34 +64,20 @@ public class KartController : MonoBehaviour
 	
 	void Update()
 	{
-		transform.rotation = new Quaternion (transform.rotation.x, transform.rotation.y,
-		                                    transform.rotation.z, transform.rotation.w);
 		if (dansLesAirs)
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-16f,rigidbody.velocity.z);
-
+		
 		// INDISPENSABLE : annule la possibilité de CONTROLER la rotation z
-		rigidbody.angularVelocity = Vector3.zero;
-
-	}
-	
-	// Update is called once per frame
-	void FixedUpdate ()
-	{
-		if (keyMap == null)
-			return;
-		if (keyMap ["moveForward"] == KeyCode.Joystick3Button2 && !hasAxis)
-			return;
-		if (keyMap ["moveForward"] == KeyCode.Joystick4Button2 && !hasAxis)
-			return;
-
-		controlPosition ();
+		//rigidbody.angularVelocity = Vector3.zero;
+		if (!stop)
+			controlPosition ();
 	}
 	
 	void OnCollisionStay(Collision collision)
 	{
 		if(collision.gameObject.name=="Ground")
 			dansLesAirs = false;
-
+		
 		if(collision.gameObject.name=="accelerateur")
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x*3,rigidbody.velocity.y*3,rigidbody.velocity.z*3);
 	}
@@ -102,22 +89,22 @@ public class KartController : MonoBehaviour
 			dansLesAirs = true;
 		}
 	}
-
+	
 	public bool IsArmed()
 	{
 		return state.IndexOf("armed")!=-1;
 	}
-
+	
 	public void SetWeaponBox(WeaponBoxScript wp)
 	{
 		takenWeaponBox = wp;
 	}
-
+	
 	public bool IsWaitingWeapon()
 	{
 		return state.IndexOf("waiting")!=-1;
 	}
-
+	
 	public void setWaitingWeapon(bool t)
 	{
 		if (t)
@@ -125,7 +112,7 @@ public class KartController : MonoBehaviour
 		else
 			state.Remove("waiting");
 	}
-
+	
 	public void SetWeapon(string w)
 	{
 		if (w == "Aku-Aku" )
@@ -134,7 +121,7 @@ public class KartController : MonoBehaviour
 		else if (w == "superAku-Aku")
 			if (baddie)
 				w = "superUka-Uka";
-
+		
 		if (w.IndexOf("triple") != -1 )
 			for(int i=0;i<3;i++)
 				weapons.Add (w.Split('_')[w.Split('_').Length - 1]);
@@ -143,7 +130,7 @@ public class KartController : MonoBehaviour
 		state.Add ("armed");
 		takenWeaponBox = null;
 	}
-
+	
 	public void UseWeapon()
 	{
 		// stop the random searching of weapon from WeaponBox
@@ -169,7 +156,7 @@ public class KartController : MonoBehaviour
 			shield = null;
 			return;
 		}
-
+		
 		if (weapons.Count == 0)
 			return;
 		string w = weapons [0];
@@ -179,16 +166,16 @@ public class KartController : MonoBehaviour
 			posToAdd = 4f * (new Vector3 (forwardNormal.x, forwardNormal.y - 0.6f, forwardNormal.z));
 		else
 			posToAdd = 6f * (new Vector3 (-1 * forwardNormal.x, forwardNormal.y - 0.6f, -1* forwardNormal.z));
-
+		
 		Quaternion q = new Quaternion (0,transform.rotation.y,0,transform.rotation.w);
 		if (poseWeapons.IndexOf(w) != -1)
 			q = transform.rotation;
-
+		
 		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position-posToAdd, q) as GameObject;
 		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
 		if (arme!=null)	{
 			arme.owner = gameObject;
-
+			
 			if (w == "bomb") {
 				explosiveWeapon = true;
 				arme.vitesseInitiale =  60f*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
@@ -205,34 +192,34 @@ public class KartController : MonoBehaviour
 				protection = arme;
 			}
 		}
-
+		
 		weapons.RemoveAt (0);
 		if (weapons.Count == 0) {
 			state.Remove ("armed");
 			GetKart().ws.guiTexture.texture = null;
 		}
 	}
-
+	
 	public void Die(GameObject killer, string weapon)
 	{
 		if (shield != null)
 		{
-				Destroy (shield.gameObject);
-				return;
+			Destroy (shield.gameObject);
+			return;
 		}
 		if (protection != null)
-				return;
+			return;
 		// si on est pas invincible : on meurt
 		if (state.IndexOf ("invincible") == -1)
 		{
-				StartCoroutine (Transparence ());
-				// mise en etat empechant de tirer : 
-				if (state.IndexOf ("UnableToShoot") == -1)
-					StartCoroutine (UnableToShoot ());
-				if (killer==gameObject)
-					kart.AddPoint(-1);
-				else
-					((KartController)killer.GetComponent ("KartController")).kart.AddPoint(1);
+			StartCoroutine (Transparence ());
+			// mise en etat empechant de tirer : 
+			if (state.IndexOf ("UnableToShoot") == -1)
+				StartCoroutine (UnableToShoot ());
+			if (killer==gameObject)
+				kart.AddPoint(-1);
+			else
+				((KartController)killer.GetComponent ("KartController")).kart.AddPoint(1);
 			if (weapon=="greenBeaker" || weapon== "redBeaker") // pour retirer des pommes
 			{
 				rmApples(1);
@@ -272,16 +259,16 @@ public class KartController : MonoBehaviour
 		}
 		renderer.enabled = true;
 		state.Remove ("invincible");
-
+		
 	}
-
+	
 	public void addApples()
 	{
 		int n = Random.Range (4, 8);
 		kart.nbApplesFinal = System.Math.Min (10, kart.nbApplesFinal+n);
 		StartCoroutine(animApplesNb());
 	}
-
+	
 	public void rmApples(int n)
 	{
 		kart.nbApplesFinal -= n;
@@ -290,7 +277,7 @@ public class KartController : MonoBehaviour
 		kart.nbApples = System.Math.Max (0, kart.nbApples);
 		kart.pommeText.text = "x "+kart.nbApples.ToString();
 	}
-
+	
 	IEnumerator animApplesNb()
 	{
 		while(kart.nbApplesFinal != kart.nbApples)
@@ -303,18 +290,18 @@ public class KartController : MonoBehaviour
 			Destroy(soundGetApple);
 		}
 	}
-
+	
 	public void SetKart (Kart k)
 	{
 		kart = k;
 	}
-
+	
 	
 	public Kart GetKart ()
 	{
 		return kart;
 	}
-
+	
 	public Vector3 normalizeVector(Vector3 a)
 	{
 		float div = Mathf.Sqrt (a.x * a.x + a.y * a.y + a.z * a.z);
@@ -323,7 +310,7 @@ public class KartController : MonoBehaviour
 		a.z /= div;
 		return a;
 	}
-
+	
 	public void controlDerapage()
 	{
 		
@@ -385,11 +372,11 @@ public class KartController : MonoBehaviour
 		Vector3 forwardNormal = transform.forward;
 		forwardNormal.y = 0;
 		forwardNormal = normalizeVector (forwardNormal);
-
+		
 		if(Input.GetKey(keyMap["moveBack"])) {
 			if (hasAxis)
 				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
-				//postForce = new Vector3 ();
+			//postForce = new Vector3 ();
 			else {
 				postForce-=forwardNormal*coeffVitesse;
 				if(Input.GetKey(keyMap["turnLeft"]))
@@ -398,7 +385,7 @@ public class KartController : MonoBehaviour
 					transform.Rotate(0,0.5f*coeffManiabilite,0);
 			}
 		}
-
+		
 		if(Input.GetKey(keyMap["moveForward"]))
 		{
 			postForce+=forwardNormal*coeffVitesse;
@@ -422,7 +409,7 @@ public class KartController : MonoBehaviour
 		if (Input.GetKey (keyMap ["viewInverse"])) {
 			if (cameraReversed)
 				kart.cm1c.positionForward = -1f ;
-				}
+		}
 		if(Input.GetKeyDown(keyMap["jump"]))
 		{
 			if(dansLesAirs==false)
@@ -437,7 +424,7 @@ public class KartController : MonoBehaviour
 		
 		if (Input.GetKeyDown (keyMap ["action"])) {
 			if (state.IndexOf ("UnableToShoot") != -1)
-			    return;
+				return;
 			if (hasAxis && Input.GetAxis (axisMap ["stop"]) < 0)
 				facteurSens = 1f;
 			else if (Input.GetKey(keyMap["moveBack"]))
@@ -446,17 +433,17 @@ public class KartController : MonoBehaviour
 				facteurSens = 1f;
 			else
 				facteurSens = -1f;
-
+			
 			if (!explosiveWeapon)
-					UseWeapon ();
+				UseWeapon ();
 			else {
-					explosiveWeapon = false;
-					arme.ActionExplosion ();
+				explosiveWeapon = false;
+				arme.ActionExplosion ();
 			}
 		}
-
+		
 		rigidbody.position += postForce;
-
+		
 	}
 	
 	void InitSelfMapping()
@@ -472,14 +459,14 @@ public class KartController : MonoBehaviour
 		List<Dictionary <string, string> > l_axis = new List<Dictionary<string, string>> {
 			ps1_axis,ps2_axis,ps3_axis,ps4_axis	};
 		
-
+		
 		if (hasAxis)
 			axisMap = l_axis[kart.numeroJoueur-1];
 		
 		keyMap = playersMapping [kart.numeroJoueur];
 		axisMapping = new Dictionary<int, Dictionary<string, string>> {{1,ps1_axis},{2,ps2_axis},{3,ps3_axis},{4,ps4_axis}};
 	}
-
+	
 	void InitMapping()
 	{
 		// constructs the static playersMapping => all 4 saved
@@ -527,16 +514,16 @@ public class KartController : MonoBehaviour
 			{"viewChange",KeyCode.Joystick4Button4}, {"viewInverse",KeyCode.Joystick4Button5},
 			{"bip",KeyCode.Joystick4Button10}, {"bip2",KeyCode.Joystick4Button11}
 		};
-
+		
 		nControllers = Input.GetJoystickNames ().Length;
 		if (nControllers > 4)
-						nControllers = 4;
-
+			nControllers = 4;
+		
 		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,ps1},{2,ps2},{3,ps3},{4,ps4}};
-
+		
 		playersMapping[nControllers + 1] = pc1;
 		playersMapping[nControllers + 2] = pc2;
-
+		
 	}
 	
 }
