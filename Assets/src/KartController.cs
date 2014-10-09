@@ -65,7 +65,7 @@ public class KartController : MonoBehaviour
 	void Update()
 	{
 		if (dansLesAirs)
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-16f,rigidbody.velocity.z);
+			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 		
 		// INDISPENSABLE : annule la possibilité de CONTROLER la rotation z
 		//rigidbody.angularVelocity = Vector3.zero;
@@ -441,8 +441,11 @@ public class KartController : MonoBehaviour
 				arme.ActionExplosion ();
 			}
 		}
-		
-		rigidbody.position += postForce;
+
+		if (!postForce.Equals(new Vector3()))
+			rigidbody.velocity = new Vector3(postForce.x, rigidbody.velocity.y, postForce.z);
+		else
+			rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
 		
 	}
 	
