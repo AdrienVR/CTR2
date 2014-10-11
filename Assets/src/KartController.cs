@@ -13,11 +13,14 @@ public class KartController : MonoBehaviour
 	};
 	public static int nControllers = 0;
 	public static bool stop = true;
+	private bool stopDie = false;
+	private bool isGoingInAir = false;
 	
 	public float coeffVitesse=2f;
 	public float coeffManiabilite=4f;
 	
 	private bool hasAxis = true;
+	private Vector3 postForce = new Vector3 ();
 	
 	private bool pressX=false;
 	private bool pressFleche=false;
@@ -64,13 +67,23 @@ public class KartController : MonoBehaviour
 	
 	void Update()
 	{
-		if (dansLesAirs)
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 		
 		// INDISPENSABLE : annule la possibilité de CONTROLER la rotation z
 		//rigidbody.angularVelocity = Vector3.zero;
-		if (!stop)
+
+		postForce = new Vector3 ();
+
+		if (!stop && !stopDie && !dansLesAirs)
 			controlPosition ();
+
+		if (!postForce.Equals(new Vector3()))
+			rigidbody.velocity = new Vector3(postForce.x, rigidbody.velocity.y, postForce.z);
+		else
+			rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
+
+		
+		rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
+
 	}
 	
 	void OnCollisionStay(Collision collision)
@@ -78,16 +91,30 @@ public class KartController : MonoBehaviour
 		if(collision.gameObject.name=="Ground")
 			dansLesAirs = false;
 		
-		if(collision.gameObject.name=="accelerateur")
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x*3,rigidbody.velocity.y*3,rigidbody.velocity.z*3);
+		/*if(collision.gameObject.name=="accelerateur")
+			rigidbody.velocity = new Vector3(rigidbody.velocity.x*3,rigidbody.velocity.y*3,rigidbody.velocity.z*3);*/
 	}
 	
 	void OnCollisionExit(Collision collision)
 	{
-		if(collision.gameObject.name=="Ground")
-		{
-			dansLesAirs = true;
+		if(collision.gameObject.name=="Ground") {
+			if (!isGoingInAir)
+				StartCoroutine(FreeAir());
 		}
+	}
+	
+	IEnumerator FreeAir()
+	{
+		isGoingInAir = true;
+		float a = 0f;
+		while(a<0.5f)
+		{
+			dansLesAirs = false;
+			yield return new WaitForSeconds (0.01f);
+			a+=0.01f;
+		}
+		dansLesAirs = true;
+		isGoingInAir = false;
 	}
 	
 	public bool IsArmed()
@@ -213,6 +240,7 @@ public class KartController : MonoBehaviour
 		if (state.IndexOf ("invincible") == -1)
 		{
 			StartCoroutine (Transparence ());
+			StartCoroutine (UnableToMove ());
 			// mise en etat empechant de tirer : 
 			if (state.IndexOf ("UnableToShoot") == -1)
 				StartCoroutine (UnableToShoot ());
@@ -226,6 +254,17 @@ public class KartController : MonoBehaviour
 			}
 			else rmApples(3);
 		}
+	}
+
+	IEnumerator UnableToMove()
+	{
+		stopDie = true;
+		float time = 0f;
+		while (time < 1f) {
+			yield return new WaitForSeconds (0.1f);
+			time += 0.1f;
+		}
+		stopDie = false;
 	}
 	
 	IEnumerator UnableToShoot()
@@ -323,8 +362,8 @@ public class KartController : MonoBehaviour
 			pressX=false;
 			pressXAndFleche=false;
 			pressXAndFlecheAndR1=false;
-			coeffManiabilite=2;
-			coeffVitesse=3;
+			//coeffManiabilite=2;
+			//coeffVitesse=3;
 		}
 		if(Input.GetKeyDown(keyMap["jump"]))
 		{
@@ -334,8 +373,8 @@ public class KartController : MonoBehaviour
 		{
 			pressR1=false;
 			pressXAndFlecheAndR1=false;
-			coeffManiabilite=2;
-			coeffVitesse=3;
+			//coeffManiabilite=2;
+			//coeffVitesse=3;
 		}
 		if(Input.GetKeyDown(keyMap["jump2"]))
 		{
@@ -356,8 +395,8 @@ public class KartController : MonoBehaviour
 		if(pressXAndFlecheAndR1)
 		{
 			Debug.Log("JE DERAPE");
-			coeffManiabilite=4;
-			coeffVitesse=3;
+			//coeffManiabilite=4;
+			//coeffVitesse=3;
 		}
 		
 		if(!pressXAndFlecheAndR1 || !pressL1)
@@ -367,7 +406,6 @@ public class KartController : MonoBehaviour
 	
 	public void controlPosition()
 	{
-		Vector3 postForce = new Vector3 ();
 		rigidbody.position = transform.position;
 		Vector3 forwardNormal = transform.forward;
 		forwardNormal.y = 0;
@@ -442,10 +480,6 @@ public class KartController : MonoBehaviour
 			}
 		}
 
-		if (!postForce.Equals(new Vector3()))
-			rigidbody.velocity = new Vector3(postForce.x, rigidbody.velocity.y, postForce.z);
-		else
-			rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
 		
 	}
 	
