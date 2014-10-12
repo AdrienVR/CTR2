@@ -124,6 +124,7 @@ public class ExplosionScript : MonoBehaviour {
 		//do not delete the shield if it's launched
 		if (launchWeapons.IndexOf(name)==-1)
 			Destroy(gameObject);
+		((KartController)owner.GetComponent ("KartController")).coeffVitesse = ((KartController)owner.GetComponent ("KartController")).coeffVInit;
 	}
 
 	// Update is called once per frame

@@ -40,7 +40,7 @@ public class AppleBoxScript : MonoBehaviour {
 	IEnumerator Take()
 	{
 		animation.Play ("boxDisappear");
-		yield return new WaitForSeconds (3f);
+		yield return new WaitForSeconds (1.5f);
 		animation.Play ("boxGrow");
 		yield return new WaitForSeconds (2f);
 		collider.enabled = true;
