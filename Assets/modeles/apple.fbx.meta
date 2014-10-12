@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: db81fb8b3c79e3348bcb41106a788fcb
+guid: efb1d11944a764941a280b1db5d4cc25
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
@@ -36,7 +36,7 @@ ModelImporter:
       name: Sphere|ArmatureAction
       takeName: Sphere|ArmatureAction
       firstFrame: 0
-      lastFrame: 60
+      lastFrame: 50
       wrapMode: 2
       orientationOffsetY: 0
       level: 0

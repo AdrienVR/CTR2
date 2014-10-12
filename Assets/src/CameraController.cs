@@ -5,11 +5,11 @@ public class CameraController : MonoBehaviour
 {
 	
 	private KartController kc;
-	public float positionForward;
+	public float positionForward = 1f;
+	public Vector3 backward;
 
 	// Use this for initialization
-	void Start () { 
-		positionForward = 1f;
+	void Start () {
 	}
 
 	public void SetKartController(KartController k)
@@ -21,7 +21,7 @@ public class CameraController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		Vector3 t= kc.transform.position + new Vector3(0f,4f,0f) - positionForward*6*kc.transform.forward;
+		Vector3 t= kc.transform.position + backward - positionForward*6*kc.transform.forward;
 		transform.position = t;
 		transform.LookAt (kc.transform.position + new Vector3(0f,2f,0f));
 	}

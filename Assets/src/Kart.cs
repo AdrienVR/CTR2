@@ -73,7 +73,7 @@ public class Kart
 		camera = GameObject.Instantiate (Resources.Load("Camera_prefab")) as GameObject;
 		camera.camera.rect = cameraMap[nbPlayers][numeroJoueur-1];
 		camera.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer_j"+numeroJoueur));
-		cm1c = (CameraController) camera.AddComponent ("CameraController");
+		cm1c = (CameraController) camera.GetComponent ("CameraController");
 		cm1c.SetKartController(kc);
 		
 		c2d = GameObject.Instantiate (Resources.Load("Camera2D_prefab")) as GameObject;
@@ -96,6 +96,10 @@ public class Kart
 		
 		GameObject pomme = GameObject.Instantiate (Resources.Load("apple_prefab")) as GameObject;
 		pomme.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
+		foreach (Transform child in pomme.transform)
+		{
+			child.gameObject.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
+		}
 		
 		GameObject nbAppleGui = GameObject.Instantiate (Resources.Load ("pommeText")) as GameObject;
 		nbAppleGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
