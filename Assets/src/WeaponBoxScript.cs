@@ -6,7 +6,6 @@ public class WeaponBoxScript : MonoBehaviour {
 
 	public AudioClip randomMusic;
 	public AudioClip endMusic;
-
 	private int nbImgArmes;
 	private float timeLookingWeapon;
 
@@ -15,22 +14,30 @@ public class WeaponBoxScript : MonoBehaviour {
 	public bool baddie = false;
 
 	// src : http://crashbandicoot.wikia.com/wiki/Crash_Team_Racing
-	private static Dictionary <int, string> normalWeapons =  new Dictionary<int, string> {
+	public static Dictionary <int, string> normalWeapons =  new Dictionary<int, string> {
 		{1,"greenBeaker"},{2,"greenShield"},{3,"bomb"},{4,"triple_bomb"},{5,"triple_missile"},
 		{6,"Aku-Aku"},{7,"TNT"},{8,"turbo"}	};
-	/*private static Dictionary <int, string> superWeapons = new Dictionary<int, string> {
+	public static Dictionary <int, string> superWeapons = new Dictionary<int, string> {
 		{1,"redBeaker"},{2,"blueShield"},{3,"superBomb"},{4,"superTripleBombs"},{5,"superTripleMissiles"},
-		{6,"superAku-Aku"},{7,"nitro"},{8,"superTurbo"}	};*/
+		{6,"superAku-Aku"},{7,"nitro"},{8,"superTurbo"}	};
 	private Dictionary <int, string> weapons;
 	
 	private static List<string> characters = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
-	private static List<string> launchWeapons = new List<string>() {"missile", "missile(Clone)", "bomb", "bomb(Clone)"};
+	private static List<string> launchWeapons = new List<string>() {"missile", "missile(Clone)", "bomb", "bomb(Clone)","superBomb","superBomb(Clone)"};
 
 	// Use this for initialization
 	void Start () {
 		weapons = normalWeapons;
 	}
+	void Update()
+	{
 
+		if(taker != null)
+		{
+			if(taker.IsSuper()) weapons=superWeapons;
+			else if(!taker.IsSuper()) weapons=normalWeapons;
+		}
+	}
 	void OnTriggerEnter(Collider other)
 	{
 		//animation
@@ -50,6 +57,7 @@ public class WeaponBoxScript : MonoBehaviour {
 			taker = (KartController)owner.GetComponent ("KartController");
 		}
 		else return;
+
 		if (taker.name == null)
 			return;
 		if (taker.IsArmed() || taker.IsWaitingWeapon())
@@ -84,6 +92,7 @@ public class WeaponBoxScript : MonoBehaviour {
 		while (nbImgArmes < 25) {
 			nb = Random.Range (1, 8);
 			taker.GetKart().ws.SetTextureN(nb);
+			taker.GetKart().lastWeaponTextureNb=nb;
 			nbImgArmes++;
 			yield return new WaitForSeconds (0.08f);
 			timeLookingWeapon += 0.08f;

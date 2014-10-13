@@ -7,7 +7,7 @@ public class Kart
 	public static int nPlayer=0;
 	public CameraController cm1c;
 	public int numeroJoueur;
-
+	public int lastWeaponTextureNb;
 	public GameObject armeGui;
 	public WeaponScript ws;
 	private GUIText pointText;
@@ -83,17 +83,13 @@ public class Kart
 	
 	public void InitGuiLayer()
 	{
-		armeGui = GameObject.Instantiate (Resources.Load ("arme"), new Vector3 (0.025f, 0.55f, 0), Quaternion.identity) as GameObject;
-		armeGui.layer = LayerMask.NameToLayer ("layer_j" + numeroJoueur);
+		setWeaponGUI ("arme");
 		GameObject pointGui = GameObject.Instantiate (Resources.Load ("pointTexture")) as GameObject;
 		pointGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
 		pointText = (GUIText)pointGui.GetComponent ("GUIText");
 		pointText.text="0";
 		if (nbPlayers > 2)
 			pointText.transform.position = new Vector3(0.8f,pointText.transform.position.y,pointText.transform.position.z) ;
-		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
-
-		
 		GameObject pomme = GameObject.Instantiate (Resources.Load("apple_prefab")) as GameObject;
 		pomme.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 		foreach (Transform child in pomme.transform)
@@ -105,8 +101,27 @@ public class Kart
 		nbAppleGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
 		pommeText = (GUIText)nbAppleGui.GetComponent ("GUIText");
 		pommeText.text = "x 0";
-
 	}
+
+	public void setWeaponGUI(string armeImage)
+	{
+		armeGui = GameObject.Instantiate (Resources.Load (armeImage), new Vector3 (0.025f, 0.55f, 0), Quaternion.identity) as GameObject;
+		armeGui.layer = LayerMask.NameToLayer ("layer_j" + numeroJoueur);
+		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
+		if(kc.IsArmed())
+		{
+			ws.SetTextureN(lastWeaponTextureNb);
+			kc.weapons.RemoveAt (0);
+			kc.state.Add ("armedEvolute");
+			if(armeImage=="arme") kc.SetWeapon(WeaponBoxScript.normalWeapons[lastWeaponTextureNb]);
+			else if(armeImage=="superArme") kc.SetWeapon(WeaponBoxScript.superWeapons[lastWeaponTextureNb]);
+			for(int i =0; i<kc.weapons.Count;i++)
+			{
+				Debug.Log(kc.weapons[i]);
+			}
+		}
+	}
+
 
 	public void AddPoint(int n)
 	{

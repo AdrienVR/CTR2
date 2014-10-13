@@ -126,6 +126,10 @@ public class KartController : MonoBehaviour
 	{
 		return state.IndexOf("waiting")!=-1;
 	}
+	public bool IsSuper()
+	{
+		return state.IndexOf("super")!=-1;
+	}
 	
 	public void setWaitingWeapon(bool t)
 	{
@@ -182,7 +186,7 @@ public class KartController : MonoBehaviour
 		if (weapons.Count == 0)
 			return;
 		string w = weapons [0];
-		if (w == "bomb")
+		if (w == "bomb" || w =="superbomb")
 			posToAdd = 6f * (new Vector3 (-facteurSens * forwardNormal.x, forwardNormal.y - 0.6f, -facteurSens * forwardNormal.z));
 		else if (poseWeapons.IndexOf(w) != -1)
 			posToAdd = 4f * (new Vector3 (forwardNormal.x, forwardNormal.y - 0.6f, forwardNormal.z));
@@ -198,15 +202,15 @@ public class KartController : MonoBehaviour
 		if (arme!=null)	{
 			arme.owner = gameObject;
 			
-			if (w == "bomb") {
+			if (w == "bomb" || w =="superbomb") {
 				explosiveWeapon = true;
 				arme.vitesseInitiale =  90f*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
 			}
 			else if (w == "missile")
 				arme.vitesseInitiale =  120f*forwardNormal;
-			else if (w == "greenShield")
+			else if (w == "greenShield"|| w == "blueShield")
 				shield = arme;
-			else if (w == "Aku-Aku") {
+			else if (w == "Aku-Aku" || w == "superAku-Aku") {
 				if (protection!=null){
 					arme.lifeTime = 12f;
 					Destroy(arme.gameObject);
@@ -221,6 +225,13 @@ public class KartController : MonoBehaviour
 		if (weapons.Count == 0) {
 			state.Remove ("armed");
 			GetKart().ws.guiTexture.texture = null;
+		}
+
+		if(state.IndexOf("armedEvolute")!=-1)
+		{
+			state.Remove ("armed");
+			state.Remove ("armed");
+			state.Remove ("armedEvolute");
 		}
 	}
 	
@@ -324,6 +335,9 @@ public class KartController : MonoBehaviour
 		kart.nbApplesFinal = System.Math.Max (0, kart.nbApplesFinal);
 		kart.nbApples = System.Math.Max (0, kart.nbApples);
 		kart.pommeText.text = "x "+kart.nbApples.ToString();
+		state.Remove("super");
+		Destroy(kart.armeGui);
+		kart.setWeaponGUI ("arme");
 	}
 	
 	IEnumerator animApplesNb()
@@ -336,6 +350,15 @@ public class KartController : MonoBehaviour
 			GameObject soundGetApple = GameObject.Instantiate (Resources.Load ("getApple")) as GameObject;
 			yield return new WaitForSeconds (0.27f);
 			Destroy(soundGetApple);
+		}
+		if(kart.nbApplesFinal == 10 && !IsSuper())
+		{
+			if(IsArmed())
+			{
+				Destroy(kart.armeGui);
+			}
+			state.Add ("super");
+			kart.setWeaponGUI ("superArme");
 		}
 	}
 	
