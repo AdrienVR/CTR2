@@ -15,8 +15,10 @@ public class ExplosionScript : MonoBehaviour {
 
 	private static List<string> targets = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
 	private static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
-	private static List<string> launchWeapons = new List<string>() {"missile", "missile(Clone)", "bomb", "bomb(Clone)"};
-	private static List<string> protectWeapons = new List<string>() {"Aku-Aku", "Aku-Aku(Clone)", "greenShield", "greenShield(Clone)"};
+	private static List<string> launchWeapons = new List<string>() {"missile", "missile(Clone)", "bomb", "bomb(Clone)",
+		"superBomb", "superBomb(Clone)"	};
+	private static List<string> protectWeapons = new List<string>() {"Aku-Aku", "Aku-Aku(Clone)", "greenShield", 
+		"greenShield(Clone)", "blueShield", "blueShield(Clone)","superAku-Aku", "superAku-Aku(Clone)"};
 	private static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker", "nitro(Clone)", 
 																		"TNT(Clone)", "greenBeaker(Clone)", "redBeaker(Clone)"};
 

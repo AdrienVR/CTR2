@@ -111,7 +111,6 @@ public class Kart
 		if(kc.IsArmed())
 		{
 			ws.SetTextureN(lastWeaponTextureNb);
-			kc.weapons.RemoveAt (0);
 			kc.state.Add ("armedEvolute");
 			if(armeImage=="arme") kc.SetWeapon(WeaponBoxScript.normalWeapons[lastWeaponTextureNb]);
 			else if(armeImage=="superArme") kc.SetWeapon(WeaponBoxScript.superWeapons[lastWeaponTextureNb]);

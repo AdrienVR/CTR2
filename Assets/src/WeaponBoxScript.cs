@@ -18,7 +18,7 @@ public class WeaponBoxScript : MonoBehaviour {
 		{1,"greenBeaker"},{2,"greenShield"},{3,"bomb"},{4,"triple_bomb"},{5,"triple_missile"},
 		{6,"Aku-Aku"},{7,"TNT"},{8,"turbo"}	};
 	public static Dictionary <int, string> superWeapons = new Dictionary<int, string> {
-		{1,"redBeaker"},{2,"blueShield"},{3,"superBomb"},{4,"superTripleBombs"},{5,"superTripleMissiles"},
+		{1,"redBeaker"},{2,"blueShield"},{3,"superBomb"},{4,"triple_superBomb"},{5,"triple_missile"},
 		{6,"superAku-Aku"},{7,"nitro"},{8,"superTurbo"}	};
 	private Dictionary <int, string> weapons;
 	

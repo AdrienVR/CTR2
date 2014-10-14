@@ -50,6 +50,7 @@ public class KartController : MonoBehaviour
 	public bool explosiveWeapon;
 	public float facteurSens ;
 	private static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker"};
+	private static List<string> bombList = new List<string>() {"bomb", "superBomb"};
 	
 	// Use this for initialization
 	void Start ()
@@ -148,11 +149,16 @@ public class KartController : MonoBehaviour
 			if (baddie)
 				w = "superUka-Uka";
 		
-		if (w.IndexOf("triple") != -1 )
-			for(int i=0;i<3;i++)
-				weapons.Add (w.Split('_')[w.Split('_').Length - 1]);
-		else
+		if (w.IndexOf ("triple") != -1){
+			int j = weapons.Count;
+			if (j == 0) j=3;
+			weapons = new List<string> ();
+			for(int i=0;i<j;i++)
+				weapons.Add (w.Split('_')[w.Split('_').Length - 1]);}
+		else{
+			weapons = new List<string> ();
 			weapons.Add (w);
+		}
 		state.Add ("armed");
 		takenWeaponBox = null;
 	}
@@ -186,7 +192,7 @@ public class KartController : MonoBehaviour
 		if (weapons.Count == 0)
 			return;
 		string w = weapons [0];
-		if (w == "bomb" || w =="superbomb")
+		if (bombList.IndexOf(w)!=-1)
 			posToAdd = 6f * (new Vector3 (-facteurSens * forwardNormal.x, forwardNormal.y - 0.6f, -facteurSens * forwardNormal.z));
 		else if (poseWeapons.IndexOf(w) != -1)
 			posToAdd = 4f * (new Vector3 (forwardNormal.x, forwardNormal.y - 0.6f, forwardNormal.z));
@@ -196,13 +202,13 @@ public class KartController : MonoBehaviour
 		Quaternion q = new Quaternion (0,transform.rotation.y,0,transform.rotation.w);
 		if (poseWeapons.IndexOf(w) != -1)
 			q = transform.rotation;
-		
+
 		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position-posToAdd, q) as GameObject;
 		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
 		if (arme!=null)	{
 			arme.owner = gameObject;
 			
-			if (w == "bomb" || w =="superbomb") {
+			if (bombList.IndexOf(w)!=-1) {
 				explosiveWeapon = true;
 				arme.vitesseInitiale =  90f*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
 			}
