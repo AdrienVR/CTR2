@@ -35,7 +35,7 @@ public class KartController : MonoBehaviour
 	private ExplosionScript shield;
 	private ExplosionScript protection;
 	
-	public List<string> state;
+	private List<string> state = new List<string>();
 	public List<string> weapons;
 	public Dictionary <string, KeyCode> keyMap;
 	
@@ -134,10 +134,24 @@ public class KartController : MonoBehaviour
 	
 	public void setWaitingWeapon(bool t)
 	{
-		if (t)
-			state.Add("waiting");
+		if (t){
+			if (state.IndexOf("waiting")==-1)
+				state.Add("waiting");
+		}
 		else
-			state.Remove("waiting");
+			if (state.IndexOf("waiting")!=-1)
+				state.Remove("waiting");
+	}
+	
+	public void setEvoluteWeapon(bool t)
+	{
+		if (t){
+			if (state.IndexOf("armedEvolute")==-1)
+				state.Add("armedEvolute");
+		}
+		else
+			if (state.IndexOf("armedEvolute")!=-1)
+				state.Remove("armedEvolute");
 	}
 	
 	public void SetWeapon(string w)
@@ -159,7 +173,8 @@ public class KartController : MonoBehaviour
 			weapons = new List<string> ();
 			weapons.Add (w);
 		}
-		state.Add ("armed");
+		if (state.IndexOf("armed")==-1)
+			state.Add ("armed");
 		takenWeaponBox = null;
 	}
 	
@@ -223,7 +238,6 @@ public class KartController : MonoBehaviour
 				}
 				else
 					protection = arme;
-				coeffVitesse *= 1.5f;
 			}
 		}
 		
@@ -274,7 +288,8 @@ public class KartController : MonoBehaviour
 	IEnumerator TempUndead()
 	{
 		//clignotment, invincibilité temporaire
-		state.Add ("invincible");
+		if (state.IndexOf("invincible")==-1)
+			state.Add ("invincible");
 		float time = 0f;
 		while (time < 0.35f) {
 			yield return new WaitForSeconds (0.05f);
@@ -296,7 +311,8 @@ public class KartController : MonoBehaviour
 	
 	IEnumerator UnableToShoot()
 	{
-		state.Add ("UnableToShoot");
+		if (state.IndexOf("UnableToShoot")==-1)
+			state.Add ("UnableToShoot");
 		float time = 0f;
 		while (time < 2.5f) {
 			yield return new WaitForSeconds (0.1f);
@@ -308,7 +324,8 @@ public class KartController : MonoBehaviour
 	IEnumerator Transparence()
 	{
 		//clignotment, invincibilité temporaire
-		state.Add ("invincible");
+		if (state.IndexOf("invincible")==-1)
+			state.Add ("invincible");
 		renderer.enabled = false;
 		float time = 0f;
 		float last_time = 0f;
@@ -363,7 +380,8 @@ public class KartController : MonoBehaviour
 			{
 				Destroy(kart.armeGui);
 			}
-			state.Add ("super");
+			if (state.IndexOf("super")==-1)
+				state.Add ("super");
 			kart.setWeaponGUI ("superArme");
 		}
 	}

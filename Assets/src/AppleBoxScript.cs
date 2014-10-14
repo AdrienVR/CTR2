@@ -6,12 +6,16 @@ public class AppleBoxScript : MonoBehaviour {
 	private KartController taker;
 	private static List<string> characters = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
 	private static List<string> launchWeapons = new List<string>() {"missile", "missile(Clone)", "bomb", "bomb(Clone)"};
+	private bool isGiving = false;
 	// Use this for initialization
 	void Start () {
 	}
 	
 	void OnTriggerEnter(Collider other)
 	{
+		if (isGiving)
+			return;
+		isGiving = true;
 		collider.enabled = false;
 		audio.Play ();
 		if(characters.IndexOf(other.name) != -1)// si c'est un kart
@@ -41,6 +45,7 @@ public class AppleBoxScript : MonoBehaviour {
 	{
 		animation.Play ("boxDisappear");
 		yield return new WaitForSeconds (1.5f);
+		isGiving = false;
 		animation.Play ("boxGrow");
 		yield return new WaitForSeconds (2f);
 		collider.enabled = true;

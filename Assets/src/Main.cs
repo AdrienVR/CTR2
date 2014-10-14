@@ -131,6 +131,7 @@ public class Main : MonoBehaviour
 				case 1:
 					Application.LoadLevel(Application.loadedLevel);
 					Kart.nPlayer=0;
+					KartController.stop = true;
 					Pause();
 					break;
 				case 5:
