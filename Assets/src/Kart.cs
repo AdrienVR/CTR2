@@ -15,6 +15,8 @@ public class Kart
 
 	public GameObject camera;
 	public GameObject c2d;
+	public GameObject superLight;
+	public GameObject superLightWeapon;
 
 	private static int nbPlayers=0;
 	private int nbPoints = 0;
@@ -64,6 +66,7 @@ public class Kart
 
 		GameObject kart= Resources.Load(prefabMap[j]) as GameObject;
 		kart = GameObject.Instantiate (kart, pos, q) as GameObject;
+		kart.name = kart.name.Split ('(') [0];
 		kc = (KartController)kart.GetComponent ("KartController");
 		kc.SetKart(this);
 	}
@@ -77,6 +80,7 @@ public class Kart
 		cm1c.SetKartController(kc);
 		
 		c2d = GameObject.Instantiate (Resources.Load("Camera2D_prefab")) as GameObject;
+		c2d.transform.position = new Vector3 (c2d.transform.position.x, c2d.transform.position.y - numeroJoueur * 500, c2d.transform.position.z);
 		c2d.camera.rect = cameraMap[nbPlayers][numeroJoueur-1];
 		c2d.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer2d_j"+numeroJoueur));
 	}
@@ -85,16 +89,20 @@ public class Kart
 	{
 		setWeaponGUI ("arme");
 		GameObject pointGui = GameObject.Instantiate (Resources.Load ("pointTexture")) as GameObject;
+		pointGui.transform.position = new Vector3 (pointGui.transform.position.x, pointGui.transform.position.y - numeroJoueur * 500, pointGui.transform.position.z);
 		pointGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
 		pointText = (GUIText)pointGui.GetComponent ("GUIText");
 		pointText.text="0";
 		if (nbPlayers > 2)
 			pointText.transform.position = new Vector3(0.8f,pointText.transform.position.y,pointText.transform.position.z) ;
 		GameObject pomme = GameObject.Instantiate (Resources.Load("apple_prefab")) as GameObject;
+		pomme.transform.position = new Vector3 (pomme.transform.position.x, pomme.transform.position.y - numeroJoueur * 500, pomme.transform.position.z);
 		pomme.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 		foreach (Transform child in pomme.transform)
 		{
 			child.gameObject.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
+			if (child.gameObject.name == "superLight") superLight = child.gameObject;
+			if (child.gameObject.name == "superLightWeapon") superLightWeapon = child.gameObject;
 		}
 		
 		GameObject nbAppleGui = GameObject.Instantiate (Resources.Load ("pommeText")) as GameObject;
@@ -105,7 +113,7 @@ public class Kart
 
 	public void setWeaponGUI(string armeImage)
 	{
-		armeGui = GameObject.Instantiate (Resources.Load (armeImage), new Vector3 (0.025f, 0.55f, 0), Quaternion.identity) as GameObject;
+		armeGui = GameObject.Instantiate (Resources.Load (armeImage)) as GameObject;
 		armeGui.layer = LayerMask.NameToLayer ("layer_j" + numeroJoueur);
 		ws = (WeaponScript)armeGui.GetComponent ("WeaponScript");
 		if(kc.IsArmed())
@@ -114,13 +122,20 @@ public class Kart
 			kc.setEvoluteWeapon(true);
 			if(armeImage=="arme") kc.SetWeapon(WeaponBoxScript.normalWeapons[lastWeaponTextureNb]);
 			else if(armeImage=="superArme") kc.SetWeapon(WeaponBoxScript.superWeapons[lastWeaponTextureNb]);
-			for(int i =0; i<kc.weapons.Count;i++)
-			{
-				Debug.Log(kc.weapons[i]);
-			}
 		}
 	}
 
+	public void SetIlluminated(bool a)
+	{
+		if (a){
+			superLight.light.color = new Color(114,113,0);
+			superLightWeapon.light.color = new Color(114,113,0);
+		}
+		else{
+			superLight.light.color = new Color();
+			superLightWeapon.light.color = new Color();
+		}
+	}
 
 	public void AddPoint(int n)
 	{

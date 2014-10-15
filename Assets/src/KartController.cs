@@ -183,6 +183,7 @@ public class KartController : MonoBehaviour
 		// stop the random searching of weapon from WeaponBox
 		if (takenWeaponBox != null){
 			takenWeaponBox.selectRandomWeapon ();
+			takenWeaponBox = null;
 			return;
 		}
 		
@@ -219,6 +220,7 @@ public class KartController : MonoBehaviour
 			q = transform.rotation;
 
 		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position-posToAdd, q) as GameObject;
+		arme1.name = arme1.name.Split ('(') [0];
 		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
 		if (arme!=null)	{
 			arme.owner = gameObject;
@@ -229,11 +231,16 @@ public class KartController : MonoBehaviour
 			}
 			else if (w == "missile")
 				arme.vitesseInitiale =  120f*forwardNormal;
-			else if (w == "greenShield"|| w == "blueShield")
+			else if (w == "greenShield"|| w == "blueShield"){
 				shield = arme;
+				shield.lifeTime = 14f;
+			}
 			else if (w == "Aku-Aku" || w == "superAku-Aku") {
 				if (protection!=null){
-					arme.lifeTime = 12f;
+					if (kart.nbApples == 10)
+						protection.lifeTime = 10f;
+					else
+						protection.lifeTime = 7f;
 					Destroy(arme.gameObject);
 				}
 				else
@@ -357,6 +364,7 @@ public class KartController : MonoBehaviour
 		kart.nbApples -= n;
 		kart.nbApplesFinal = System.Math.Max (0, kart.nbApplesFinal);
 		kart.nbApples = System.Math.Max (0, kart.nbApples);
+		if (kart.nbApples != 10) kart.SetIlluminated(false);
 		kart.pommeText.text = "x "+kart.nbApples.ToString();
 		state.Remove("super");
 		Destroy(kart.armeGui);
@@ -368,6 +376,7 @@ public class KartController : MonoBehaviour
 		while(kart.nbApplesFinal != kart.nbApples)
 		{
 			kart.nbApples ++;
+			kart.SetIlluminated((kart.nbApples == 10));
 			audio.Play();
 			kart.pommeText.text = "x "+kart.nbApples.ToString();
 			yield return new WaitForSeconds (0.27f);

@@ -13,19 +13,17 @@ public class ExplosionScript : MonoBehaviour {
 	private bool isAlive;
 	private bool exploded=false;
 
-	private static List<string> targets = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
+	private static List<string> targets = new List<string>() {"coco_prefab","crash_prefab"};
 	private static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
-	private static List<string> launchWeapons = new List<string>() {"missile", "missile(Clone)", "bomb", "bomb(Clone)",
-		"superBomb", "superBomb(Clone)"	};
-	private static List<string> protectWeapons = new List<string>() {"Aku-Aku", "Aku-Aku(Clone)", "greenShield", 
-		"greenShield(Clone)", "blueShield", "blueShield(Clone)","superAku-Aku", "superAku-Aku(Clone)"};
-	private static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker", "nitro(Clone)", 
-																		"TNT(Clone)", "greenBeaker(Clone)", "redBeaker(Clone)"};
+	private static List<string> launchWeapons = new List<string>() {"missile", "bomb","superBomb"};
+	private static List<string> protectWeapons = new List<string>() {"Aku-Aku", "greenShield", "blueShield","superAku-Aku"};
+	private static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker"};
+	private static List<string> protectors = new List<string>() {"Aku-Aku","superAku-Aku", "Uka-Uka","superUka-Uka"};
 
 
 	// Use this for initialization
 	void Start () {
-		if (protectWeapons.IndexOf(name) != -1)
+		if (protectWeapons.IndexOf(name) != -1 && name != "blueShield")
 			StartCoroutine (TimeToLive());
 	}
 
@@ -69,7 +67,7 @@ public class ExplosionScript : MonoBehaviour {
 		if (launchWeapons.IndexOf(name)!=-1) {
 			if (other.gameObject != owner)
 				touched.Die (owner, name.Split('(')[0]);
-			if (name[0] == 'b')
+			if (name == "bomb")
 				ActionExplosion ();
 			if (!exploded)
 				StartCoroutine (Explode());
@@ -94,7 +92,7 @@ public class ExplosionScript : MonoBehaviour {
 		if (protectWeapons.IndexOf (name) != -1) {
 			if (other.gameObject != owner){
 				touched.Die (owner,name.Split('(')[0]);
-				if (name[0] != 'A')
+				if (protectors.IndexOf(name)!=-1)
 					Destroy(gameObject);
 			}
 		}
