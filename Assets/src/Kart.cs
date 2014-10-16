@@ -89,7 +89,7 @@ public class Kart
 	{
 		setWeaponGUI ("arme");
 		GameObject pointGui = GameObject.Instantiate (Resources.Load ("pointTexture")) as GameObject;
-		pointGui.transform.position = new Vector3 (pointGui.transform.position.x, pointGui.transform.position.y - numeroJoueur * 500, pointGui.transform.position.z);
+		//pointGui.transform.position = new Vector3 (pointGui.transform.position.x, pointGui.transform.position.y - numeroJoueur * 500, pointGui.transform.position.z);
 		pointGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
 		pointText = (GUIText)pointGui.GetComponent ("GUIText");
 		pointText.text="0";

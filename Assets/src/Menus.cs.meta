@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 092200a4b603ddf45ae301470cab5d06
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - normal: {fileID: 2800000, guid: 5d5181cd8056d5b4a949d298a3a45b0b, type: 3}
+  - hover: {fileID: 2800000, guid: ec136099a2476e24ebe64ad0f2f6159b, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

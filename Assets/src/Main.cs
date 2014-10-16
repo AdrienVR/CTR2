@@ -5,24 +5,24 @@ using System.Collections.Generic;
 public class Main : MonoBehaviour
 {
 	public int nbPlayer;
-
+	public Texture normal;
+	public Texture hover;
 	public GameObject respawn1;
 	public GameObject respawn2;
 	public GameObject respawn3;
 	public GameObject respawn4;
 	private List<Transform> listRespawn;
 	public List<Kart> players;
-	public bool inPause=false;
-	public float normalTime;
-	public GUIStyle gs; //normal button pause style
-	public GUIStyle gs2; //title "pause" style
-	public GUIStyle gs3; // over button pause style (for keyboard)
-	private List<GUIStyle> b; // blank styles for pause button
-	delegate void func();
-	public bool initPause=false;
-	private static Dictionary <int, string> menuDispostion =  new Dictionary<int, string> {
-		{0,"REPRENDRE"},{1,"RECOMMENCER"},{2,"CHANGER PERSONNAGE"},{3,"CHANGER NIVEAU"},{4,"CHANGER CONFIG"},{5,"QUITTER"},{6,"OPTIONS"}
-	};
+	//public bool inPause=false;
+	//public float normalTime;
+	//public GUIStyle gs; //normal button pause style
+	//public GUIStyle gs2; //title "pause" style
+	//public GUIStyle gs3; // over button pause style (for keyboard)
+	//private List<GUIStyle> b; // blank styles for pause button
+	//public bool initPause=false;
+	//private static Dictionary <int, string> menuDispostion =  new Dictionary<int, string> {
+	//	{0,"REPRENDRE"},{1,"RECOMMENCER"},{2,"CHANGER PERSONNAGE"},{3,"CHANGER NIVEAU"},{4,"CHANGER CONFIG"},{5,"QUITTER"},{6,"OPTIONS"}
+	//};
 	void Start()
 	{
 		Debug.Log ("Demarrage !");
@@ -30,13 +30,17 @@ public class Main : MonoBehaviour
 		InitializeRespawn ();
 		
 		CreateNPersos(nbPlayer);
-		normalTime = Time.timeScale;
-		b=new List<GUIStyle>();
-		b.Add(gs3);
+		//normalTime = Time.timeScale;
+		//b=new List<GUIStyle>();
+		//b.Add(gs3);
 		Instantiate (Resources.Load ("feux_depart"));
+		Menus m =(Menus)gameObject.AddComponent ("Menus");
+		m.normal = normal;
+		m.hover = hover;
 	}
 	void Update()
 	{
+		/*
 		//if any player push on start : pause event
 		bool start = false;
 		for (int i = 1; i<5; i++)
@@ -44,9 +48,9 @@ public class Main : MonoBehaviour
 		if(start)
 			Pause ();
 
-		keyboardMenu ();
+		keyboardMenu ();*/
 	}
-
+	/*
 	void Pause()
 	{
 		if(!inPause)
@@ -167,7 +171,7 @@ public class Main : MonoBehaviour
 			}
 		}
 	}
-
+	*/
 	void InitializeRespawn()
 	{
 		listRespawn = new List<Transform> {respawn1.transform,
