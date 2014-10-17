@@ -58,7 +58,6 @@ public class Menus : MonoBehaviour
 	{
 		bool pressStart = false;
 		for (int i = 1; i<5; i++) pressStart |= Input.GetKeyDown (KartController.playersMapping [i] ["start"]) ;
-		Main m = (Main)GetComponent ("Main");
 		if (pressStart)
 		{
 			Pause();
@@ -67,7 +66,6 @@ public class Menus : MonoBehaviour
 
 	void Pause()
 	{
-		Main m = (Main)GetComponent ("Main");
 		if (!inPause)
 		{
 			greyT = (GameObject)GameObject.Instantiate(Resources.Load("guiTexture1"));

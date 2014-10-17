@@ -14,6 +14,7 @@ public class ExplosionScript : MonoBehaviour {
 	private bool exploded=false;
 
 	private static List<string> targets = new List<string>() {"coco_prefab","crash_prefab"};
+
 	private static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
 	private static List<string> launchWeapons = new List<string>() {"missile", "bomb","superBomb"};
 	private static List<string> protectWeapons = new List<string>() {"Aku-Aku", "greenShield", "blueShield","superAku-Aku"};
@@ -66,7 +67,7 @@ public class ExplosionScript : MonoBehaviour {
 		// for bombs, missiles and launched shields
 		if (launchWeapons.IndexOf(name)!=-1) {
 			if (other.gameObject != owner)
-				touched.Die (owner, name.Split('(')[0]);
+				touched.Die (owner, name);
 			if (name == "bomb")
 				ActionExplosion ();
 			if (!exploded)
@@ -74,7 +75,7 @@ public class ExplosionScript : MonoBehaviour {
 		}
 		// nitro tnt, beakers
 		else if (poseWeapons.IndexOf(name)!=-1) {
-			touched.Die (owner,name.Split('(')[0]);
+			touched.Die (owner,name);
 			StartCoroutine (Explode());
 		}
 	}
@@ -91,7 +92,7 @@ public class ExplosionScript : MonoBehaviour {
 		// for Aku-Aku and shields
 		if (protectWeapons.IndexOf (name) != -1) {
 			if (other.gameObject != owner){
-				touched.Die (owner,name.Split('(')[0]);
+				touched.Die (owner,name);
 				if (protectors.IndexOf(name)!=-1)
 					Destroy(gameObject);
 			}
