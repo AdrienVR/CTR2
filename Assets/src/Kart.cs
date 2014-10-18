@@ -95,7 +95,10 @@ public class Kart
 		pointText.text="0";
 		if (nbPlayers > 2)
 			pointText.transform.position = new Vector3(0.8f,pointText.transform.position.y,pointText.transform.position.z) ;
+
 		GameObject pomme = GameObject.Instantiate (Resources.Load("apple_prefab")) as GameObject;
+		Resizer rs = (Resizer)pomme.GetComponent ("Resizer");
+		rs.rectCam = cameraMap [nbPlayers] [numeroJoueur - 1];
 		pomme.transform.position = new Vector3 (pomme.transform.position.x, pomme.transform.position.y - numeroJoueur * 500, pomme.transform.position.z);
 		pomme.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 		foreach (Transform child in pomme.transform)

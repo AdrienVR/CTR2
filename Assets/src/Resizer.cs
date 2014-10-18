@@ -2,10 +2,8 @@
 using System.Collections;
 
 public class Resizer : MonoBehaviour {
-
-	public int nbX = 1;
-	public int nbY = 2;
-
+	//
+	public Rect rectCam;
 	// Use this for initialization
 	void Start () {
 		Debug.Log ("screen : " + Screen.width+","+Screen.height);
@@ -13,13 +11,9 @@ public class Resizer : MonoBehaviour {
 	}
 
 	void ResizeLocation(){
-		//Designed for a 1600, 730)
-		int sx = Screen.width / nbY * nbY;
-		int sy = Screen.height / nbX * nbX;
-		float ry = (float)sy / 730f;
-		float rx = (float)sx / 1600f / ry;
-		gameObject.transform.position = new Vector3 (gameObject.transform.position.x * rx,
-		                                             gameObject.transform.position.y ,//* ry,
+		float rx = Screen.width / 816f * 459f / Screen.height;
+		gameObject.transform.position = new Vector3 (gameObject.transform.position.x / rectCam.height * rx,
+		                                             gameObject.transform.position.y ,
 		                                             gameObject.transform.position.z);
 
 	}
