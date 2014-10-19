@@ -1,6 +1,6 @@
 CTR2 is an open source remake of Crash Team Racing - developed by [Naughty Dog](http://www.naughtydog.com) - that allows to enjoy the game in a better quality.
 
-| ![CTR2](http://www.mediafire.com/view/deuiqc7e5516qp4/ctr2_preview.png "Warning, this a preview of the game") |
+| ![CTR2](https://raw.githubusercontent.com/AdrienVR/CTR2/master/ctr2_preview.jpg "Warning, this a preview of the game") |
 |:----:|
 
 ## Project Details
