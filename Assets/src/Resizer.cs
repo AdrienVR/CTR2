@@ -11,7 +11,7 @@ public class Resizer : MonoBehaviour {
 	}
 
 	void ResizeLocation(){
-		float rx = Screen.width / 816f * 459f / Screen.height;
+		float rx = Screen.width / 816f * 459f / Screen.height / rectCam.height * rectCam.width;
 		gameObject.transform.position = new Vector3 (gameObject.transform.position.x * rx,
 		                                             gameObject.transform.position.y,
 		                                             gameObject.transform.position.z);
