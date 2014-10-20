@@ -6,6 +6,9 @@ public class Menus : MonoBehaviour
 {
 	public Texture normal;
 	public Texture hover;
+	public Texture triVolume3;
+	public Texture triVolume2;
+	public Texture triVolume1;
 	public static GameObject cameraMenu;
 	private GameObject greyT;
 	private float normalTime;
@@ -14,6 +17,8 @@ public class Menus : MonoBehaviour
 	private bool authorizeNavigate = false;
 	private bool inPause = false;
 	private static GameObject titreAffiche;
+	private static GameObject triangleFond;
+	private static GameObject triangleVolume;
 	private static List <GameObject> textureAffichees =  new List <GameObject>();
 	private static List <GameObject> textAffiches =  new List <GameObject>();
 	private static Dictionary <int, string> menuCourant = new Dictionary<int, string>();
@@ -33,16 +38,21 @@ public class Menus : MonoBehaviour
 	private static Dictionary <int, string> menuOptions =  new Dictionary<int, string>
 	{
 		{0,"Options"},
-		{1,"VOLUME"},
+		{1,"VOLUME :"},
 		{2,"REGLAGES CONTROLES"},
 		{3,"RETOUR"}
 	};
-
+	private static Dictionary <int, string> menuReglages =  new Dictionary<int, string>
+	{
+		{0,"Reglages Controles"},
+		{1,"RETOUR"}
+	};
 	// Use this for initialization
 	void Start ()
 	{
 		normalTime = Time.timeScale;
 		cameraMenu = (GameObject)GameObject.Instantiate (Resources.Load("cameraMenu"));
+		//AudioListener.volume = 0.5f;
 	}
 
 	
@@ -94,14 +104,35 @@ public class Menus : MonoBehaviour
 		titreAffiche = textTitre;
 		for (int i = 1; i<menu.Count; i++)
 		{
-			Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("button"),pos,Quaternion.identity));
-			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
-			textbutton.guiText.text=menu[i];
-			textAffiches.Add(textbutton);
+			if(!specialButton(menu,i))
+			{
+				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
+				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("button"),pos,Quaternion.identity));
+				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+				textbutton.guiText.text=menu[i];
+				textAffiches.Add(textbutton);
+			}
 		}
 		menuCourant = menu;
 		authorizeNavigate = true;
+	}
+
+	bool specialButton(Dictionary <int, string> menu, int i)
+	{
+		if(menu[i]=="VOLUME :")
+		{
+			Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
+			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("button"),pos,Quaternion.identity));
+			triangleFond = (GameObject)Instantiate (Resources.Load ("triangleFond"),new Vector3(pos.x,pos.y,2),Quaternion.identity);
+			triangleVolume = (GameObject)Instantiate (Resources.Load ("triangleVolume"),new Vector3(pos.x,pos.y,3),Quaternion.identity);
+			Rect t = new Rect(triangleVolume.guiTexture.pixelInset.x,triangleVolume.guiTexture.pixelInset.y,250*AudioListener.volume*1.42f,25*AudioListener.volume*1.42f);
+			triangleVolume.guiTexture.pixelInset=t;
+			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)3)),pos.y,0),Quaternion.identity);
+			textbutton.guiText.text=menu[i];
+			textAffiches.Add(textbutton);
+			return true;
+		}
+		else return false;
 	}
 
 	void navigateMenu()
@@ -143,6 +174,21 @@ public class Menus : MonoBehaviour
 			{
 				action(menuCourant,position);
 			}
+			bool right = Input.GetKeyDown(KeyCode.D);
+			if(right && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.7) AudioListener.volume+=0.1f;
+			bool left = Input.GetKeyDown(KeyCode.Q);
+			if(left && menuCourant[position+1]=="VOLUME :" && AudioListener.volume>=0.1f) AudioListener.volume-=0.1f;
+			if(menuCourant[position+1]=="VOLUME :")
+			{
+				Destroy(triangleVolume);
+				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menuCourant.Count/2-1),-1);
+				triangleVolume = (GameObject)Instantiate (Resources.Load ("triangleVolume"),new Vector3(pos.x,pos.y,3),Quaternion.identity);
+				Rect t = new Rect(triangleVolume.guiTexture.pixelInset.x,triangleVolume.guiTexture.pixelInset.y,250*AudioListener.volume*1.42f,25*AudioListener.volume*1.42f);
+				triangleVolume.guiTexture.pixelInset=t;
+				if(AudioListener.volume<0.4f) triangleVolume.guiTexture.texture=triVolume1;
+				else if (AudioListener.volume>=0.4f && AudioListener.volume<0.6f) triangleVolume.guiTexture.texture=triVolume2;
+				else triangleVolume.guiTexture.texture=triVolume3;
+			}
 		}
 	}
 
@@ -175,8 +221,22 @@ public class Menus : MonoBehaviour
 		{
 			switch (menu[p+1])
 			{
+			case "REGLAGES CONTROLES":
+				displayMenu(menuReglages);
+				break;
 			case "RETOUR":
 				displayMenu(menuPause);
+				break;
+			default:
+				break;
+			}
+		}
+		if(menu[0]=="Reglages Controles")
+		{
+			switch (menu[p+1])
+			{
+			case "RETOUR":
+				displayMenu(menuOptions);
 				break;
 			default:
 				break;
@@ -188,6 +248,8 @@ public class Menus : MonoBehaviour
 	{
 		authorizeNavigate = false;
 		Destroy (titreAffiche);
+		Destroy (triangleFond);
+		Destroy (triangleVolume);
 		foreach (GameObject g in textureAffichees) Destroy (g);
 		foreach (GameObject g in textAffiches) Destroy (g);
 		textureAffichees =  new List <GameObject>();

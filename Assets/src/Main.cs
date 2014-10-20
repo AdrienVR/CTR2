@@ -7,22 +7,16 @@ public class Main : MonoBehaviour
 	public int nbPlayer;
 	public Texture normal;
 	public Texture hover;
+	public Texture triVolume3;
+	public Texture triVolume2;
+	public Texture triVolume1;
 	public GameObject respawn1;
 	public GameObject respawn2;
 	public GameObject respawn3;
 	public GameObject respawn4;
 	private List<Transform> listRespawn;
 	public List<Kart> players;
-	//public bool inPause=false;
-	//public float normalTime;
-	//public GUIStyle gs; //normal button pause style
-	//public GUIStyle gs2; //title "pause" style
-	//public GUIStyle gs3; // over button pause style (for keyboard)
-	//private List<GUIStyle> b; // blank styles for pause button
-	//public bool initPause=false;
-	//private static Dictionary <int, string> menuDispostion =  new Dictionary<int, string> {
-	//	{0,"REPRENDRE"},{1,"RECOMMENCER"},{2,"CHANGER PERSONNAGE"},{3,"CHANGER NIVEAU"},{4,"CHANGER CONFIG"},{5,"QUITTER"},{6,"OPTIONS"}
-	//};
+
 	void Start()
 	{
 		Debug.Log ("Demarrage !");
@@ -30,148 +24,20 @@ public class Main : MonoBehaviour
 		InitializeRespawn ();
 		
 		CreateNPersos(nbPlayer);
-		//normalTime = Time.timeScale;
-		//b=new List<GUIStyle>();
-		//b.Add(gs3);
+		InitMenus ();
 		Instantiate (Resources.Load ("feux_depart"));
+	}
+
+	void InitMenus()
+	{
 		Menus m =(Menus)gameObject.AddComponent ("Menus");
 		m.normal = normal;
 		m.hover = hover;
-	}
-	void Update()
-	{
-		/*
-		//if any player push on start : pause event
-		bool start = false;
-		for (int i = 1; i<5; i++)
-			start |= Input.GetKeyDown (KartController.playersMapping [i] ["start"]) ;
-		if(start)
-			Pause ();
-
-		keyboardMenu ();*/
-	}
-	/*
-	void Pause()
-	{
-		if(!inPause)
-		{
-			Time.timeScale=0f;
-			inPause=true;
-			AudioListener.pause = true;
-			foreach (Kart k in players)
-			{
-				k.blackScreen();
-			}
-
-		}
-		else
-		{
-			Time.timeScale=normalTime;
-			inPause=false;
-			AudioListener.pause = false;
-			foreach (Kart k in players)
-			{
-				k.normalScreen();
-			}
-		}
+		m.triVolume1 = triVolume1;
+		m.triVolume2 = triVolume2;
+		m.triVolume3 = triVolume3;
 	}
 
-	public void keyboardMenu()
-	{
-
-		if(inPause)
-		{
-			// si on vient d'arrive en pause
-			if(b[0]==gs3 && !initPause)	{
-				for (int i = 0; i< 6 ; i++)
-					b.Add(gs); //lol
-				initPause=true;
-			}
-			bool down = false;
-			// down means 1 player 
-			for (int i = 1; i<5; i++)
-			{
-				down |= (Input.GetAxis (KartController.axisMapping[i]["stop"]) == 1 && KartController.controllersEnabled[i]);
-				down |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveBack"]) && !KartController.controllersEnabled[i]);
-			}
-			if(down)
-			{
-				int r = b.IndexOf(gs3);
-				if (r<b.Count-1)
-				{
-					b[r]=gs;
-					b[r+1]=gs3;
-				}
-			}
-			bool up = false;
-			for (int i = 1; i<5; i++)
-			{
-				up |= (Input.GetAxis (KartController.axisMapping[i]["stop"]) == -1 && KartController.controllersEnabled[i]);
-				up |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveForward"]) && !KartController.controllersEnabled[i]);
-			}
-			if(up)
-			{
-				int r = b.IndexOf(gs3);
-				if (r>0)
-				{
-					b[r]=gs;
-					b[r-1]=gs3;
-				}
-			}
-			bool ok = false;
-			for (int i = 1; i<5; i++)
-			{
-				ok |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveForward"]) && KartController.controllersEnabled[i]);
-				ok |= (Input.GetKeyDown (KartController.playersMapping [i] ["action"]) && !KartController.controllersEnabled[i]);
-			}
-			if(ok)
-			{
-				int r = b.IndexOf(gs3);
-				switch (r)
-				{
-				case 0:
-					Pause ();
-					break;
-				case 1:
-					Application.LoadLevel(Application.loadedLevel);
-					Kart.nPlayer=0;
-					KartController.stop = true;
-					Pause();
-					break;
-				case 5:
-					Application.Quit();
-					break;
-				default:
-					break;
-				}
-			}
-		}
-	}
-
-	void OnGUI()
-	{
-		if(inPause)
-		{
-			float widthLabel=400;
-			float heightLabel=35;
-
-			GUI.TextArea(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-5*heightLabel, widthLabel, heightLabel), "Pause",gs2);
-		
-			for (int i = 0; i<menuDispostion.Count; i++)
-			{
-				if (GUI.Button(new Rect(Screen.width/2-widthLabel/2, Screen.height/2+heightLabel/2-(4-i)*heightLabel, widthLabel, heightLabel), menuDispostion[i],b[i]))
-				{
-					if (menuDispostion[i]=="REPRENDRE")
-						Pause();
-					else if (menuDispostion[i]=="QUITTER")
-						Application.Quit();
-					else if (menuDispostion[i] == "RECOMMENCER")
-						Application.LoadLevel(Application.loadedLevel);
-				}
-			}
-		}
-	}
-	*/
 	void InitializeRespawn()
 	{
 		listRespawn = new List<Transform> {respawn1.transform,
