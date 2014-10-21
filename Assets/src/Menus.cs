@@ -19,6 +19,7 @@ public class Menus : MonoBehaviour
 	private static GameObject titreAffiche;
 	private static GameObject triangleFond;
 	private static GameObject triangleVolume;
+	private static GameObject fleches;
 	private static List <GameObject> textureAffichees =  new List <GameObject>();
 	private static List <GameObject> textAffiches =  new List <GameObject>();
 	private static Dictionary <int, string> menuCourant = new Dictionary<int, string>();
@@ -45,7 +46,17 @@ public class Menus : MonoBehaviour
 	private static Dictionary <int, string> menuReglages =  new Dictionary<int, string>
 	{
 		{0,"Reglages Controles"},
-		{1,"RETOUR"}
+		{1,"JOUEUR :"},
+		{2,"Avancer"},
+		{3,"Reculer"},
+		{4,"Tourner Gauche"},
+		{5,"Tourner Droite"},
+		{6,"Actionner Arme"},
+		{7,"Sauter"},
+		{8,"Deraper"},
+		{9,"Inverser Camera"},
+		{10,"Mettre en Pause"},
+		{11,"RETOUR"}
 	};
 	// Use this for initialization
 	void Start ()
@@ -132,6 +143,28 @@ public class Menus : MonoBehaviour
 			textAffiches.Add(textbutton);
 			return true;
 		}
+		else if(menu[0]=="Reglages Controles" && menu[i]!="RETOUR")
+		{
+			if(menu[i]=="JOUEUR :")
+			{
+				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
+				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("button"),pos,Quaternion.identity));
+				fleches = (GameObject)Instantiate (Resources.Load ("fleches"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,5),Quaternion.identity);
+				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)4)),pos.y,0),Quaternion.identity);
+				textbutton.guiText.text=menu[i];
+				textAffiches.Add(textbutton);
+			}
+			else
+			{
+				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
+				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("button"),pos,Quaternion.identity));
+				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)2.2f)),pos.y,0),Quaternion.identity);
+				textbutton.guiText.text=menu[i];
+				textbutton.guiText.anchor=TextAnchor.MiddleLeft;
+				textAffiches.Add(textbutton);
+			}
+			return true;
+		}
 		else return false;
 	}
 
@@ -157,6 +190,7 @@ public class Menus : MonoBehaviour
 				down |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveBack"]) && !KartController.controllersEnabled[i]);
 			}
 			if (down && position<menuCourant.Count-2) position++;
+			else if(down && !(position<menuCourant.Count-2)) position = 0;
 			bool up = false;
 			for (int i = 1; i<5; i++)
 			{
@@ -164,6 +198,7 @@ public class Menus : MonoBehaviour
 				up |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveForward"]) && !KartController.controllersEnabled[i]);
 			}
 			if (up && position>0) position--;
+			else if(up && !(position>0)) position = menuCourant.Count-2;
 			bool ok = false;
 			for (int i = 1; i<5; i++)
 			{
@@ -213,6 +248,9 @@ public class Menus : MonoBehaviour
 			case "OPTIONS":
 				displayMenu(menuOptions);
 				break;
+			case "QUITTER":
+				Application.Quit();
+				break;
 			default:
 				break;
 			}
@@ -250,6 +288,7 @@ public class Menus : MonoBehaviour
 		Destroy (titreAffiche);
 		Destroy (triangleFond);
 		Destroy (triangleVolume);
+		Destroy (fleches);
 		foreach (GameObject g in textureAffichees) Destroy (g);
 		foreach (GameObject g in textAffiches) Destroy (g);
 		textureAffichees =  new List <GameObject>();
