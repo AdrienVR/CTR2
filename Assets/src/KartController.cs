@@ -70,11 +70,7 @@ public class KartController : MonoBehaviour
 	
 	void FixedUpdate()
 	{
-		lowForce = new Vector3 ();
-		postForce = new Vector3 ();
-
-		if (!stop && !stopDie)
-			controlPosition ();
+		rigidbody.rotation = transform.rotation;
 
 		if (postForce.Equals(new Vector3())){
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x/1.10f, rigidbody.velocity.y, rigidbody.velocity.z/1.10f);
@@ -87,7 +83,16 @@ public class KartController : MonoBehaviour
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 
 	}
+
 	
+	void Update()
+	{
+		lowForce = new Vector3 ();
+		postForce = new Vector3 ();
+		if (!stop && !stopDie)
+			controlPosition ();
+	}
+
 	void OnCollisionStay(Collision collision)
 	{
 		if(collision.gameObject.name=="Ground")
@@ -196,7 +201,7 @@ public class KartController : MonoBehaviour
 		if (shield != null) {
 			shield.vitesseInitiale =  100f*forwardNormal;
 			shield.name = "bomb";
-			posToAdd = transform.position - 6f * (new Vector3 (-facteurSens * forwardNormal.x, forwardNormal.y - 0.6f, -facteurSens * forwardNormal.z));
+			posToAdd = transform.position - 6f * (new Vector3 (-1 * forwardNormal.x, forwardNormal.y - 0.6f, -1 *forwardNormal.z));
 			shield.transform.position = posToAdd;
 			shield.transform.rotation = new Quaternion();
 			shield.activePhysics();
@@ -209,7 +214,7 @@ public class KartController : MonoBehaviour
 			return;
 		string w = weapons [0];
 		if (bombList.IndexOf(w)!=-1)
-			posToAdd = 6f * (new Vector3 (-facteurSens * forwardNormal.x, forwardNormal.y - 0.6f, -facteurSens * forwardNormal.z));
+			posToAdd = 6f * (new Vector3 (facteurSens * forwardNormal.x, forwardNormal.y - 0.6f, facteurSens * forwardNormal.z));
 		else if (poseWeapons.IndexOf(w) != -1)
 			posToAdd = 4f * (new Vector3 (forwardNormal.x, forwardNormal.y - 0.6f, forwardNormal.z));
 		else
@@ -227,7 +232,7 @@ public class KartController : MonoBehaviour
 			
 			if (bombList.IndexOf(w)!=-1) {
 				explosiveWeapon = true;
-				arme.vitesseInitiale =  90f*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
+				arme.vitesseInitiale =  90f*new Vector3(-facteurSens * forwardNormal.x, 0, -facteurSens * forwardNormal.z);
 			}
 			else if (w == "missile")
 				arme.vitesseInitiale =  120f*forwardNormal;
@@ -469,15 +474,13 @@ public class KartController : MonoBehaviour
 	
 	public void controlPosition()
 	{
-		rigidbody.position = transform.position;
+		//rigidbody.position = transform.position;
 		Vector3 forwardNormal = transform.forward;
 		forwardNormal.y = 0;
 		forwardNormal = normalizeVector (forwardNormal);
 		
 		if(Input.GetKey(keyMap["moveBack"])) {
-			if (hasAxis)
-				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
-			else {
+			if (!hasAxis){
 				lowForce = -forwardNormal*coeffVitesse;
 				if(Input.GetKey(keyMap["turnLeft"]))
 					transform.Rotate(0,-0.5f*coeffManiabilite,0);
@@ -485,13 +488,14 @@ public class KartController : MonoBehaviour
 					transform.Rotate(0,0.5f*coeffManiabilite,0);
 			}
 		}
+		else if (hasAxis)
+			if(Input.GetAxis (axisMap ["stop"]) > 0)
+				lowForce = -Input.GetAxis (axisMap ["stop"]) * forwardNormal * coeffVitesse;
 		
 		if(Input.GetKey(keyMap["moveForward"]))
 		{
 			postForce = forwardNormal*coeffVitesse;
-			if (hasAxis)
-				transform.Rotate(0,Input.GetAxis(axisMap["turn"])*coeffManiabilite,0);
-			else
+			if (!hasAxis)
 			{
 				if(Input.GetKey(keyMap["turnLeft"]))
 					transform.Rotate(0,0.5f*coeffManiabilite,0);
@@ -517,15 +521,21 @@ public class KartController : MonoBehaviour
 				rigidbody.position += new Vector3(0,3f,0);
 			}
 		}
-		if (hasAxis && Input.GetAxis (axisMap ["stop"]) > 0) {
-			lowForce = -Input.GetAxis (axisMap ["stop"]) * forwardNormal * coeffVitesse;
-			transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
+		if (hasAxis){
+			if(!Input.GetKey(keyMap["moveBack"]) && System.Math.Abs(Input.GetAxis (axisMap ["turn"]))>0.1f){
+				if(Input.GetAxis (axisMap ["stop"]) > 0.1f){
+					transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
+					Debug.Log (Input.GetAxis (axisMap ["stop"]));
+				}
+				else if(Input.GetKey(keyMap["moveForward"]) || Input.GetKeyDown(keyMap["jump"]))
+					transform.Rotate (0, Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
+			}
 		}
 		
 		if (Input.GetKeyDown (keyMap ["action"])) {
 			if (state.IndexOf ("UnableToShoot") != -1)
 				return;
-			if (hasAxis && Input.GetAxis (axisMap ["stop"]) < 0)
+			if (hasAxis && Input.GetAxis (axisMap ["stop"]) > 0.1f)
 				facteurSens = 1f;
 			else if (Input.GetKey(keyMap["moveBack"]))
 				facteurSens = -1f;

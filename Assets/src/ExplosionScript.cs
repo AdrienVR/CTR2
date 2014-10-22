@@ -93,7 +93,7 @@ public class ExplosionScript : MonoBehaviour {
 		if (protectWeapons.IndexOf (name) != -1) {
 			if (other.gameObject != owner){
 				touched.Die (owner,name);
-				if (protectors.IndexOf(name)!=-1)
+				if (protectors.IndexOf(name)==-1)
 					Destroy(gameObject);
 			}
 		}
