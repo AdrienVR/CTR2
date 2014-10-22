@@ -209,10 +209,10 @@ public class Menus : MonoBehaviour
 			{
 				action(menuCourant,position);
 			}
-			bool right = Input.GetKeyDown(KeyCode.D);
-			if(right && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.7) AudioListener.volume+=0.1f;
-			bool left = Input.GetKeyDown(KeyCode.Q);
-			if(left && menuCourant[position+1]=="VOLUME :" && AudioListener.volume>=0.1f) AudioListener.volume-=0.1f;
+			bool right = Input.GetKey(KeyCode.D);
+			if(right && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
+			bool left = Input.GetKey(KeyCode.Q);
+			if(left && menuCourant[position+1]=="VOLUME :" && AudioListener.volume>=0.008f) AudioListener.volume-=0.008f;
 			if(menuCourant[position+1]=="VOLUME :")
 			{
 				Destroy(triangleVolume);

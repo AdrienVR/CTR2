@@ -11,7 +11,7 @@ Platform assembly: C:\Users\Jonathan\Documents\GitHub\CTR2\ctr2_Data\Managed\Uni
 Loading C:\Users\Jonathan\Documents\GitHub\CTR2\ctr2_Data\Managed\UnityEngine.dll into Unity Child Domain
 Platform assembly: C:\Users\Jonathan\Documents\GitHub\CTR2\ctr2_Data\Managed\Assembly-CSharp.dll (this message is harmless)
 Loading C:\Users\Jonathan\Documents\GitHub\CTR2\ctr2_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
-- Completed reload, in  0.109 seconds
+- Completed reload, in  0.097 seconds
 desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
 <RI> Initializing input.
 XInput1_3.dll not found.
@@ -21,10 +21,6 @@ Demarrage !
 (Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
 
 Platform assembly: C:\Users\Jonathan\Documents\GitHub\CTR2\ctr2_Data\Managed\System.dll (this message is harmless)
-screen : 1366,768
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
 screen : 1366,768
  
 (Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
