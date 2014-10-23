@@ -16,6 +16,7 @@ public class Main : MonoBehaviour
 	public GameObject respawn4;
 	private List<Transform> listRespawn;
 	public List<Kart> players;
+	public static int nbPtsPartie = 15;
 
 	void Start()
 	{
@@ -55,6 +56,14 @@ public class Main : MonoBehaviour
 			players.Add(a);
 		}
 	}
+
+	public static void Restart(){
+		
+				Application.LoadLevel (Application.loadedLevel);
+				Kart.nPlayer = 0;
+				KartController.stop = true;
+				AudioListener.pause = false;
+		}
 
 
 }

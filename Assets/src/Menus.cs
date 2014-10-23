@@ -237,13 +237,10 @@ public class Menus : MonoBehaviour
 				Pause();
 				break;
 			case "RECOMMENCER":
-				Application.LoadLevel(Application.loadedLevel);
-				Kart.nPlayer=0;
-				KartController.stop = true;
-				viderMenu();
-				Destroy(greyT);
-				Time.timeScale=normalTime;
-				AudioListener.pause = false;
+				viderMenu ();
+				Destroy (greyT);
+				Time.timeScale = normalTime;
+				Main.Restart();
 				break;
 			case "OPTIONS":
 				displayMenu(menuOptions);

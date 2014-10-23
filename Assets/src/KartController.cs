@@ -265,7 +265,8 @@ public class KartController : MonoBehaviour
 			}
 			else if (w == "greenBeaker" || w=="redBeaker")
 				if (sens == 1f)
-					arme.vitesseInstant =  90f*new Vector3(sens * forwardNormal.x, 0, sens * forwardNormal.z);
+					arme.rigidbody.AddForce(2000f*new Vector3(sens * forwardNormal.x, 0.2f, sens * forwardNormal.z));
+					//arme.vitesseInstant =  90f*new Vector3(sens * forwardNormal.x, 0, sens * forwardNormal.z);
 		}
 
 		//use the weapon so remove

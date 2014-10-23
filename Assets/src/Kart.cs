@@ -145,6 +145,8 @@ public class Kart
 		nbPoints+=n;
 		//Debug.Log (numeroJoueur + " a " + nbPoints + " points !");
 		pointText.text = nbPoints.ToString();
+		if (nbPoints == Main.nbPtsPartie)
+			Main.Restart ();
 	}
 }
 

@@ -93,8 +93,8 @@ public class WeaponBoxScript : MonoBehaviour {
 		timeLookingWeapon = 0;
 		int nb = 1;
 		while (nbImgArmes < 25) {
-			nb = Random.Range (1, 8);
-			nb=5;
+			nb = Random.Range (1, normalWeapons.Count);
+			//nb = 5;
 			taker.GetKart().ws.SetTextureN(nb);
 			taker.GetKart().lastWeaponTextureNb=nb;
 			nbImgArmes++;

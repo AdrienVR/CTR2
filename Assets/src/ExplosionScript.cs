@@ -99,6 +99,12 @@ public class ExplosionScript : MonoBehaviour {
 			}
 		}
 	}
+
+	
+	void OnCollisionEnter(Collision collision)
+	{
+		rigidbody.velocity = new Vector3();
+	}
 	
 	IEnumerator Explode()
 	{
@@ -108,6 +114,10 @@ public class ExplosionScript : MonoBehaviour {
 			animation.Play (explosionClip.name);
 		audio.Play ();
 		gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+		foreach (Transform child in gameObject.transform)
+		{
+			Destroy(child.gameObject);
+		}
 		gameObject.light.color = explosionColor;
 		yield return new WaitForSeconds (0.1f);
 		gameObject.light.color = new Color();
