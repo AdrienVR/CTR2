@@ -7,6 +7,7 @@ public class ExplosionScript : MonoBehaviour {
 	public AnimationClip explosionClip;
 	public Color explosionColor;
 	public Vector3 vitesseInitiale;
+	public Vector3 vitesseInstant;
 	public GameObject owner;
 	public float lifeTime = 12.0f;
 
@@ -106,7 +107,7 @@ public class ExplosionScript : MonoBehaviour {
 		if (explosionClip != null)
 			animation.Play (explosionClip.name);
 		audio.Play ();
-		gameObject.transform.localScale = new Vector3 ();
+		gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
 		gameObject.light.color = explosionColor;
 		yield return new WaitForSeconds (0.1f);
 		gameObject.light.color = new Color();

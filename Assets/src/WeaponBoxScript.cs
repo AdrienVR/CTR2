@@ -22,8 +22,8 @@ public class WeaponBoxScript : MonoBehaviour {
 		{6,"superAku-Aku"},{7,"nitro"},{8,"superTurbo"}	};
 	private Dictionary <int, string> weapons;
 	
-	private static List<string> characters = new List<string>() {"coco_prefab","crash_prefab","crash_prefab(Clone)"};
-	private static List<string> launchWeapons = new List<string>() {"missile", "missile(Clone)", "bomb", "bomb(Clone)","superBomb","superBomb(Clone)"};
+	private static List<string> characters = new List<string>() {"coco_prefab","crash_prefab"};
+	private static List<string> launchWeapons = new List<string>() {"missile", "bomb", "greenShield", "blueShield", "superBomb"};
 
 	// Use this for initialization
 	void Start () {
@@ -78,10 +78,13 @@ public class WeaponBoxScript : MonoBehaviour {
 		audio.PlayOneShot(endMusic);
 	}
 
-	public void selectRandomWeapon()
+	public bool selectRandomWeapon()
 	{
 		if(timeLookingWeapon>1f)
 			nbImgArmes = 25;
+		else 
+			return false;
+		return true;
 	}
 
 	IEnumerator AnimArmes()
@@ -91,7 +94,7 @@ public class WeaponBoxScript : MonoBehaviour {
 		int nb = 1;
 		while (nbImgArmes < 25) {
 			nb = Random.Range (1, 8);
-			nb = 2;
+			nb=5;
 			taker.GetKart().ws.SetTextureN(nb);
 			taker.GetKart().lastWeaponTextureNb=nb;
 			nbImgArmes++;

@@ -48,7 +48,7 @@ public class KartController : MonoBehaviour
 	
 	private ExplosionScript arme;
 	public bool explosiveWeapon;
-	public float facteurSens ;
+	private float facteurSens = 1f;
 	private static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker"};
 	private static List<string> bombList = new List<string>() {"bomb", "superBomb"};
 	
@@ -70,9 +70,10 @@ public class KartController : MonoBehaviour
 	
 	void FixedUpdate()
 	{
-		rigidbody.rotation = transform.rotation;
 
 		if (postForce.Equals(new Vector3())){
+			rigidbody.rotation = transform.rotation;
+			rigidbody.position = transform.position;
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x/1.10f, rigidbody.velocity.y, rigidbody.velocity.z/1.10f);
 			rigidbody.velocity = new Vector3(lowForce.x, rigidbody.velocity.y, lowForce.z);
 		}
@@ -81,7 +82,6 @@ public class KartController : MonoBehaviour
 
 		if (dansLesAirs)
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
-
 	}
 
 	
@@ -187,8 +187,8 @@ public class KartController : MonoBehaviour
 	{
 		// stop the random searching of weapon from WeaponBox
 		if (takenWeaponBox != null){
-			takenWeaponBox.selectRandomWeapon ();
-			takenWeaponBox = null;
+			if (takenWeaponBox.selectRandomWeapon ())
+				takenWeaponBox = null;
 			return;
 		}
 		
@@ -201,7 +201,7 @@ public class KartController : MonoBehaviour
 		if (shield != null) {
 			shield.vitesseInitiale =  100f*forwardNormal;
 			shield.name = "bomb";
-			posToAdd = transform.position - 6f * (new Vector3 (-1 * forwardNormal.x, forwardNormal.y - 0.6f, -1 *forwardNormal.z));
+			posToAdd = transform.position + 6f * (new Vector3 (forwardNormal.x, forwardNormal.y+0.6f, forwardNormal.z));
 			shield.transform.position = posToAdd;
 			shield.transform.rotation = new Quaternion();
 			shield.activePhysics();
@@ -213,26 +213,38 @@ public class KartController : MonoBehaviour
 		if (weapons.Count == 0)
 			return;
 		string w = weapons [0];
-		if (bombList.IndexOf(w)!=-1)
-			posToAdd = 6f * (new Vector3 (facteurSens * forwardNormal.x, forwardNormal.y - 0.6f, facteurSens * forwardNormal.z));
-		else if (poseWeapons.IndexOf(w) != -1)
-			posToAdd = 4f * (new Vector3 (forwardNormal.x, forwardNormal.y - 0.6f, forwardNormal.z));
-		else
-			posToAdd = 6f * (new Vector3 (-1 * forwardNormal.x, forwardNormal.y - 0.6f, -1* forwardNormal.z));
 		
+		float sens = -1f;
+		if (hasAxis && Input.GetAxis (axisMap ["stop"]) < -0.1f)
+			sens = 1f;
+
+		// computing the distance to instantiate the weapon
+		if (bombList.IndexOf(w)!=-1)
+			posToAdd = 6f * (new Vector3 (facteurSens * forwardNormal.x, forwardNormal.y + 0.6f, facteurSens * forwardNormal.z));
+		else if (poseWeapons.IndexOf(w) != -1){
+			if (w == "greenBeaker" || w=="redBeaker")
+				posToAdd = 4f * (new Vector3 (sens*forwardNormal.x, forwardNormal.y + 0.2f, sens*forwardNormal.z));
+			else
+				posToAdd = 4f * (new Vector3 (-forwardNormal.x, forwardNormal.y + 0.2f, -forwardNormal.z));
+		}
+		else
+			posToAdd = 6f * (new Vector3 (forwardNormal.x, forwardNormal.y + 0.6f, forwardNormal.z));
 		Quaternion q = new Quaternion (0,transform.rotation.y,0,transform.rotation.w);
 		if (poseWeapons.IndexOf(w) != -1)
 			q = transform.rotation;
 
-		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position-posToAdd, q) as GameObject;
+		//instantiate the weapon
+		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position + posToAdd, q) as GameObject;
 		arme1.name = arme1.name.Split ('(') [0];
+
+		//compute the velocity
 		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
 		if (arme!=null)	{
 			arme.owner = gameObject;
 			
 			if (bombList.IndexOf(w)!=-1) {
 				explosiveWeapon = true;
-				arme.vitesseInitiale =  90f*new Vector3(-facteurSens * forwardNormal.x, 0, -facteurSens * forwardNormal.z);
+				arme.vitesseInitiale =  90f*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
 			}
 			else if (w == "missile")
 				arme.vitesseInitiale =  120f*forwardNormal;
@@ -251,14 +263,17 @@ public class KartController : MonoBehaviour
 				else
 					protection = arme;
 			}
+			else if (w == "greenBeaker" || w=="redBeaker")
+				if (sens == 1f)
+					arme.vitesseInstant =  90f*new Vector3(sens * forwardNormal.x, 0, sens * forwardNormal.z);
 		}
-		
+
+		//use the weapon so remove
 		weapons.RemoveAt (0);
 		if (weapons.Count == 0) {
 			state.Remove ("armed");
 			GetKart().ws.guiTexture.texture = null;
 		}
-
 		if(state.IndexOf("armedEvolute")!=-1)
 		{
 			state.Remove ("armed");
@@ -489,7 +504,7 @@ public class KartController : MonoBehaviour
 			}
 		}
 		else if (hasAxis)
-			if(Input.GetAxis (axisMap ["stop"]) > 0)
+			if(Input.GetAxis (axisMap ["stop"]) > 0.1f)
 				lowForce = -Input.GetAxis (axisMap ["stop"]) * forwardNormal * coeffVitesse;
 		
 		if(Input.GetKey(keyMap["moveForward"]))
@@ -525,23 +540,22 @@ public class KartController : MonoBehaviour
 			if(!Input.GetKey(keyMap["moveBack"]) && System.Math.Abs(Input.GetAxis (axisMap ["turn"]))>0.1f){
 				if(Input.GetAxis (axisMap ["stop"]) > 0.1f){
 					transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
-					Debug.Log (Input.GetAxis (axisMap ["stop"]));
 				}
 				else if(Input.GetKey(keyMap["moveForward"]) || Input.GetKeyDown(keyMap["jump"]))
 					transform.Rotate (0, Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
+			}
+			if(Input.GetKey(keyMap["moveBack"])){
+				transform.Rotate (0, Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
 			}
 		}
 		
 		if (Input.GetKeyDown (keyMap ["action"])) {
 			if (state.IndexOf ("UnableToShoot") != -1)
 				return;
+			facteurSens = 1f;
 			if (hasAxis && Input.GetAxis (axisMap ["stop"]) > 0.1f)
-				facteurSens = 1f;
-			else if (Input.GetKey(keyMap["moveBack"]))
 				facteurSens = -1f;
-			else if (!hasAxis)
-				facteurSens = 1f;
-			else
+			else if (!hasAxis && Input.GetKey(keyMap["moveBack"]))
 				facteurSens = -1f;
 			
 			if (!explosiveWeapon)
