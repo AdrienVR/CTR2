@@ -18,10 +18,12 @@ public class ExplosionScript : MonoBehaviour {
 	private static List<string> targets = new List<string>() {"coco_prefab","crash_prefab"};
 
 	private static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
+	private static List<string> unkillable = new List<string>() {"weaponBox","appleBox", "Ground"};
 	private static List<string> launchWeapons = new List<string>() {"missile", "bomb","superBomb"};
 	private static List<string> protectWeapons = new List<string>() {"Aku-Aku", "greenShield", "blueShield","superAku-Aku"};
 	private static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker"};
 	private static List<string> protectors = new List<string>() {"Aku-Aku","superAku-Aku", "Uka-Uka","superUka-Uka"};
+	private static List<string> shields = new List<string>() {"greenShield", "blueShield"};
 
 
 	// Use this for initialization
@@ -49,13 +51,23 @@ public class ExplosionScript : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider other)
 	{
+		//prevent from multi explosing
+		if (exploded && (name == "greenBeaker" || name == "redBeaker" || name == "missile"))
+			return;
 		// check if other is a valid target, else return
 		if((boxes.IndexOf(other.name)!=-1 && launchWeapons.IndexOf(name)!=-1))
 			return;
-		if (other.name == "Ground")
-			if (launchWeapons.IndexOf(name)!=-1)
-				StartCoroutine (Explode());
 
+		// explosion if bad/false collision
+		if (launchWeapons.IndexOf(name)!=-1 && (other.name == "Ground" || poseWeapons.IndexOf(other.name)!=-1))
+			StartCoroutine (Explode());
+		if (shields.IndexOf(name)!=-1 && other.gameObject != owner.gameObject && unkillable.IndexOf(other.name)==-1){
+			KartController ownerKart = (KartController)owner.GetComponent ("KartController");
+			if (ownerKart.protection != null && other.gameObject != ownerKart.protection.gameObject){
+				lifeTime = 0.3f;
+				StartCoroutine (TimeToLive());
+			}
+		}
 		// not a target
 		if (targets.IndexOf (other.name) == -1 ) {
 			if (poseWeapons.IndexOf(name)!=-1)
@@ -137,7 +149,6 @@ public class ExplosionScript : MonoBehaviour {
 		//do not delete the shield if it's launched
 		if (launchWeapons.IndexOf(name)==-1)
 			Destroy(gameObject);
-		((KartController)owner.GetComponent ("KartController")).coeffVitesse = ((KartController)owner.GetComponent ("KartController")).coeffVInit;
 	}
 
 	// Update is called once per frame

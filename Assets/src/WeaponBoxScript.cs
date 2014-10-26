@@ -94,7 +94,6 @@ public class WeaponBoxScript : MonoBehaviour {
 		int nb = 1;
 		while (nbImgArmes < 25) {
 			nb = Random.Range (1, normalWeapons.Count);
-			//nb = 5;
 			taker.GetKart().ws.SetTextureN(nb);
 			taker.GetKart().lastWeaponTextureNb=nb;
 			nbImgArmes++;
@@ -109,9 +108,9 @@ public class WeaponBoxScript : MonoBehaviour {
 	IEnumerator Take()
 	{
 		animation.Play ("boxDisappear");
-		yield return new WaitForSeconds (1.5f);
-		animation.Play ("boxGrow");
 		yield return new WaitForSeconds (2f);
+		animation.Play ("boxGrow");
+		yield return new WaitForSeconds (1.3f);
 		collider.enabled = true;
 	}
 }

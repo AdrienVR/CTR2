@@ -18,7 +18,7 @@ public class KartController : MonoBehaviour
 	
 	public float coeffVitesse=2f;
 	public float coeffManiabilite=4f;
-	public float coeffVInit;
+	private bool bonusSpeedAku = false;
 	
 	private bool hasAxis = true;
 	private Vector3 postForce;
@@ -33,13 +33,12 @@ public class KartController : MonoBehaviour
 
 	private WeaponBoxScript takenWeaponBox;
 	private ExplosionScript shield;
-	private ExplosionScript protection;
+	public ExplosionScript protection;
 	
 	private List<string> state = new List<string>();
 	public List<string> weapons;
 	public Dictionary <string, KeyCode> keyMap;
-	
-	private bool cameraReversed=false;
+
 	private Kart kart;
 	private bool dansLesAirs = true;
 	private Dictionary <string, string> axisMap;
@@ -55,7 +54,6 @@ public class KartController : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		coeffVInit = coeffVitesse;
 		explosiveWeapon = false;
 		weapons = new List<string>();
 		if (playersMapping == null)
@@ -87,10 +85,13 @@ public class KartController : MonoBehaviour
 	
 	void Update()
 	{
+		if (Time.timeScale == 0)
+			return;
 		lowForce = new Vector3 ();
 		postForce = new Vector3 ();
 		if (!stop && !stopDie)
 			controlPosition ();
+		controlCamera ();
 	}
 
 	void OnCollisionStay(Collision collision)
@@ -264,6 +265,7 @@ public class KartController : MonoBehaviour
 				}
 				else
 					protection = arme;
+				StartCoroutine(SpeedAcceleration(protection.lifeTime, true));
 			}
 			else if (w == "greenBeaker" || w=="redBeaker")
 				if (sens == 1f)
@@ -313,6 +315,37 @@ public class KartController : MonoBehaviour
 			}
 			else rmApples(3);
 		}
+	}
+
+	
+	IEnumerator SpeedAcceleration(float duration, bool aku)
+	{
+		if ((aku && !bonusSpeedAku) || !aku){
+			float bonusSpeed = coeffVitesse*0.5f;
+			if(aku){
+				bonusSpeedAku = true;
+				bonusSpeed = 15f;
+			}
+			coeffVitesse += bonusSpeed;
+			float time = 0f;
+			while (time < duration) {
+				yield return new WaitForSeconds (0.05f);
+				time += 0.05f;
+			}
+			coeffVitesse -= bonusSpeed;
+			if(aku)
+				bonusSpeedAku = false;
+		}
+		else{
+			float bonusSpeed = coeffVitesse;
+			float time = 0f;
+			while (time < duration) {
+				yield return new WaitForSeconds (0.05f);
+				time += 0.05f;
+				coeffVitesse = bonusSpeed;
+			}
+		}
+		yield return new WaitForSeconds (0);
 	}
 
 	IEnumerator TempUndead()
@@ -521,17 +554,7 @@ public class KartController : MonoBehaviour
 					transform.Rotate(0,-0.5f*coeffManiabilite,0);
 			}
 		}
-		if (Input.GetKeyDown (keyMap ["viewInverse"])) {
-			cameraReversed = true;
-		}
-		if (Input.GetKeyUp (keyMap ["viewInverse"])) {
-			cameraReversed = false;
-			kart.cm1c.positionForward = 1f ;
-		}
-		if (Input.GetKey (keyMap ["viewInverse"])) {
-			if (cameraReversed)
-				kart.cm1c.positionForward = -1f ;
-		}
+
 		if(Input.GetKeyDown(keyMap["jump"]))
 		{
 			if(dansLesAirs==false)
@@ -567,6 +590,22 @@ public class KartController : MonoBehaviour
 				explosiveWeapon = false;
 				arme.ActionExplosion ();
 			}
+		}
+	}
+	
+	public void controlCamera()
+	{
+		if (Input.GetKeyDown (keyMap ["viewInverse"])) {
+			kart.cm1c.reversed = -1f ;
+		}
+		if (Input.GetKeyUp (keyMap ["viewInverse"])) {
+			kart.cm1c.reversed = 1f ;
+		}
+		if (Input.GetKeyDown (keyMap ["viewChange"])) {
+			if (kart.cm1c.positionForward == 1f)
+				kart.cm1c.positionForward = 0.85f ;
+			else
+				kart.cm1c.positionForward = 1f ;
 		}
 	}
 	
