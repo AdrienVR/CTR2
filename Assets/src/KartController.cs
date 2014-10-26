@@ -18,6 +18,7 @@ public class KartController : MonoBehaviour
 	
 	public float coeffVitesse=2f;
 	public float coeffManiabilite=4f;
+	public float coeffInitSpeed;
 	private bool bonusSpeedAku = false;
 	
 	private bool hasAxis = true;
@@ -54,6 +55,7 @@ public class KartController : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		coeffInitSpeed = coeffVitesse;
 		explosiveWeapon = false;
 		weapons = new List<string>();
 		if (playersMapping == null)
@@ -339,13 +341,18 @@ public class KartController : MonoBehaviour
 		else{
 			float bonusSpeed = coeffVitesse;
 			float time = 0f;
+			bool prot = false;
 			while (time < duration) {
 				yield return new WaitForSeconds (0.05f);
 				time += 0.05f;
-				coeffVitesse = bonusSpeed;
+				if (coeffVitesse != bonusSpeed){
+					coeffVitesse = bonusSpeed;prot = true;}
 			}
+			if (prot)
+				coeffVitesse-=15f;
 		}
-		yield return new WaitForSeconds (0);
+		if (coeffInitSpeed > coeffVitesse)
+			coeffVitesse = coeffInitSpeed;
 	}
 
 	IEnumerator TempUndead()

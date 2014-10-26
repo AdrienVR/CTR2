@@ -18,7 +18,7 @@ public class ExplosionScript : MonoBehaviour {
 	private static List<string> targets = new List<string>() {"coco_prefab","crash_prefab"};
 
 	private static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
-	private static List<string> unkillable = new List<string>() {"weaponBox","appleBox", "Ground"};
+	private static List<string> unkillable = new List<string>() {"weaponBox","appleBox", "Ground", "PALMIER3","totem"};
 	private static List<string> launchWeapons = new List<string>() {"missile", "bomb","superBomb"};
 	private static List<string> protectWeapons = new List<string>() {"Aku-Aku", "greenShield", "blueShield","superAku-Aku"};
 	private static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker"};
@@ -57,17 +57,19 @@ public class ExplosionScript : MonoBehaviour {
 		// check if other is a valid target, else return
 		if((boxes.IndexOf(other.name)!=-1 && launchWeapons.IndexOf(name)!=-1))
 			return;
+		if (shields.IndexOf(name)!=-1 && other.gameObject != owner.gameObject && unkillable.IndexOf(other.name)==-1){
+			KartController ownerKart = (KartController)owner.GetComponent ("KartController");
+			if ((ownerKart.protection != null && other.gameObject == ownerKart.protection.gameObject))
+			    return;
+			renderer.enabled = false;
+			lifeTime = 0.3f;
+			StartCoroutine (TimeToLive());
+			return;
+		}
 
 		// explosion if bad/false collision
 		if (launchWeapons.IndexOf(name)!=-1 && (other.name == "Ground" || poseWeapons.IndexOf(other.name)!=-1))
 			StartCoroutine (Explode());
-		if (shields.IndexOf(name)!=-1 && other.gameObject != owner.gameObject && unkillable.IndexOf(other.name)==-1){
-			KartController ownerKart = (KartController)owner.GetComponent ("KartController");
-			if (ownerKart.protection != null && other.gameObject != ownerKart.protection.gameObject){
-				lifeTime = 0.3f;
-				StartCoroutine (TimeToLive());
-			}
-		}
 		// not a target
 		if (targets.IndexOf (other.name) == -1 ) {
 			if (poseWeapons.IndexOf(name)!=-1)
