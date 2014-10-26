@@ -10,6 +10,7 @@ public class ExplosionScript : MonoBehaviour {
 	public Vector3 vitesseInstant;
 	public GameObject owner;
 	public float lifeTime = 12.0f;
+	public float explosionRadius = 3f;
 
 	private bool isAlive;
 	private bool exploded=false;
@@ -43,7 +44,7 @@ public class ExplosionScript : MonoBehaviour {
 	public void ActionExplosion()
 	{
 		CapsuleCollider cc = (CapsuleCollider)GetComponent ("CapsuleCollider");
-		cc.radius = 6.5f;
+		cc.radius = explosionRadius;
 	}
 	
 	void OnTriggerEnter(Collider other)

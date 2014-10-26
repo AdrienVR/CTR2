@@ -245,6 +245,8 @@ public class KartController : MonoBehaviour
 			if (bombList.IndexOf(w)!=-1) {
 				explosiveWeapon = true;
 				arme.vitesseInitiale =  90f*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
+				if (kart.nbApples == 10)
+					arme.explosionRadius *= 2.5f;
 			}
 			else if (w == "missile")
 				arme.vitesseInitiale =  120f*forwardNormal;
