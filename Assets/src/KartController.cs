@@ -242,13 +242,15 @@ public class KartController : MonoBehaviour
 		if (weapons.Count == 0)
 			return;
 		string w = weapons [0];
-		if (IsSuper() && !Dictionnaries.superWeapons.ContainsValue(w))
+		if (IsSuper() && !Dictionnaries.superWeapons.ContainsValue(w) && w!="missile")
 		{
+			Debug.Log("ddd "+w);
 			int n = 0;
 			for(int k=1;k<Dictionnaries.normalWeapons.Count+1;k++)
 				if (Dictionnaries.normalWeapons[k] == w)
 					n = k;
 			w = Dictionnaries.superWeapons[n];
+			Debug.Log("ddd "+w);
 		}
 		float sens = -1f;
 		if (hasAxis && Input.GetAxis (axisMap ["stop"]) < -0.1f)
