@@ -10,23 +10,38 @@ public class Main : MonoBehaviour
 	public Texture triVolume3;
 	public Texture triVolume2;
 	public Texture triVolume1;
+
 	public GameObject respawn1;
 	public GameObject respawn2;
 	public GameObject respawn3;
 	public GameObject respawn4;
+
 	private List<Transform> listRespawn;
 	public List<Kart> players;
+
 	public static int nbPtsPartie = 15;
+
+	public float speedCoeff;
+	public float turnCoeff;
+	public static Main main;
 
 	void Start()
 	{
+		gameObject.AddComponent ("Dictionnaries");
 		Debug.Log ("Demarrage !");
-		Kart.SetNbPlayers (nbPlayer);
-		InitializeRespawn ();
+		main = this;
+		Init ();
+	}
+
+	public static void Init()
+	{
+		Kart.nbPlayers = main.nbPlayer;
+		KartController.setCoefficients (main.speedCoeff, main.turnCoeff);
+		main.InitializeRespawn ();
 		
-		CreateNPersos(nbPlayer);
-		InitMenus ();
-		Instantiate (Resources.Load ("feux_depart"));
+		main.CreateNPersos(main.nbPlayer);
+		main.InitMenus ();
+		Instantiate (Resources.Load ("guiStartFire"));
 	}
 
 	void InitMenus()
@@ -52,18 +67,17 @@ public class Main : MonoBehaviour
 		players = new List<Kart>();
 		for (int i=0; i<n; i++)
 		{
-			Kart a = new Kart(listRespawn[i].position, listRespawn[i].rotation);
+			Kart a = new Kart(listRespawn[i].position, listRespawn[i].rotation, Dictionnaries.listKarts[i]);
 			players.Add(a);
 		}
 	}
 
 	public static void Restart(){
-		
-				Application.LoadLevel (Application.loadedLevel);
-				Kart.nPlayer = 0;
-				KartController.stop = true;
-				AudioListener.pause = false;
-		}
+		Application.LoadLevel (Application.loadedLevel);
+		Kart.nPlayer = 0;
+		KartController.stop = true;
+		AudioListener.pause = false;
+	}
 
 
 }

@@ -6,24 +6,19 @@ using System.Collections.Generic;
 
 public class KartController : MonoBehaviour
 {
-	public static Dictionary <int, Dictionary<string, KeyCode>> playersMapping;
-	public static Dictionary <int, Dictionary<string, string>> axisMapping;
-	public static Dictionary <int, bool> controllersEnabled = new Dictionary <int, bool> {
-		{1,true},{2,true},{3,true},{4,true},{5,true},{6,true}
-	};
-	public static int nControllers = 0;
 	public static bool stop = true;
 	private bool stopDie = false;
 	private bool isGoingInAir = false;
 	
-	public float coeffVitesse=2f;
-	public float coeffManiabilite=4f;
+	private static float speedCoeff;
+	private static float turnCoeff;
 	public float coeffInitSpeed;
 	private bool bonusSpeedAku = false;
 	
-	private bool hasAxis = true;
+	private bool hasAxis = false;
 	private Vector3 postForce;
 	private Vector3 lowForce;
+	private Vector3 forwardNormal;
 	
 	private bool pressX=false;
 	private bool pressFleche=false;
@@ -49,27 +44,22 @@ public class KartController : MonoBehaviour
 	private ExplosionScript arme;
 	public bool explosiveWeapon;
 	private float facteurSens = 1f;
-	private static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker"};
-	private static List<string> bombList = new List<string>() {"bomb", "superBomb"};
+
+	public int weaponSize = 1;
 	
 	// Use this for initialization
 	void Start ()
 	{
-		coeffInitSpeed = coeffVitesse;
+		coeffInitSpeed = speedCoeff;
 		explosiveWeapon = false;
 		weapons = new List<string>();
-		if (playersMapping == null)
-			InitMapping ();
-		// clavier pour joueur n°3 si 2 manettes deja connectees.
-		if (kart.numeroJoueur == nControllers + 1 || kart.numeroJoueur == nControllers + 2) {
-			hasAxis = false;
-			controllersEnabled[kart.numeroJoueur] = false;
-		}
 		InitSelfMapping ();
 	}
 	
 	void FixedUpdate()
 	{
+		if (!hasAxis)
+			InitSelfMapping ();
 
 		if (postForce.Equals(new Vector3())){
 			rigidbody.rotation = transform.rotation;
@@ -91,8 +81,15 @@ public class KartController : MonoBehaviour
 			return;
 		lowForce = new Vector3 ();
 		postForce = new Vector3 ();
-		if (!stop && !stopDie)
-			controlPosition ();
+		if (!stop && !stopDie){
+			forwardNormal = transform.forward;
+			forwardNormal.y = 0;
+			forwardNormal = normalizeVector (forwardNormal);
+			if (hasAxis)
+				controlPosition ();
+			else
+				controlKeyboard ();
+		}
 		controlCamera ();
 	}
 
@@ -111,6 +108,11 @@ public class KartController : MonoBehaviour
 			if (!isGoingInAir)
 				StartCoroutine(FreeAir());
 		}
+	}
+
+	public static void setCoefficients(float speed, float turn){
+		speedCoeff = speed;
+		turnCoeff = turn;
 	}
 	
 	IEnumerator FreeAir()
@@ -135,9 +137,33 @@ public class KartController : MonoBehaviour
 	{
 		return state.IndexOf("waiting")!=-1;
 	}
+
 	public bool IsSuper()
 	{
-		return state.IndexOf("super")!=-1;
+		return kart.nbApples == 10;
+	}
+	
+	public void addApples()
+	{
+		kart.addApples ();
+	}
+
+	public void animApples()
+	{
+		StartCoroutine (animApplesNb());
+	}
+	
+	IEnumerator animApplesNb()
+	{
+		while(kart.nbApplesFinal != kart.nbApples)
+		{
+			kart.nbApples ++;
+			kart.SetIllumination((kart.nbApples == 10));
+			audio.Play();
+			kart.guitextApples.text = "x "+kart.nbApples.ToString();
+			kart.drawWeaponGui();
+			yield return new WaitForSeconds (0.27f);
+		}
 	}
 	
 	public void setWaitingWeapon(bool t)
@@ -216,15 +242,22 @@ public class KartController : MonoBehaviour
 		if (weapons.Count == 0)
 			return;
 		string w = weapons [0];
-		
+		if (IsSuper() && !Dictionnaries.superWeapons.ContainsValue(w))
+		{
+			int n = 0;
+			for(int k=1;k<Dictionnaries.normalWeapons.Count+1;k++)
+				if (Dictionnaries.normalWeapons[k] == w)
+					n = k;
+			w = Dictionnaries.superWeapons[n];
+		}
 		float sens = -1f;
 		if (hasAxis && Input.GetAxis (axisMap ["stop"]) < -0.1f)
 			sens = 1f;
 
 		// computing the distance to instantiate the weapon
-		if (bombList.IndexOf(w)!=-1)
+		if (w == "bomb")
 			posToAdd = 6f * (new Vector3 (facteurSens * forwardNormal.x, forwardNormal.y + 0.6f, facteurSens * forwardNormal.z));
-		else if (poseWeapons.IndexOf(w) != -1){
+		else if (Dictionnaries.poseWeapons.IndexOf(w) != -1){
 			if (w == "greenBeaker" || w=="redBeaker")
 				posToAdd = 4f * (new Vector3 (sens*forwardNormal.x, forwardNormal.y + 0.2f, sens*forwardNormal.z));
 			else
@@ -233,7 +266,7 @@ public class KartController : MonoBehaviour
 		else
 			posToAdd = 6f * (new Vector3 (forwardNormal.x, forwardNormal.y + 0.6f, forwardNormal.z));
 		Quaternion q = new Quaternion (0,transform.rotation.y,0,transform.rotation.w);
-		if (poseWeapons.IndexOf(w) != -1)
+		if (Dictionnaries.poseWeapons.IndexOf(w) != -1)
 			q = transform.rotation;
 
 		//instantiate the weapon
@@ -245,7 +278,7 @@ public class KartController : MonoBehaviour
 		if (arme!=null)	{
 			arme.owner = gameObject;
 			
-			if (bombList.IndexOf(w)!=-1) {
+			if (w == "bomb") {
 				explosiveWeapon = true;
 				arme.vitesseInitiale =  90f*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
 				if (kart.nbApples == 10)
@@ -279,7 +312,7 @@ public class KartController : MonoBehaviour
 		weapons.RemoveAt (0);
 		if (weapons.Count == 0) {
 			state.Remove ("armed");
-			GetKart().ws.guiTexture.texture = null;
+			GetKart().undrawWeaponGui();
 		}
 		if(state.IndexOf("armedEvolute")!=-1)
 		{
@@ -313,9 +346,9 @@ public class KartController : MonoBehaviour
 				((KartController)killer.GetComponent ("KartController")).kart.AddPoint(1);
 			if (weapon=="greenBeaker" || weapon== "redBeaker") // pour retirer des pommes
 			{
-				rmApples(1);
+				kart.rmApples(1);
 			}
-			else rmApples(3);
+			else kart.rmApples(3);
 		}
 	}
 
@@ -323,36 +356,36 @@ public class KartController : MonoBehaviour
 	IEnumerator SpeedAcceleration(float duration, bool aku)
 	{
 		if ((aku && !bonusSpeedAku) || !aku){
-			float bonusSpeed = coeffVitesse*0.5f;
+			float bonusSpeed = speedCoeff*0.5f;
 			if(aku){
 				bonusSpeedAku = true;
 				bonusSpeed = 15f;
 			}
-			coeffVitesse += bonusSpeed;
+			speedCoeff += bonusSpeed;
 			float time = 0f;
 			while (time < duration) {
 				yield return new WaitForSeconds (0.05f);
 				time += 0.05f;
 			}
-			coeffVitesse -= bonusSpeed;
+			speedCoeff -= bonusSpeed;
 			if(aku)
 				bonusSpeedAku = false;
 		}
 		else{
-			float bonusSpeed = coeffVitesse;
+			float bonusSpeed = speedCoeff;
 			float time = 0f;
 			bool prot = false;
 			while (time < duration) {
 				yield return new WaitForSeconds (0.05f);
 				time += 0.05f;
-				if (coeffVitesse != bonusSpeed){
-					coeffVitesse = bonusSpeed;prot = true;}
+				if (speedCoeff != bonusSpeed){
+					speedCoeff = bonusSpeed;prot = true;}
 			}
 			if (prot)
-				coeffVitesse-=15f;
+				speedCoeff-=15f;
 		}
-		if (coeffInitSpeed > coeffVitesse)
-			coeffVitesse = coeffInitSpeed;
+		if (coeffInitSpeed > speedCoeff)
+			speedCoeff = coeffInitSpeed;
 	}
 
 	IEnumerator TempUndead()
@@ -414,47 +447,7 @@ public class KartController : MonoBehaviour
 		state.Remove ("invincible");
 	}
 	
-	public void addApples()
-	{
-		int n = Random.Range (4, 8);
-		kart.nbApplesFinal = System.Math.Min (10, kart.nbApplesFinal+n);
-		StartCoroutine(animApplesNb());
-	}
-	
-	public void rmApples(int n)
-	{
-		kart.nbApplesFinal -= n;
-		kart.nbApples -= n;
-		kart.nbApplesFinal = System.Math.Max (0, kart.nbApplesFinal);
-		kart.nbApples = System.Math.Max (0, kart.nbApples);
-		if (kart.nbApples != 10) kart.SetIlluminated(false);
-		kart.pommeText.text = "x "+kart.nbApples.ToString();
-		state.Remove("super");
-		Destroy(kart.armeGui);
-		kart.setWeaponGUI ("arme");
-	}
-	
-	IEnumerator animApplesNb()
-	{
-		while(kart.nbApplesFinal != kart.nbApples)
-		{
-			kart.nbApples ++;
-			kart.SetIlluminated((kart.nbApples == 10));
-			audio.Play();
-			kart.pommeText.text = "x "+kart.nbApples.ToString();
-			yield return new WaitForSeconds (0.27f);
-		}
-		if(kart.nbApplesFinal == 10 && !IsSuper())
-		{
-			if(IsArmed())
-			{
-				Destroy(kart.armeGui);
-			}
-			if (state.IndexOf("super")==-1)
-				state.Add ("super");
-			kart.setWeaponGUI ("superArme");
-		}
-	}
+
 	
 	public void SetKart (Kart k)
 	{
@@ -488,8 +481,8 @@ public class KartController : MonoBehaviour
 			pressX=false;
 			pressXAndFleche=false;
 			pressXAndFlecheAndR1=false;
-			//coeffManiabilite=2;
-			//coeffVitesse=3;
+			//turnCoeff=2;
+			//speedCoeff=3;
 		}
 		if(Input.GetKeyDown(keyMap["jump"]))
 		{
@@ -499,8 +492,8 @@ public class KartController : MonoBehaviour
 		{
 			pressR1=false;
 			pressXAndFlecheAndR1=false;
-			//coeffManiabilite=2;
-			//coeffVitesse=3;
+			//turnCoeff=2;
+			//speedCoeff=3;
 		}
 		if(Input.GetKeyDown(keyMap["jump2"]))
 		{
@@ -521,8 +514,8 @@ public class KartController : MonoBehaviour
 		if(pressXAndFlecheAndR1)
 		{
 			Debug.Log("JE DERAPE");
-			//coeffManiabilite=4;
-			//coeffVitesse=3;
+			//turnCoeff=4;
+			//speedCoeff=3;
 		}
 		
 		if(!pressXAndFlecheAndR1 || !pressL1)
@@ -531,34 +524,19 @@ public class KartController : MonoBehaviour
 	}
 	
 	public void controlPosition()
-	{
-		//rigidbody.position = transform.position;
-		Vector3 forwardNormal = transform.forward;
-		forwardNormal.y = 0;
-		forwardNormal = normalizeVector (forwardNormal);
-		
-		if(Input.GetKey(keyMap["moveBack"])) {
-			if (!hasAxis){
-				lowForce = -forwardNormal*coeffVitesse;
-				if(Input.GetKey(keyMap["turnLeft"]))
-					transform.Rotate(0,-0.5f*coeffManiabilite,0);
-				if(Input.GetKey(keyMap["turnRight"]))
-					transform.Rotate(0,0.5f*coeffManiabilite,0);
-			}
-		}
-		else if (hasAxis)
-			if(Input.GetAxis (axisMap ["stop"]) > 0.1f)
-				lowForce = -Input.GetAxis (axisMap ["stop"]) * forwardNormal * coeffVitesse;
+	{	
+		if(Input.GetAxis (axisMap ["stop"]) > 0.1f)
+				lowForce = -Input.GetAxis (axisMap ["stop"]) * forwardNormal * speedCoeff;
 		
 		if(Input.GetKey(keyMap["moveForward"]))
 		{
-			postForce = forwardNormal*coeffVitesse;
+			postForce = forwardNormal*speedCoeff;
 			if (!hasAxis)
 			{
 				if(Input.GetKey(keyMap["turnLeft"]))
-					transform.Rotate(0,0.5f*coeffManiabilite,0);
+					transform.Rotate(0,0.5f*turnCoeff,0);
 				if(Input.GetKey(keyMap["turnRight"]))
-					transform.Rotate(0,-0.5f*coeffManiabilite,0);
+					transform.Rotate(0,-0.5f*turnCoeff,0);
 			}
 		}
 
@@ -569,16 +547,58 @@ public class KartController : MonoBehaviour
 				rigidbody.position += new Vector3(0,3f,0);
 			}
 		}
-		if (hasAxis){
-			if(!Input.GetKey(keyMap["moveBack"]) && System.Math.Abs(Input.GetAxis (axisMap ["turn"]))>0.1f){
-				if(Input.GetAxis (axisMap ["stop"]) > 0.1f){
-					transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
-				}
-				else if(Input.GetKey(keyMap["moveForward"]) || Input.GetKeyDown(keyMap["jump"]))
-					transform.Rotate (0, Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
+
+		if(!Input.GetKey(keyMap["moveBack"]) && System.Math.Abs(Input.GetAxis (axisMap ["turn"]))>0.1f){
+			if(Input.GetAxis (axisMap ["stop"]) > 0.1f){
+				transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * turnCoeff, 0);
 			}
-			if(Input.GetKey(keyMap["moveBack"])){
-				transform.Rotate (0, Input.GetAxis (axisMap ["turn"]) * coeffManiabilite, 0);
+			else if(Input.GetKey(keyMap["moveForward"]) || Input.GetKeyDown(keyMap["jump"]))
+				transform.Rotate (0, Input.GetAxis (axisMap ["turn"]) * turnCoeff, 0);
+		}
+		if(Input.GetKey(keyMap["moveBack"])){
+			transform.Rotate (0, Input.GetAxis (axisMap ["turn"]) * turnCoeff, 0);
+		}
+
+		if (Input.GetKeyDown (keyMap ["action"])) {
+			if (state.IndexOf ("UnableToShoot") != -1)
+				return;
+			facteurSens = 1f;
+			if (hasAxis && Input.GetAxis (axisMap ["stop"]) > 0.1f)
+				facteurSens = -1f;
+
+			if (!explosiveWeapon)
+				UseWeapon ();
+			else {
+				explosiveWeapon = false;
+				arme.ActionExplosion ();
+			}
+		}
+	}
+
+	public void controlKeyboard(){
+
+		if(Input.GetKey(keyMap["moveBack"])) {
+				lowForce = -forwardNormal*speedCoeff;
+				if(Input.GetKey(keyMap["turnLeft"]))
+					transform.Rotate(0,-0.5f*turnCoeff,0);
+				if(Input.GetKey(keyMap["turnRight"]))
+					transform.Rotate(0,0.5f*turnCoeff,0);
+		}
+		
+		if(Input.GetKey(keyMap["moveForward"]))
+		{
+			postForce = forwardNormal*speedCoeff;
+			if(Input.GetKey(keyMap["turnLeft"]))
+					transform.Rotate(0,0.5f*turnCoeff,0);
+			if(Input.GetKey(keyMap["turnRight"]))
+					transform.Rotate(0,-0.5f*turnCoeff,0);
+		}
+		
+		if(Input.GetKeyDown(keyMap["jump"]))
+		{
+			if(dansLesAirs==false)
+			{
+				rigidbody.position += new Vector3(0,3f,0);
 			}
 		}
 		
@@ -586,9 +606,7 @@ public class KartController : MonoBehaviour
 			if (state.IndexOf ("UnableToShoot") != -1)
 				return;
 			facteurSens = 1f;
-			if (hasAxis && Input.GetAxis (axisMap ["stop"]) > 0.1f)
-				facteurSens = -1f;
-			else if (!hasAxis && Input.GetKey(keyMap["moveBack"]))
+			if (Input.GetKey(keyMap["moveBack"]))
 				facteurSens = -1f;
 			
 			if (!explosiveWeapon)
@@ -598,6 +616,7 @@ public class KartController : MonoBehaviour
 				arme.ActionExplosion ();
 			}
 		}
+
 	}
 	
 	public void controlCamera()
@@ -618,82 +637,11 @@ public class KartController : MonoBehaviour
 	
 	void InitSelfMapping()
 	{
-		Dictionary <string, string> ps1_axis = new Dictionary<string, string> {
-			{"turn","J1_TurnAxis"}, {"stop","J1_StopAxis"}		};
-		Dictionary <string, string> ps2_axis = new Dictionary<string, string> {
-			{"turn","J2_TurnAxis"}, {"stop","J2_StopAxis"}		};
-		Dictionary <string, string> ps3_axis = new Dictionary<string, string> {
-			{"turn","J3_TurnAxis"}, {"stop","J3_StopAxis"}		};
-		Dictionary <string, string> ps4_axis = new Dictionary<string, string> {
-			{"turn","J4_TurnAxis"}, {"stop","J4_StopAxis"}		};
-		List<Dictionary <string, string> > l_axis = new List<Dictionary<string, string>> {
-			ps1_axis,ps2_axis,ps3_axis,ps4_axis	};
-		
-		
+		hasAxis = Dictionnaries.controllersEnabled[kart.numeroJoueur];
 		if (hasAxis)
-			axisMap = l_axis[kart.numeroJoueur-1];
+			axisMap = Dictionnaries.axisMapping [kart.numeroJoueur];
 		
-		keyMap = playersMapping [kart.numeroJoueur];
-		axisMapping = new Dictionary<int, Dictionary<string, string>> {{1,ps1_axis},{2,ps2_axis},{3,ps3_axis},{4,ps4_axis}};
-	}
-	
-	void InitMapping()
-	{
-		// constructs the static playersMapping => all 4 saved
-		Dictionary <string, KeyCode> pc1 = new Dictionary<string, KeyCode> {
-			{"moveForward",KeyCode.Z}, {"moveBack",KeyCode.S},
-			{"turnRight",KeyCode.Q}, {"turnLeft",KeyCode.D},
-			{"jump",KeyCode.Space}, {"jump2",KeyCode.F5}, 
-			{"action",KeyCode.A}, {"start",KeyCode.Escape}, 
-			{"viewChange",KeyCode.F1}, {"viewInverse",KeyCode.F2},
-			{"bip",KeyCode.F3}, {"bip2",KeyCode.F4}
-		};
-		Dictionary <string, KeyCode> pc2 = new Dictionary<string, KeyCode> {
-			{"moveForward",KeyCode.I}, {"moveBack",KeyCode.K},
-			{"turnRight",KeyCode.J}, {"turnLeft",KeyCode.L},
-			{"jump",KeyCode.B}, {"jump2",KeyCode.F11}, 
-			{"action",KeyCode.U}, {"start",KeyCode.F12}, 
-			{"viewChange",KeyCode.F7}, {"viewInverse",KeyCode.F8},
-			{"bip",KeyCode.F9}, {"bip2",KeyCode.F10}
-		};
-		Dictionary <string, KeyCode> ps1 = new Dictionary<string, KeyCode> {
-			{"moveForward",KeyCode.Joystick1Button2}, {"moveBack",KeyCode.Joystick1Button3},
-			{"jump",KeyCode.Joystick1Button7}, {"jump2",KeyCode.Joystick1Button6},
-			{"action",KeyCode.Joystick1Button1},{"start",KeyCode.Joystick1Button9},
-			{"viewChange",KeyCode.Joystick1Button4}, {"viewInverse",KeyCode.Joystick1Button5},
-			{"bip",KeyCode.Joystick1Button10}, {"bip2",KeyCode.Joystick1Button11}
-		};
-		Dictionary <string, KeyCode> ps2 = new Dictionary<string, KeyCode> {
-			{"moveForward",KeyCode.Joystick2Button2}, {"moveBack",KeyCode.Joystick2Button3},
-			{"jump",KeyCode.Joystick2Button7}, {"jump2",KeyCode.Joystick2Button6},
-			{"action",KeyCode.Joystick2Button1},{"start",KeyCode.Joystick2Button9},
-			{"viewChange",KeyCode.Joystick2Button4}, {"viewInverse",KeyCode.Joystick2Button5},
-			{"bip",KeyCode.Joystick2Button10}, {"bip2",KeyCode.Joystick2Button11}
-		};
-		Dictionary <string, KeyCode> ps3 = new Dictionary<string, KeyCode> {
-			{"moveForward",KeyCode.Joystick3Button2}, {"moveBack",KeyCode.Joystick3Button3},
-			{"jump",KeyCode.Joystick3Button7}, {"jump2",KeyCode.Joystick3Button6},
-			{"action",KeyCode.Joystick3Button1},{"start",KeyCode.Joystick3Button9},
-			{"viewChange",KeyCode.Joystick3Button4}, {"viewInverse",KeyCode.Joystick3Button5},
-			{"bip",KeyCode.Joystick3Button10}, {"bip2",KeyCode.Joystick3Button11}
-		};
-		Dictionary <string, KeyCode> ps4 = new Dictionary<string, KeyCode> {
-			{"moveForward",KeyCode.Joystick4Button2}, {"moveBack",KeyCode.Joystick4Button3},
-			{"jump",KeyCode.Joystick4Button7}, {"jump2",KeyCode.Joystick4Button6},
-			{"action",KeyCode.Joystick4Button1},{"start",KeyCode.Joystick4Button9},
-			{"viewChange",KeyCode.Joystick4Button4}, {"viewInverse",KeyCode.Joystick4Button5},
-			{"bip",KeyCode.Joystick4Button10}, {"bip2",KeyCode.Joystick4Button11}
-		};
-		
-		nControllers = Input.GetJoystickNames ().Length;
-		if (nControllers > 4)
-			nControllers = 4;
-		
-		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,ps1},{2,ps2},{3,ps3},{4,ps4}};
-		
-		playersMapping[nControllers + 1] = pc1;
-		playersMapping[nControllers + 2] = pc2;
-		
+		keyMap = Dictionnaries.playersMapping [kart.numeroJoueur];
 	}
 	
 }

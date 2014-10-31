@@ -13,31 +13,7 @@ public class WeaponBoxScript : MonoBehaviour {
 
 	public bool baddie = false;
 
-	// src : http://crashbandicoot.wikia.com/wiki/Crash_Team_Racing
-	public static Dictionary <int, string> normalWeapons =  new Dictionary<int, string> {
-		{1,"greenBeaker"},{2,"greenShield"},{3,"bomb"},{4,"triple_bomb"},{5,"triple_missile"},
-		{6,"Aku-Aku"},{7,"TNT"},{8,"turbo"}	};
-	public static Dictionary <int, string> superWeapons = new Dictionary<int, string> {
-		{1,"redBeaker"},{2,"blueShield"},{3,"superBomb"},{4,"triple_superBomb"},{5,"triple_missile"},
-		{6,"superAku-Aku"},{7,"nitro"},{8,"superTurbo"}	};
-	private Dictionary <int, string> weapons;
-	
-	private static List<string> characters = new List<string>() {"coco_prefab","crash_prefab"};
-	private static List<string> launchWeapons = new List<string>() {"missile", "bomb", "greenShield", "blueShield", "superBomb"};
 
-	// Use this for initialization
-	void Start () {
-		weapons = normalWeapons;
-	}
-	void Update()
-	{
-
-		if(taker != null)
-		{
-			if(taker.IsSuper()) weapons=superWeapons;
-			else if(!taker.IsSuper()) weapons=normalWeapons;
-		}
-	}
 	void OnTriggerEnter(Collider other)
 	{
 		//animation
@@ -46,11 +22,11 @@ public class WeaponBoxScript : MonoBehaviour {
 		StartCoroutine (Take());
 
 		//find who to give weapon
-		if(characters.IndexOf(other.name) != -1)// si c'est un kart
+		if(Dictionnaries.characters.IndexOf(other.name) != -1)// si c'est un kart
 		{
 			taker = (KartController)other.GetComponent ("KartController");
 		}
-		else if(launchWeapons.IndexOf(other.name) != -1) // si c'est une bombe
+		else if(Dictionnaries.launchWeapons.IndexOf(other.name) != -1) // si c'est une bombe
 		{
 			ExplosionScript es = (ExplosionScript)other.GetComponent ("ExplosionScript");
 			GameObject owner = es.owner;
@@ -73,7 +49,7 @@ public class WeaponBoxScript : MonoBehaviour {
 	{
 		while (nbImgArmes<25 && nbImgArmes>0) {
 			audio.PlayOneShot(randomMusic);
-			yield return new WaitForSeconds (randomMusic.length-randomMusic.length/4);
+			yield return new WaitForSeconds (randomMusic.length*3/4);
 		}
 		audio.PlayOneShot(endMusic);
 	}
@@ -93,15 +69,18 @@ public class WeaponBoxScript : MonoBehaviour {
 		timeLookingWeapon = 0;
 		int nb = 1;
 		while (nbImgArmes < 25) {
-			nb = Random.Range (1, normalWeapons.Count);
+			nb = Random.Range (1, Dictionnaries.normalWeapons.Count);
 			//nb = 6;
-			taker.GetKart().ws.SetTextureN(nb);
 			taker.GetKart().lastWeaponTextureNb=nb;
+			taker.GetKart().drawWeaponGui();
 			nbImgArmes++;
 			yield return new WaitForSeconds (0.08f);
 			timeLookingWeapon += 0.08f;
 		}
-		taker.SetWeapon(weapons[nb]);
+		if (!taker.IsSuper())
+			taker.SetWeapon(Dictionnaries.normalWeapons[nb]);
+		else
+			taker.SetWeapon(Dictionnaries.superWeapons[nb]);
 		taker.setWaitingWeapon (false);
 		nbImgArmes = 0;
 	}

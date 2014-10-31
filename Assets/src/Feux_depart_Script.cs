@@ -42,6 +42,7 @@ public class Feux_depart_Script : MonoBehaviour {
 			yield return new WaitForSeconds (0.01f);
 		}
 		Destroy (gt);
+		Destroy (this);
 		
 	}
 	

@@ -24,6 +24,8 @@ public class Menus : MonoBehaviour
 	private static List <GameObject> textAffiches =  new List <GameObject>();
 	private static Dictionary <int, string> menuCourant = new Dictionary<int, string>();
 
+	private bool readyToMove = true;
+
 	// menus :
 	private static Dictionary <int, string> menuPause =  new Dictionary<int, string>
 	{
@@ -78,7 +80,7 @@ public class Menus : MonoBehaviour
 	void testPause()
 	{
 		bool pressStart = false;
-		for (int i = 1; i<5; i++) pressStart |= Input.GetKeyDown (KartController.playersMapping [i] ["start"]) ;
+		for (int i = 1; i<5; i++) pressStart |= Input.GetKeyDown (Dictionnaries.playersMapping [i] ["start"]) ;
 		if (pressStart)
 		{
 			Pause();
@@ -89,7 +91,7 @@ public class Menus : MonoBehaviour
 	{
 		if (!inPause)
 		{
-			greyT = (GameObject)GameObject.Instantiate(Resources.Load("guiTexture1"));
+			greyT = (GameObject)GameObject.Instantiate(Resources.Load("guiBlack"));
 			inPause=true;
 			displayMenu(menuPause);
 			Time.timeScale=0f;
@@ -118,7 +120,7 @@ public class Menus : MonoBehaviour
 			if(!specialButton(menu,i))
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("button"),pos,Quaternion.identity));
+				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
 				textbutton.guiText.text=menu[i];
 				textAffiches.Add(textbutton);
@@ -133,9 +135,9 @@ public class Menus : MonoBehaviour
 		if(menu[i]=="VOLUME :")
 		{
 			Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("button"),pos,Quaternion.identity));
-			triangleFond = (GameObject)Instantiate (Resources.Load ("triangleFond"),new Vector3(pos.x,pos.y,2),Quaternion.identity);
-			triangleVolume = (GameObject)Instantiate (Resources.Load ("triangleVolume"),new Vector3(pos.x,pos.y,3),Quaternion.identity);
+			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+			triangleFond = (GameObject)Instantiate (Resources.Load ("menuBackgroundTriangle"),new Vector3(pos.x,pos.y,2),Quaternion.identity);
+			triangleVolume = (GameObject)Instantiate (Resources.Load ("menuVolumeTriangle"),new Vector3(pos.x,pos.y,3),Quaternion.identity);
 			Rect t = new Rect(triangleVolume.guiTexture.pixelInset.x,triangleVolume.guiTexture.pixelInset.y,250*AudioListener.volume*1.42f,25*AudioListener.volume*1.42f);
 			triangleVolume.guiTexture.pixelInset=t;
 			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)3)),pos.y,0),Quaternion.identity);
@@ -148,8 +150,8 @@ public class Menus : MonoBehaviour
 			if(menu[i]=="JOUEUR :")
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("button"),pos,Quaternion.identity));
-				fleches = (GameObject)Instantiate (Resources.Load ("fleches"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,5),Quaternion.identity);
+				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+				fleches = (GameObject)Instantiate (Resources.Load ("menuFleches"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,5),Quaternion.identity);
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)4)),pos.y,0),Quaternion.identity);
 				textbutton.guiText.text=menu[i];
 				textAffiches.Add(textbutton);
@@ -157,7 +159,7 @@ public class Menus : MonoBehaviour
 			else
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("button"),pos,Quaternion.identity));
+				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)2.2f)),pos.y,0),Quaternion.identity);
 				textbutton.guiText.text=menu[i];
 				textbutton.guiText.anchor=TextAnchor.MiddleLeft;
@@ -183,41 +185,62 @@ public class Menus : MonoBehaviour
 
 				}
 			}
+			int nControllers = System.Math.Min(Input.GetJoystickNames ().Length + 2, 4);
 			bool down = false;
-			for (int i = 1; i<5; i++)
+			for (int i = 1; i<nControllers; i++)
 			{
-				down |= (Input.GetAxis (KartController.axisMapping[i]["stop"]) == 1 && KartController.controllersEnabled[i]);
-				down |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveBack"]) && !KartController.controllersEnabled[i]);
+				down |= (Dictionnaries.controllersEnabled[i] && Input.GetAxis (Dictionnaries.axisMapping[i]["stop"]) == 1 );
+				down |= (!Dictionnaries.controllersEnabled[i] && Input.GetKey (Dictionnaries.playersMapping [i] ["moveBack"]));
 			}
+			if (!readyToMove)
+				down = false;
+			else if (down && readyToMove)
+				StartCoroutine(RestrictMovement());
 			if (down && position<menuCourant.Count-2) position++;
 			else if(down && !(position<menuCourant.Count-2)) position = 0;
 			bool up = false;
-			for (int i = 1; i<5; i++)
+			for (int i = 1; i<nControllers; i++)
 			{
-				up |= (Input.GetAxis (KartController.axisMapping[i]["stop"]) == -1 && KartController.controllersEnabled[i]);
-				up |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveForward"]) && !KartController.controllersEnabled[i]);
+				up |= (Dictionnaries.controllersEnabled[i] && Input.GetAxis (Dictionnaries.axisMapping[i]["stop"]) == -1);
+				up |= (!Dictionnaries.controllersEnabled[i] && Input.GetKey (Dictionnaries.playersMapping [i] ["moveForward"]));
 			}
+			if (!readyToMove)
+				up = false;
+			else if (up && readyToMove)
+				StartCoroutine(RestrictMovement());
 			if (up && position>0) position--;
 			else if(up && !(position>0)) position = menuCourant.Count-2;
 			bool ok = false;
-			for (int i = 1; i<5; i++)
+			for (int i = 1; i<nControllers; i++)
 			{
-				ok |= (Input.GetKeyDown (KartController.playersMapping [i] ["moveForward"]) && KartController.controllersEnabled[i]);
-				ok |= (Input.GetKeyDown (KartController.playersMapping [i] ["action"]) && !KartController.controllersEnabled[i]);
+				ok |= (Dictionnaries.controllersEnabled[i] && Input.GetKeyDown (Dictionnaries.playersMapping [i] ["moveForward"]));
+				ok |= (!Dictionnaries.controllersEnabled[i] && Input.GetKeyDown (Dictionnaries.playersMapping [i] ["action"]));
 			}
 			if(ok)
 			{
 				action(menuCourant,position);
 			}
-			bool right = Input.GetKey(KeyCode.D);
+			
+			bool right = false;
+			bool left = false;
+			for (int i = 1; i<nControllers; i++)
+			{
+				if (Dictionnaries.controllersEnabled[i]){
+					right |= (Input.GetAxis (Dictionnaries.axisMapping[i]["turn"]) == 1 );
+					left |= (Input.GetAxis (Dictionnaries.axisMapping[i]["turn"]) == -1 );
+				}
+				else{
+					right |= (Input.GetKeyDown (Dictionnaries.playersMapping [i] ["turnRight"]));
+					left |= (Input.GetKeyDown (Dictionnaries.playersMapping [i] ["turnLeft"]));
+				}
+			}
 			if(right && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
-			bool left = Input.GetKey(KeyCode.Q);
 			if(left && menuCourant[position+1]=="VOLUME :" && AudioListener.volume>=0.008f) AudioListener.volume-=0.008f;
 			if(menuCourant[position+1]=="VOLUME :")
 			{
 				Destroy(triangleVolume);
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menuCourant.Count/2-1),-1);
-				triangleVolume = (GameObject)Instantiate (Resources.Load ("triangleVolume"),new Vector3(pos.x,pos.y,3),Quaternion.identity);
+				triangleVolume = (GameObject)Instantiate (Resources.Load ("menuVolumeTriangle"),new Vector3(pos.x,pos.y,3),Quaternion.identity);
 				Rect t = new Rect(triangleVolume.guiTexture.pixelInset.x,triangleVolume.guiTexture.pixelInset.y,250*AudioListener.volume*1.42f,25*AudioListener.volume*1.42f);
 				triangleVolume.guiTexture.pixelInset=t;
 				if(AudioListener.volume<0.4f) triangleVolume.guiTexture.texture=triVolume1;
@@ -225,6 +248,14 @@ public class Menus : MonoBehaviour
 				else triangleVolume.guiTexture.texture=triVolume3;
 			}
 		}
+	}
+	
+	IEnumerator RestrictMovement()
+	{
+		readyToMove = false;
+		for(int i=0;i<10;i++)
+			yield return new WaitForEndOfFrame ();
+		readyToMove = true;
 	}
 
 	void action(Dictionary <int, string> menu,int p)
@@ -244,6 +275,12 @@ public class Menus : MonoBehaviour
 				break;
 			case "OPTIONS":
 				displayMenu(menuOptions);
+				break;
+			case "CHANGER NIVEAU":
+				//Application.LoadLevel("dinoRace");
+				//Application.LoadLevel("plage");
+				//Main.Restart();
+				//Main.Init();
 				break;
 			case "QUITTER":
 				Application.Quit();
