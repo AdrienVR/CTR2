@@ -25,5 +25,11 @@ public class CameraController : MonoBehaviour
 		transform.position = kc.transform.position + backward - reversed*positionForward*6*kc.transform.forward;
 		transform.LookAt (kc.transform.position + new Vector3(0f,2f,0f));
 	}
+
+	
+	void FixedUpdate ()
+	{
+		//transform.LookAt (kc.transform.position + new Vector3(0f,2f,0f));
+	}
 	
 }

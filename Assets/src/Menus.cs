@@ -268,19 +268,18 @@ public class Menus : MonoBehaviour
 				Pause();
 				break;
 			case "RECOMMENCER":
-				viderMenu ();
-				Destroy (greyT);
-				Time.timeScale = normalTime;
-				Main.Restart();
+				Application.LoadLevel (Application.loadedLevel);
+				Restart();
 				break;
 			case "OPTIONS":
 				displayMenu(menuOptions);
 				break;
 			case "CHANGER NIVEAU":
-				//Application.LoadLevel("dinoRace");
-				//Application.LoadLevel("plage");
-				//Main.Restart();
-				//Main.Init();
+				if (Application.loadedLevelName == "plage")
+					Application.LoadLevel("dinoRace");
+				else
+					Application.LoadLevel("plage");
+				Restart();
 				break;
 			case "QUITTER":
 				Application.Quit();
@@ -314,6 +313,14 @@ public class Menus : MonoBehaviour
 				break;
 			}
 		}
+	}
+
+	void Restart()
+	{
+		viderMenu ();
+		Destroy (greyT);
+		Time.timeScale = normalTime;
+		Main.Restart();
 	}
 
 	void viderMenu()

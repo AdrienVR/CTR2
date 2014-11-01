@@ -23,9 +23,7 @@ public class Dictionnaries : MonoBehaviour
 	};
 
 	public static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker"};
-	public static List<string> characters = new List<string>() {"kartCrash"};
 	public static List<string> launchWeapons = new List<string>() {"missile", "bomb"};
-	public static List<string> listKarts = new List<string>{"Crash","Crash","Crash","Crash"};
 	public static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
 	public static List<string> unkillable = new List<string>() {"weaponBox","appleBox", "Ground", "PALMIER3","totem"};
 	public static List<string> protectWeapons = new List<string>() {"Aku-Aku", "greenShield", "blueShield","superAku-Aku"};
@@ -34,6 +32,9 @@ public class Dictionnaries : MonoBehaviour
 	
 	public static Dictionary <int, Dictionary<string, KeyCode>> playersMapping;
 	public static Dictionary <int, Dictionary<string, string>> axisMapping;
+	public static List<string> listKarts = new List<string>{"Crash","Crash","Crash","Crash"};
+	public static List<string> characters = new List<string>() {"kartCrash"};
+	public static List<string> listMap = new List<string>() {"dinoRace", "plage"};
 
 	// AXIS
 	private static Dictionary <string, string> ps1_axis = new Dictionary<string, string> {

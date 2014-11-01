@@ -73,7 +73,6 @@ public class Main : MonoBehaviour
 	}
 
 	public static void Restart(){
-		Application.LoadLevel (Application.loadedLevel);
 		Kart.nPlayer = 0;
 		KartController.stop = true;
 		AudioListener.pause = false;
