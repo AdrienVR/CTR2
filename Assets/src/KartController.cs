@@ -10,8 +10,8 @@ public class KartController : MonoBehaviour
 	private bool stopDie = false;
 	private bool isGoingInAir = false;
 	
-	private static float speedCoeff;
-	private static float turnCoeff;
+	private float speedCoeff;
+	private float turnCoeff;
 	public float coeffInitSpeed;
 	private bool bonusSpeedAku = false;
 	
@@ -110,7 +110,7 @@ public class KartController : MonoBehaviour
 		}
 	}
 
-	public static void setCoefficients(float speed, float turn){
+	public void setCoefficients(float speed, float turn){
 		speedCoeff = speed;
 		turnCoeff = turn;
 	}
@@ -244,7 +244,6 @@ public class KartController : MonoBehaviour
 		string w = weapons [0];
 		if (IsSuper() && !Dictionnaries.superWeapons.ContainsValue(w) && w!="missile")
 		{
-			Debug.Log("ddd "+w);
 			int n = 0;
 			for(int k=1;k<Dictionnaries.normalWeapons.Count+1;k++)
 				if (Dictionnaries.normalWeapons[k] == w)
@@ -272,7 +271,7 @@ public class KartController : MonoBehaviour
 			q = transform.rotation;
 
 		//instantiate the weapon
-		GameObject arme1 = Instantiate(Resources.Load("weapons/"+w), transform.position + posToAdd, q) as GameObject;
+		GameObject arme1 = Instantiate(Resources.Load("Weapons/"+w), transform.position + posToAdd, q) as GameObject;
 		arme1.name = arme1.name.Split ('(') [0];
 
 		//compute the velocity

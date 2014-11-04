@@ -30,13 +30,13 @@ public class Main : MonoBehaviour
 		gameObject.AddComponent ("Dictionnaries");
 		Debug.Log ("Demarrage !");
 		main = this;
+		Kart.setCoefficients (speedCoeff, turnCoeff);
 		Init ();
 	}
 
 	public static void Init()
 	{
 		Kart.nbPlayers = main.nbPlayer;
-		KartController.setCoefficients (main.speedCoeff, main.turnCoeff);
 		main.InitializeRespawn ();
 		
 		main.CreateNPersos(main.nbPlayer);

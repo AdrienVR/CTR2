@@ -24,6 +24,8 @@ public class Kart
 
 	public static int nPlayer=0;
 	public static int nbPlayers=0;
+	private static float speedCoeff;
+	private static float turnCoeff;
 
 	public Kart(Vector3 pos, Quaternion q, string kart)
 	{
@@ -35,12 +37,18 @@ public class Kart
 		InitGui();
 	}
 
+	public static void setCoefficients(float speed, float turn){
+		speedCoeff = speed;
+		turnCoeff = turn;
+	}
+
 	public void InitObjet(Vector3 pos, Quaternion q, string kart_name)
 	{
 		GameObject kart = GameObject.Instantiate (Resources.Load("kart"+kart_name), pos, q) as GameObject;
 		kart.name = kart.name.Split ('(') [0];
 		kc = (KartController)kart.GetComponent ("KartController");
 		kc.SetKart(this);
+		kc.setCoefficients (speedCoeff, turnCoeff);
 	}
 
 	public void InitCamera()
@@ -131,8 +139,10 @@ public class Kart
 		// n = 1 or n = -1
 		nbPoints+=n;
 		pointText.text = nbPoints.ToString();
-		if (nbPoints == Main.nbPtsPartie)
+		if (nbPoints == Main.nbPtsPartie){
 			Main.Restart ();
+			Application.LoadLevel (Application.loadedLevel);
+		}
 	}
 
 	public void addApples()
