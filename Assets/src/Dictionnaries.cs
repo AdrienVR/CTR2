@@ -47,7 +47,7 @@ public class Dictionnaries : MonoBehaviour
 		{"turn","J4_TurnAxis"}, {"stop","J4_StopAxis"}		};
 
 	// BUTTONS
-	private static Dictionary <string, KeyCode> pc1 = new Dictionary<string, KeyCode> {
+	public static Dictionary <string, KeyCode> pc1 = new Dictionary<string, KeyCode> {
 		{"moveForward",KeyCode.Z}, {"moveBack",KeyCode.S},
 		{"turnRight",KeyCode.Q}, {"turnLeft",KeyCode.D},
 		{"jump",KeyCode.Space}, {"jump2",KeyCode.F5}, 
@@ -55,7 +55,7 @@ public class Dictionnaries : MonoBehaviour
 		{"viewChange",KeyCode.F1}, {"viewInverse",KeyCode.F2},
 		{"bip",KeyCode.F3}, {"bip2",KeyCode.F4}
 	};
-	private static Dictionary <string, KeyCode> pc2 = new Dictionary<string, KeyCode> {
+	public static Dictionary <string, KeyCode> pc2 = new Dictionary<string, KeyCode> {
 		{"moveForward",KeyCode.I}, {"moveBack",KeyCode.K},
 		{"turnRight",KeyCode.J}, {"turnLeft",KeyCode.L},
 		{"jump",KeyCode.B}, {"jump2",KeyCode.F11}, 
@@ -63,33 +63,48 @@ public class Dictionnaries : MonoBehaviour
 		{"viewChange",KeyCode.F7}, {"viewInverse",KeyCode.F8},
 		{"bip",KeyCode.F9}, {"bip2",KeyCode.F10}
 	};
-	private static Dictionary <string, KeyCode> ps1 = new Dictionary<string, KeyCode> {
+	public static Dictionary <string, KeyCode> ps1 = new Dictionary<string, KeyCode> {
 		{"moveForward",KeyCode.Joystick1Button2}, {"moveBack",KeyCode.Joystick1Button3},
 		{"jump",KeyCode.Joystick1Button7}, {"jump2",KeyCode.Joystick1Button6},
 		{"action",KeyCode.Joystick1Button1},{"start",KeyCode.Joystick1Button9},
 		{"viewChange",KeyCode.Joystick1Button4}, {"viewInverse",KeyCode.Joystick1Button5},
 		{"bip",KeyCode.Joystick1Button10}, {"bip2",KeyCode.Joystick1Button11}
 	};
-	private static Dictionary <string, KeyCode> ps2 = new Dictionary<string, KeyCode> {
+	public static Dictionary <string, KeyCode> ps2 = new Dictionary<string, KeyCode> {
 		{"moveForward",KeyCode.Joystick2Button2}, {"moveBack",KeyCode.Joystick2Button3},
 		{"jump",KeyCode.Joystick2Button7}, {"jump2",KeyCode.Joystick2Button6},
 		{"action",KeyCode.Joystick2Button1},{"start",KeyCode.Joystick2Button9},
 		{"viewChange",KeyCode.Joystick2Button4}, {"viewInverse",KeyCode.Joystick2Button5},
 		{"bip",KeyCode.Joystick2Button10}, {"bip2",KeyCode.Joystick2Button11}
 	};
-	private static Dictionary <string, KeyCode> ps3 = new Dictionary<string, KeyCode> {
+	public static Dictionary <string, KeyCode> ps3 = new Dictionary<string, KeyCode> {
 		{"moveForward",KeyCode.Joystick3Button2}, {"moveBack",KeyCode.Joystick3Button3},
 		{"jump",KeyCode.Joystick3Button7}, {"jump2",KeyCode.Joystick3Button6},
 		{"action",KeyCode.Joystick3Button1},{"start",KeyCode.Joystick3Button9},
 		{"viewChange",KeyCode.Joystick3Button4}, {"viewInverse",KeyCode.Joystick3Button5},
 		{"bip",KeyCode.Joystick3Button10}, {"bip2",KeyCode.Joystick3Button11}
 	};
-	private static Dictionary <string, KeyCode> ps4 = new Dictionary<string, KeyCode> {
+	public static Dictionary <string, KeyCode> ps4 = new Dictionary<string, KeyCode> {
 		{"moveForward",KeyCode.Joystick4Button2}, {"moveBack",KeyCode.Joystick4Button3},
 		{"jump",KeyCode.Joystick4Button7}, {"jump2",KeyCode.Joystick4Button6},
 		{"action",KeyCode.Joystick4Button1},{"start",KeyCode.Joystick4Button9},
 		{"viewChange",KeyCode.Joystick4Button4}, {"viewInverse",KeyCode.Joystick4Button5},
 		{"bip",KeyCode.Joystick4Button10}, {"bip2",KeyCode.Joystick4Button11}
+	};
+	public static Dictionary <string, string> actions = new Dictionary<string, string>
+	{
+		{"Avancer","moveForward"},
+		{"Reculer","moveBack"},
+		{"Sauter","jump"},
+		{"rien1","jump2"},
+		{"Actionner Arme","action"},
+		{"Mettre en Pause","start"},
+		{"Changer Vue","viewChange"},
+		{"Inverser Camera","viewInverse"},
+		{"Tourner Gauche","turnLeft"},
+		{"Tourner Droite","turnRight"},
+		{"rien2","bip"},
+		{"rien3","bip2"}
 	};
 
 	private static int nControllers;

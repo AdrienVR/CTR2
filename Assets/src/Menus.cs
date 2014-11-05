@@ -14,15 +14,23 @@ public class Menus : MonoBehaviour
 	private float normalTime;
 	private int heightLabel=100;
 	private int position=0;
+	private int positionH=1;
 	private bool authorizeNavigate = false;
+	private bool waitingForKey = false;
 	private bool inPause = false;
 	private static GameObject titreAffiche;
 	private static GameObject triangleFond;
 	private static GameObject triangleVolume;
+	private static GameObject textPlayer;
 	private static GameObject fleches;
+	private static KeyCode keyPressed;
+	private static List <KeyCode> listKeys=  new List <KeyCode>();
+	private static List <GameObject> flechesD =  new List <GameObject>();
 	private static List <GameObject> textureAffichees =  new List <GameObject>();
 	private static List <GameObject> textAffiches =  new List <GameObject>();
+	private static List <GameObject> controlAffiches =  new List <GameObject>();
 	private static Dictionary <int, string> menuCourant = new Dictionary<int, string>();
+	public Main main;
 
 	private bool readyToMove = true;
 
@@ -55,8 +63,8 @@ public class Menus : MonoBehaviour
 		{5,"Tourner Droite"},
 		{6,"Actionner Arme"},
 		{7,"Sauter"},
-		{8,"Deraper"},
-		{9,"Inverser Camera"},
+		{8,"Inverser Camera"},
+		{9,"Changer Vue"},
 		{10,"Mettre en Pause"},
 		{11,"RETOUR"}
 	};
@@ -155,8 +163,11 @@ public class Menus : MonoBehaviour
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)4)),pos.y,0),Quaternion.identity);
 				textbutton.guiText.text=menu[i];
 				textAffiches.Add(textbutton);
+				textPlayer = (GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,6),Quaternion.identity);
+				positionH=main.players[0].numeroJoueur;
+				textPlayer.guiText.text="Joueur "+positionH;
 			}
-			else
+			else if(i>1)
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
 				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
@@ -164,6 +175,13 @@ public class Menus : MonoBehaviour
 				textbutton.guiText.text=menu[i];
 				textbutton.guiText.anchor=TextAnchor.MiddleLeft;
 				textAffiches.Add(textbutton);
+				GameObject textcontrol =(GameObject)Instantiate (Resources.Load ("textControl"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,0),Quaternion.identity);
+				string action =Dictionnaries.actions[menu[i]];
+				KeyCode actual =Dictionnaries.playersMapping[positionH][action];
+				textcontrol.guiText.text=actual.ToString();
+				controlAffiches.Add(textcontrol);
+				GameObject flecheD = (GameObject)Instantiate (Resources.Load ("menuFlecheD"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)2.5f)),pos.y,5),Quaternion.identity);
+				flechesD.Add(flecheD);
 			}
 			return true;
 		}
@@ -182,7 +200,19 @@ public class Menus : MonoBehaviour
 					textureAffichees [position].guiTexture.texture = hover;
 					textAffiches[i].guiText.color=Color.white;
 					textAffiches[position].guiText.color=Color.black;
-
+					if(menuCourant[0]=="Reglages Controles")
+					{
+						textPlayer.guiText.color=Color.white; 
+						if(menuCourant[position+1]=="JOUEUR :")
+						{
+							textPlayer.guiText.color=Color.black;
+						}
+						if(i<controlAffiches.Count) controlAffiches[i].guiText.color=Color.white;
+						if(position>0 && position<menuCourant.Count-2)
+						{
+							controlAffiches[position-1].guiText.color=Color.black;
+						}
+					}
 				}
 			}
 			int nControllers = System.Math.Min(Input.GetJoystickNames ().Length + 2, 4);
@@ -235,7 +265,7 @@ public class Menus : MonoBehaviour
 				}
 			}
 			if(right && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
-			if(left && menuCourant[position+1]=="VOLUME :" && AudioListener.volume>=0.008f) AudioListener.volume-=0.008f;
+			if(left && menuCourant[position+1]=="VOLUME :" && AudioListener.volume>=0.008f) AudioListener.volume-=0.008f;;
 			if(menuCourant[position+1]=="VOLUME :")
 			{
 				Destroy(triangleVolume);
@@ -247,9 +277,88 @@ public class Menus : MonoBehaviour
 				else if (AudioListener.volume>=0.4f && AudioListener.volume<0.6f) triangleVolume.guiTexture.texture=triVolume2;
 				else triangleVolume.guiTexture.texture=triVolume3;
 			}
+			else if(menuCourant[position+1]=="JOUEUR :")
+			{
+				textPlayer.guiText.text="Joueur "+positionH;
+				for(int i=0;i<controlAffiches.Count;i++)
+				{
+					string action =Dictionnaries.actions[menuCourant[i+2]];
+					KeyCode actual =Dictionnaries.playersMapping[positionH][action];
+					controlAffiches[i].guiText.text=actual.ToString();
+				}
+				if(right)
+				{
+					if(positionH<main.players.Count) positionH++;
+					else positionH=1;
+				}
+				else if(left)
+				{
+					if(positionH>1) positionH--;
+					else positionH=main.players.Count;
+				}
+
+			}
+			else if((menuCourant[0]=="Reglages Controles") && (menuCourant[position+1]!="Reglages Controles") && (menuCourant[position+1]!="JOUEUR :") && (menuCourant[position+1]!="RETOUR"))
+			{
+				listKeys=  new List <KeyCode>();
+				foreach(string a in Dictionnaries.playersMapping[positionH].Keys)
+				{
+					listKeys.Add(Dictionnaries.playersMapping[positionH][a]);
+				}
+				if(right)
+				{
+					authorizeNavigate=false;
+					Destroy(flechesD[position-1]);
+					controlAffiches[position-1].guiText.text="?";
+					controlAffiches[position-1].guiText.color=Color.blue;
+					waitingForKey = true;
+				}
+			}
 		}
 	}
+
+	void OnGUI()
+	{
 	
+		if(waitingForKey==true && Event.current.isKey)
+		{
+
+			StartCoroutine(getKey());
+			waitingForKey=false;
+		}
+		if (Event.current.isKey && Event.current.keyCode.ToString () != "None")
+		{
+			keyPressed = Event.current.keyCode;
+			Debug.Log (keyPressed);
+		}
+	}
+
+	IEnumerator getKey()
+	{
+		for(int i=0;i<25;i++)
+		{
+			yield return new WaitForEndOfFrame ();
+		}
+		KeyCode temp = keyPressed;
+		while(keyPressed==temp || listKeys.IndexOf(keyPressed)>-1)
+		{
+			yield return new WaitForEndOfFrame ();
+		}
+		controlAffiches[position-1].guiText.text=keyPressed.ToString();
+		Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menuCourant.Count/2-position-1),-1);
+		GameObject flecheD = (GameObject)Instantiate (Resources.Load ("menuFlecheD"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)2.5f)),pos.y,5),Quaternion.identity);
+		flechesD[position-1]=flecheD;
+		Debug.Log (menuCourant [position +1]);
+		string action =Dictionnaries.actions[menuCourant[position+1]];
+		Dictionnaries.playersMapping [positionH] [action] = keyPressed;
+		for(int i=0;i<25;i++)
+		{
+			yield return new WaitForEndOfFrame ();
+		}
+		authorizeNavigate=true;
+	}
+
+
 	IEnumerator RestrictMovement()
 	{
 		readyToMove = false;
@@ -330,10 +439,15 @@ public class Menus : MonoBehaviour
 		Destroy (triangleFond);
 		Destroy (triangleVolume);
 		Destroy (fleches);
+		Destroy (textPlayer);
 		foreach (GameObject g in textureAffichees) Destroy (g);
 		foreach (GameObject g in textAffiches) Destroy (g);
+		foreach (GameObject g in controlAffiches) Destroy (g);
+		foreach (GameObject g in flechesD) Destroy (g);
 		textureAffichees =  new List <GameObject>();
 		textAffiches =  new List <GameObject>();
+		controlAffiches =  new List <GameObject>();
+		flechesD =  new List <GameObject>();
 		cameraMenu.SetActive (false);
 	}
 
