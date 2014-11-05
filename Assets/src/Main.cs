@@ -52,6 +52,7 @@ public class Main : MonoBehaviour
 		m.triVolume1 = triVolume1;
 		m.triVolume2 = triVolume2;
 		m.triVolume3 = triVolume3;
+		m.main = this;
 	}
 
 	void InitializeRespawn()
