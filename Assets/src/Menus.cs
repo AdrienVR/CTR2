@@ -260,8 +260,8 @@ public class Menus : MonoBehaviour
 					left |= (Input.GetAxis (Dictionnaries.axisMapping[i]["turn"]) == -1 );
 				}
 				else{
-					right |= (Input.GetKeyDown (Dictionnaries.playersMapping [i] ["turnRight"]));
-					left |= (Input.GetKeyDown (Dictionnaries.playersMapping [i] ["turnLeft"]));
+					left |= (Input.GetKey (Dictionnaries.playersMapping [i] ["turnRight"]));
+					right |= (Input.GetKey (Dictionnaries.playersMapping [i] ["turnLeft"]));
 				}
 			}
 			if(right && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
