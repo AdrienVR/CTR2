@@ -38,6 +38,7 @@ public class KartController : MonoBehaviour
 	private Kart kart;
 	private bool dansLesAirs = true;
 	private Dictionary <string, string> axisMap;
+	public Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
 	private float ky;
 	private bool baddie = false;
 	
@@ -45,7 +46,11 @@ public class KartController : MonoBehaviour
 	public bool explosiveWeapon;
 	private float facteurSens = 1f;
 
+	private float yTurn;
+	private float yTurnWheel;
+
 	public int weaponSize = 1;
+	private static int nControllers;
 	
 	// Use this for initialization
 	void Start ()
@@ -58,7 +63,7 @@ public class KartController : MonoBehaviour
 	
 	void FixedUpdate()
 	{
-		if (!hasAxis)
+		if (Input.GetJoystickNames ().Length != nControllers)
 			InitSelfMapping ();
 
 		if (postForce.Equals(new Vector3())){
@@ -72,11 +77,21 @@ public class KartController : MonoBehaviour
 
 		if (dansLesAirs)
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
+
+		transform.Rotate (0, yTurn, 0);
+		wheels ["wheelAL"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + yTurnWheel * 13f));
+		wheels ["wheelAR"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + yTurnWheel * 13f));
+		foreach(string w in wheels.Keys)
+		{
+			wheels [w].rotation = Quaternion.Euler (wheels [w].eulerAngles + new Vector3 (0, 0, 0));
+		}
 	}
 
 	
 	void Update()
 	{
+		yTurn = 0;
+		yTurnWheel = 0;
 		if (Time.timeScale == 0)
 			return;
 		lowForce = new Vector3 ();
@@ -431,6 +446,10 @@ public class KartController : MonoBehaviour
 		if (state.IndexOf("invincible")==-1)
 			state.Add ("invincible");
 		renderer.enabled = false;
+		foreach(string w in wheels.Keys)
+		{
+			wheels [w].renderer.enabled = false;
+		}
 		float time = 0f;
 		float last_time = 0f;
 		float clignotement = 0.3f;
@@ -442,6 +461,11 @@ public class KartController : MonoBehaviour
 				last_time = time;
 				clignotement /= 2;
 				renderer.enabled = !renderer.enabled;
+				
+				foreach(string w in wheels.Keys)
+				{
+					wheels [w].renderer.enabled = !wheels [w].renderer.enabled;
+				}
 			}
 		}
 		renderer.enabled = true;
@@ -526,19 +550,14 @@ public class KartController : MonoBehaviour
 	
 	public void controlPosition()
 	{	
+		yTurnWheel = Input.GetAxis (axisMap ["turn"]) * turnCoeff;
+
 		if(Input.GetAxis (axisMap ["stop"]) > 0.1f)
 				lowForce = -Input.GetAxis (axisMap ["stop"]) * forwardNormal * speedCoeff;
 		
 		if(Input.GetKey(keyMap["moveForward"]))
 		{
 			postForce = forwardNormal*speedCoeff;
-			if (!hasAxis)
-			{
-				if(Input.GetKey(keyMap["turnLeft"]))
-					transform.Rotate(0,0.5f*turnCoeff,0);
-				if(Input.GetKey(keyMap["turnRight"]))
-					transform.Rotate(0,-0.5f*turnCoeff,0);
-			}
 		}
 
 		if(Input.GetKeyDown(keyMap["jump"]))
@@ -551,13 +570,13 @@ public class KartController : MonoBehaviour
 
 		if(!Input.GetKey(keyMap["moveBack"]) && System.Math.Abs(Input.GetAxis (axisMap ["turn"]))>0.1f){
 			if(Input.GetAxis (axisMap ["stop"]) > 0.1f){
-				transform.Rotate (0, -Input.GetAxis (axisMap ["turn"]) * turnCoeff, 0);
+				yTurn = -Input.GetAxis (axisMap ["turn"]) * turnCoeff;
 			}
 			else if(Input.GetKey(keyMap["moveForward"]) || Input.GetKeyDown(keyMap["jump"]))
-				transform.Rotate (0, Input.GetAxis (axisMap ["turn"]) * turnCoeff, 0);
+				yTurn = Input.GetAxis (axisMap ["turn"]) * turnCoeff;
 		}
 		if(Input.GetKey(keyMap["moveBack"])){
-			transform.Rotate (0, Input.GetAxis (axisMap ["turn"]) * turnCoeff, 0);
+				yTurn = Input.GetAxis (axisMap ["turn"]) * turnCoeff;
 		}
 
 		if (Input.GetKeyDown (keyMap ["action"])) {
@@ -577,22 +596,27 @@ public class KartController : MonoBehaviour
 	}
 
 	public void controlKeyboard(){
+		
+		if(Input.GetKey(keyMap["turnLeft"]))
+			yTurnWheel = 0.5f*turnCoeff;
+		else if(Input.GetKey(keyMap["turnRight"]))
+			yTurnWheel = -0.5f*turnCoeff;
 
 		if(Input.GetKey(keyMap["moveBack"])) {
 				lowForce = -forwardNormal*speedCoeff;
 				if(Input.GetKey(keyMap["turnLeft"]))
-					transform.Rotate(0,-0.5f*turnCoeff,0);
-				if(Input.GetKey(keyMap["turnRight"]))
-					transform.Rotate(0,0.5f*turnCoeff,0);
+					yTurn = -0.5f*turnCoeff;
+				else if(Input.GetKey(keyMap["turnRight"]))
+					yTurn = 0.5f*turnCoeff;
 		}
 		
 		if(Input.GetKey(keyMap["moveForward"]))
 		{
 			postForce = forwardNormal*speedCoeff;
 			if(Input.GetKey(keyMap["turnLeft"]))
-					transform.Rotate(0,0.5f*turnCoeff,0);
+				yTurn = 0.5f*turnCoeff;
 			if(Input.GetKey(keyMap["turnRight"]))
-					transform.Rotate(0,-0.5f*turnCoeff,0);
+				yTurn = -0.5f*turnCoeff;
 		}
 		
 		if(Input.GetKeyDown(keyMap["jump"]))
@@ -638,6 +662,7 @@ public class KartController : MonoBehaviour
 	
 	void InitSelfMapping()
 	{
+		nControllers = Input.GetJoystickNames ().Length;
 		hasAxis = Dictionnaries.controllersEnabled[kart.numeroJoueur];
 		if (hasAxis)
 			axisMap = Dictionnaries.axisMapping [kart.numeroJoueur];
