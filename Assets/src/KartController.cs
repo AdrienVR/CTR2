@@ -13,7 +13,8 @@ public class KartController : MonoBehaviour
 	private float speedCoeff;
 	private float turnCoeff;
 	public float coeffInitSpeed;
-	private bool bonusSpeedAku = false;
+	public Dictionary <string, float> speedDuration = new Dictionary <string,  float>();
+	public Dictionary <string, float> speedToAdd = new Dictionary <string,  float>();
 	
 	private bool hasAxis = false;
 	private Vector3 postForce;
@@ -45,6 +46,8 @@ public class KartController : MonoBehaviour
 	private ExplosionScript arme;
 	public bool explosiveWeapon;
 	private float facteurSens = 1f;
+	private static float ellapsedTime = 0f;
+	private static float currentTime = 0f;
 
 	private float yTurn;
 	private float yTurnWheel;
@@ -65,6 +68,10 @@ public class KartController : MonoBehaviour
 	{
 		if (Input.GetJoystickNames ().Length != nControllers)
 			InitSelfMapping ();
+
+		ellapsedTime = Time.time - currentTime;
+		currentTime = Time.time;
+		CheckSpeed ();
 
 		if (postForce.Equals(new Vector3())){
 			rigidbody.rotation = transform.rotation;
@@ -240,7 +247,7 @@ public class KartController : MonoBehaviour
 		if (transform.forward.y>0)
 			forwardNormal.y = 0;
 		forwardNormal = normalizeVector (forwardNormal);
-		Vector3 posToAdd ;
+		Vector3 posToAdd = new Vector3();
 		//launch the shield
 		if (shield != null) {
 			shield.vitesseInitiale =  100f*forwardNormal;
@@ -280,28 +287,34 @@ public class KartController : MonoBehaviour
 				posToAdd = 4f * (new Vector3 (-forwardNormal.x, forwardNormal.y + 0.2f, -forwardNormal.z));
 		}
 		else
-			posToAdd = 6f * (new Vector3 (forwardNormal.x, forwardNormal.y + 0.6f, forwardNormal.z));
+			posToAdd = 6f * (new Vector3 (forwardNormal.x, forwardNormal.y + 0.2f, forwardNormal.z));
 		Quaternion q = new Quaternion (0,transform.rotation.y,0,transform.rotation.w);
 		if (Dictionnaries.poseWeapons.IndexOf(w) != -1)
 			q = transform.rotation;
 
-		//instantiate the weapon
-		GameObject arme1 = Instantiate(Resources.Load("Weapons/"+w), transform.position + posToAdd, q) as GameObject;
-		arme1.name = arme1.name.Split ('(') [0];
+		if (Dictionnaries.instatiableWeapons.IndexOf(w)!=-1){
+			//instantiate the weapon
+			GameObject arme1 = Instantiate(Resources.Load("Weapons/"+w), transform.position + posToAdd, q) as GameObject;
+			arme1.name = arme1.name.Split ('(') [0];
 
-		//compute the velocity
-		arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
+			//compute the velocity
+			arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
+		}
 		if (arme!=null)	{
 			arme.owner = gameObject;
 			
 			if (w == "bomb") {
 				explosiveWeapon = true;
-				arme.vitesseInitiale =  90f*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
+				arme.vitesseInitiale =  3*speedCoeff*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
 				if (kart.nbApples == 10)
 					arme.explosionRadius *= 2.5f;
 			}
-			else if (w == "missile")
-				arme.vitesseInitiale =  120f*forwardNormal;
+			else if (w == "missile"){
+				if (IsSuper())
+					arme.vitesseInitiale =  4*speedCoeff*forwardNormal;
+				else
+					arme.vitesseInitiale =  2.75f*speedCoeff*forwardNormal;
+			}
 			else if (w == "greenShield"|| w == "blueShield"){
 				shield = arme;
 				shield.lifeTime = 14f;
@@ -316,12 +329,18 @@ public class KartController : MonoBehaviour
 				}
 				else
 					protection = arme;
-				StartCoroutine(SpeedAcceleration(protection.lifeTime, true));
+				AddSpeed(protection.lifeTime, 1.5f, "aku");
 			}
 			else if (w == "greenBeaker" || w=="redBeaker")
 				if (sens == 1f)
 					arme.rigidbody.AddForce(2000f*new Vector3(sens * forwardNormal.x, 0.2f, sens * forwardNormal.z));
 					//arme.vitesseInstant =  90f*new Vector3(sens * forwardNormal.x, 0, sens * forwardNormal.z);
+		}
+		else if (w=="turbo"){
+			if (IsSuper())
+				AddSpeed(3.0f, 1.5f, w);
+			else
+				AddSpeed(2.0f, 1.5f, w);
 		}
 
 		//use the weapon so remove
@@ -369,39 +388,28 @@ public class KartController : MonoBehaviour
 	}
 
 	
-	IEnumerator SpeedAcceleration(float duration, bool aku)
+	void AddSpeed(float duration, float addSpeed, string weapon)
 	{
-		if ((aku && !bonusSpeedAku) || !aku){
-			float bonusSpeed = speedCoeff*0.5f;
-			if(aku){
-				bonusSpeedAku = true;
-				bonusSpeed = 15f;
+		if (speedDuration.ContainsKey(weapon) == false)
+			speedDuration [weapon] = 0f;
+		speedDuration [weapon] += duration;
+		speedToAdd [weapon] = addSpeed;
+	}
+
+	void CheckSpeed()
+	{
+		speedCoeff = coeffInitSpeed;
+
+		string [] copy = new string[speedDuration.Keys.Count];
+		speedDuration.Keys.CopyTo(copy, 0);
+
+		foreach(string key in copy)
+		{
+			if (speedDuration [key] > 0f){
+				speedDuration [key] -= ellapsedTime;
+				speedCoeff *= speedToAdd[key];
 			}
-			speedCoeff += bonusSpeed;
-			float time = 0f;
-			while (time < duration) {
-				yield return new WaitForSeconds (0.05f);
-				time += 0.05f;
-			}
-			speedCoeff -= bonusSpeed;
-			if(aku)
-				bonusSpeedAku = false;
 		}
-		else{
-			float bonusSpeed = speedCoeff;
-			float time = 0f;
-			bool prot = false;
-			while (time < duration) {
-				yield return new WaitForSeconds (0.05f);
-				time += 0.05f;
-				if (speedCoeff != bonusSpeed){
-					speedCoeff = bonusSpeed;prot = true;}
-			}
-			if (prot)
-				speedCoeff-=15f;
-		}
-		if (coeffInitSpeed > speedCoeff)
-			speedCoeff = coeffInitSpeed;
 	}
 
 	IEnumerator TempUndead()

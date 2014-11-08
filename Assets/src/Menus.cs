@@ -329,7 +329,7 @@ public class Menus : MonoBehaviour
 		if (Event.current.isKey && Event.current.keyCode.ToString () != "None")
 		{
 			keyPressed = Event.current.keyCode;
-			Debug.Log (keyPressed);
+			//Debug.Log (keyPressed);
 		}
 	}
 

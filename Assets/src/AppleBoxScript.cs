@@ -9,11 +9,11 @@ public class AppleBoxScript : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider other)
 	{
+		collider.enabled = false;
 		KartController taker;
 		if (isGiving)
 			return;
 		isGiving = true;
-		collider.enabled = false;
 		audio.Play ();
 		if(Dictionnaries.characters.IndexOf(other.name) != -1)// si c'est un kart
 		{

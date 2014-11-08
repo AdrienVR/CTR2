@@ -15,6 +15,7 @@ public class ExplosionScript : MonoBehaviour {
 	private bool isAlive;
 	private bool exploded=false;
 
+	private bool lockExplosion = false;
 
 	// Use this for initialization
 	void Start () {
@@ -41,6 +42,8 @@ public class ExplosionScript : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider other)
 	{
+		if (lockExplosion)
+			return;
 		//prevent from multi explosing
 		if (exploded && (name == "greenBeaker" || name == "redBeaker" || name == "missile"))
 			return;
@@ -66,6 +69,9 @@ public class ExplosionScript : MonoBehaviour {
 				StartCoroutine (Explode());
 			return;
 		}
+
+		if (Dictionnaries.protectWeapons.IndexOf (name) == -1)
+			StartCoroutine (LockExplosion());
 
 		//find the KartController target
 		KartController touched = (KartController)other.GetComponent ("KartController");
@@ -111,6 +117,12 @@ public class ExplosionScript : MonoBehaviour {
 		rigidbody.velocity = new Vector3();
 	}
 	
+	IEnumerator LockExplosion()
+	{
+		yield return new WaitForSeconds (0.01f);
+		lockExplosion = true;
+	}
+	
 	IEnumerator Explode()
 	{
 		exploded = true;
@@ -147,7 +159,7 @@ public class ExplosionScript : MonoBehaviour {
 	void Update () {
 		// for bombs, missiles and launched shields
 		if (Dictionnaries.launchWeapons.IndexOf(name) != -1) {
-			rigidbody.velocity = new Vector3(vitesseInitiale.x,-19.81f,vitesseInitiale.z);
+			rigidbody.velocity = new Vector3(vitesseInitiale.x,-20f,vitesseInitiale.z);
 			if (exploded && name[0] == 'b')
 				rigidbody.velocity = new Vector3();
 		}

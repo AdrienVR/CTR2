@@ -8,7 +8,7 @@ public class Kart
 	public CameraController cm1c;
 	private KartController kc;
 	private GUIText pointText;
-	public GUIText guitextApples;
+	public GUIText guitextApples; 
 	
 	public GameObject guiArme;
 	public GameObject camera;

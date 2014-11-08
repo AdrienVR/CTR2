@@ -12,7 +12,7 @@ public class Dictionnaries : MonoBehaviour
 		{6,"Aku-Aku"},{7,"TNT"},{8,"turbo"}	};
 	public static Dictionary <int, string> superWeapons = new Dictionary<int, string> {
 		{1,"redBeaker"},{2,"blueShield"},{3,"bomb"},{4,"triple_bomb"},{5,"triple_missile"},
-		{6,"superAku-Aku"},{7,"nitro"},{8,"superTurbo"}	};
+		{6,"superAku-Aku"},{7,"nitro"},{8,"turbo"}	};
 	public static Dictionary <int, List<Rect>> cameraMap = new Dictionary <int, List<Rect>>{
 		{1, new List<Rect>(){new Rect(0, 0, 1, 1)}},
 		{2, new List<Rect>(){new Rect(0, 0.51f, 1, 0.49f), new Rect(0, 0, 1, 0.49f)}},
@@ -21,7 +21,9 @@ public class Dictionnaries : MonoBehaviour
 		{4, new List<Rect>(){new Rect(0, 0.51f, 0.49f, 0.49f), new Rect(0, 0, 0.49f, 0.49f), 
 				new Rect(0.51f, 0.51f, 0.49f, 0.49f), new Rect(0.51f, 0, 0.49f, 0.49f)}}
 	};
-
+	
+	public static List<string> instatiableWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker",
+		"missile", "bomb", "Aku-Aku", "greenShield", "blueShield","superAku-Aku"};
 	public static List<string> poseWeapons = new List<string>() {"nitro", "TNT", "greenBeaker", "redBeaker"};
 	public static List<string> launchWeapons = new List<string>() {"missile", "bomb"};
 	public static List<string> boxes = new List<string>() {"weaponBox","appleBox"};
