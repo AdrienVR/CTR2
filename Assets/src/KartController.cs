@@ -46,8 +46,8 @@ public class KartController : MonoBehaviour
 	private ExplosionScript arme;
 	public bool explosiveWeapon;
 	private float facteurSens = 1f;
-	private static float ellapsedTime = 0f;
-	private static float currentTime = 0f;
+	private float ellapsedTime = 0f;
+	private float currentTime = 0f;
 
 	private float yTurn;
 	private float yTurnWheel;
@@ -271,10 +271,11 @@ public class KartController : MonoBehaviour
 				if (Dictionnaries.normalWeapons[k] == w)
 					n = k;
 			w = Dictionnaries.superWeapons[n];
-			Debug.Log("ddd "+w);
 		}
 		float sens = -1f;
 		if (hasAxis && Input.GetAxis (axisMap ["stop"]) < -0.1f)
+			sens = 1f;
+		else if (Input.GetKey(keyMap["moveForward"]))
 			sens = 1f;
 
 		// computing the distance to instantiate the weapon
@@ -418,7 +419,7 @@ public class KartController : MonoBehaviour
 		if (state.IndexOf("invincible")==-1)
 			state.Add ("invincible");
 		float time = 0f;
-		while (time < 0.35f) {
+		while (time < 0.75f) {
 			yield return new WaitForSeconds (0.05f);
 			time += 0.05f;
 		}
@@ -591,7 +592,7 @@ public class KartController : MonoBehaviour
 			if (state.IndexOf ("UnableToShoot") != -1)
 				return;
 			facteurSens = 1f;
-			if (hasAxis && Input.GetAxis (axisMap ["stop"]) > 0.1f)
+			if (Input.GetAxis (axisMap ["stop"]) > 0.1f)
 				facteurSens = -1f;
 
 			if (!explosiveWeapon)

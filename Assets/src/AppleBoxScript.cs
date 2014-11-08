@@ -46,6 +46,7 @@ public class AppleBoxScript : MonoBehaviour {
 		animation.Play ("boxGrow");
 		yield return new WaitForSeconds (1.3f);
 		collider.enabled = true;
+		isGiving = false;
 	}
 	
 	// Update is called once per frame

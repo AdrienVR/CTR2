@@ -44,19 +44,21 @@ public class ExplosionScript : MonoBehaviour {
 	{
 		if (lockExplosion)
 			return;
-		//prevent from multi explosing
-		if (exploded && (name == "greenBeaker" || name == "redBeaker" || name == "missile"))
-			return;
 		// check if other is a valid target, else return
 		if((Dictionnaries.boxes.IndexOf(other.name)!=-1 && Dictionnaries.launchWeapons.IndexOf(name)!=-1))
 			return;
-		if (Dictionnaries.shields.IndexOf(name)!=-1 && other.gameObject != owner.gameObject && Dictionnaries.unkillable.IndexOf(other.name)==-1){
+		if (Dictionnaries.shields.IndexOf(name)!=-1){
 			KartController ownerKart = (KartController)owner.GetComponent ("KartController");
 			if ((ownerKart.protection != null && other.gameObject == ownerKart.protection.gameObject))
-			    return;
-			renderer.enabled = false;
-			lifeTime = 0.3f;
-			StartCoroutine (TimeToLive());
+				return;
+			if (Dictionnaries.shields.IndexOf(other.name)!=-1){
+				Destroy(other.gameObject);
+				Destroy(gameObject);
+			}
+			else if (Dictionnaries.instatiableWeapons.IndexOf(other.name) != -1)
+				Destroy(gameObject);
+			else if ( Dictionnaries.characters.IndexOf(other.name) != -1 && other.gameObject != owner.gameObject)
+				Destroy(gameObject);
 			return;
 		}
 
@@ -105,8 +107,6 @@ public class ExplosionScript : MonoBehaviour {
 		if (Dictionnaries.protectWeapons.IndexOf (name) != -1) {
 			if (other.gameObject != owner){
 				touched.Die (owner,name);
-				if (Dictionnaries.protectors.IndexOf(name)==-1)
-					Destroy(gameObject);
 			}
 		}
 	}
