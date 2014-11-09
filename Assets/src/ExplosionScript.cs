@@ -19,7 +19,7 @@ public class ExplosionScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		if (Dictionnaries.protectWeapons.IndexOf(name) != -1 && name != "blueShield")
+		if (Game.protectWeapons.IndexOf(name) != -1 && name != "blueShield")
 			StartCoroutine (TimeToLive());
 	}
 
@@ -28,15 +28,15 @@ public class ExplosionScript : MonoBehaviour {
 		name = n;
 	}
 
-	public void activePhysics()
+	public void EnablePhysics()
 	{
-		CapsuleCollider cc = (CapsuleCollider)GetComponent ("CapsuleCollider");
+		SphereCollider cc = GetComponent <SphereCollider> ();
 		cc.enabled = true;
 	}
 
 	public void ActionExplosion()
 	{
-		CapsuleCollider cc = (CapsuleCollider)GetComponent ("CapsuleCollider");
+		CapsuleCollider cc = GetComponent <CapsuleCollider> ();
 		cc.radius = explosionRadius;
 	}
 	
@@ -45,41 +45,44 @@ public class ExplosionScript : MonoBehaviour {
 		if (lockExplosion)
 			return;
 		// check if other is a valid target, else return
-		if((Dictionnaries.boxes.IndexOf(other.name)!=-1 && Dictionnaries.launchWeapons.IndexOf(name)!=-1))
+		if((Game.boxes.IndexOf(other.name)!=-1 && Game.launchWeapons.IndexOf(name)!=-1))
 			return;
-		if (Dictionnaries.shields.IndexOf(name)!=-1){
-			KartController ownerKart = (KartController)owner.GetComponent ("KartController");
+		if (Game.shields.IndexOf(name)!=-1){
+			KartController ownerKart = owner.GetComponent <KartController>();
 			if ((ownerKart.protection != null && other.gameObject == ownerKart.protection.gameObject))
 				return;
-			if (Dictionnaries.shields.IndexOf(other.name)!=-1){
+			if (Game.shields.IndexOf(other.name)!=-1){
 				Destroy(other.gameObject);
 				Destroy(gameObject);
 			}
-			else if (Dictionnaries.instatiableWeapons.IndexOf(other.name) != -1)
+			else if (Game.instatiableWeapons.IndexOf(other.name) != -1)
 				Destroy(gameObject);
-			else if ( Dictionnaries.characters.IndexOf(other.name) != -1 && other.gameObject != owner.gameObject)
+			else if ( Game.characters.IndexOf(other.name) != -1 && other.gameObject != owner.gameObject){
+				KartController toKill = other.GetComponent <KartController>();
+				toKill.Die(owner, name);
 				Destroy(gameObject);
+			}
 			return;
 		}
 
 		// explosion if bad/false collision
-		if (Dictionnaries.launchWeapons.IndexOf(name)!=-1 && (other.name == "Ground" || Dictionnaries.poseWeapons.IndexOf(other.name)!=-1))
+		if (Game.launchWeapons.IndexOf(name)!=-1 && (other.name == "Ground" || Game.poseWeapons.IndexOf(other.name)!=-1))
 			StartCoroutine (Explode());
 		// not a target
-		if (Dictionnaries.characters.IndexOf (other.name) == -1 ) {
-			if (Dictionnaries.poseWeapons.IndexOf(name)!=-1)
+		if (Game.characters.IndexOf (other.name) == -1 ) {
+			if (Game.poseWeapons.IndexOf(name)!=-1)
 				StartCoroutine (Explode());
 			return;
 		}
 
-		if (Dictionnaries.protectWeapons.IndexOf (name) == -1)
+		if (Game.protectWeapons.IndexOf (name) == -1)
 			StartCoroutine (LockExplosion());
 
 		//find the KartController target
-		KartController touched = (KartController)other.GetComponent ("KartController");
+		KartController touched = other.GetComponent <KartController>();
 
 		// for bombs, missiles and launched shields
-		if (Dictionnaries.launchWeapons.IndexOf(name)!=-1) {
+		if (Game.launchWeapons.IndexOf(name)!=-1) {
 			if (other.gameObject != owner)
 				touched.Die (owner, name);
 			if (name == "bomb")
@@ -88,7 +91,7 @@ public class ExplosionScript : MonoBehaviour {
 				StartCoroutine (Explode());
 		}
 		// nitro tnt, beakers
-		else if (Dictionnaries.poseWeapons.IndexOf(name)!=-1) {
+		else if (Game.poseWeapons.IndexOf(name)!=-1) {
 			touched.Die (owner,name);
 			StartCoroutine (Explode());
 		}
@@ -97,14 +100,14 @@ public class ExplosionScript : MonoBehaviour {
 	void OnTriggerStay(Collider other)
 	{
 		// don't kill if it's not a target
-		if (Dictionnaries.characters.IndexOf (other.name) == -1)
+		if (Game.characters.IndexOf (other.name) == -1)
 			return;
 		
 		//find the KartController target
-		KartController touched = (KartController)other.GetComponent ("KartController");
+		KartController touched = other.GetComponent <KartController>();
 		
 		// for Aku-Aku and shields
-		if (Dictionnaries.protectWeapons.IndexOf (name) != -1) {
+		if (Game.protectWeapons.IndexOf (name) != -1) {
 			if (other.gameObject != owner){
 				touched.Die (owner,name);
 			}
@@ -126,7 +129,7 @@ public class ExplosionScript : MonoBehaviour {
 	IEnumerator Explode()
 	{
 		exploded = true;
-		((KartController)owner.GetComponent ("KartController")).explosiveWeapon = false;
+		owner.GetComponent <KartController>().explosiveWeapon = false;
 		if (explosionClip != null)
 			animation.Play (explosionClip.name);
 		audio.Play ();
@@ -151,20 +154,20 @@ public class ExplosionScript : MonoBehaviour {
 		}
 		//maybe not clean but works...
 		//do not delete the shield if it's launched
-		if (Dictionnaries.launchWeapons.IndexOf(name)==-1)
+		if (Game.launchWeapons.IndexOf(name)==-1)
 			Destroy(gameObject);
 	}
 
 	// Update is called once per frame
 	void Update () {
 		// for bombs, missiles and launched shields
-		if (Dictionnaries.launchWeapons.IndexOf(name) != -1) {
+		if (Game.launchWeapons.IndexOf(name) != -1) {
 			rigidbody.velocity = new Vector3(vitesseInitiale.x,-20f,vitesseInitiale.z);
 			if (exploded && name[0] == 'b')
 				rigidbody.velocity = new Vector3();
 		}
 		// for Aku-Aku and shields
-		else if (Dictionnaries.protectWeapons.IndexOf(name) != -1) {
+		else if (Game.protectWeapons.IndexOf(name) != -1) {
 			transform.position = owner.rigidbody.transform.position;
 		}
 	}

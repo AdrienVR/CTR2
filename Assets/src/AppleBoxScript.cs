@@ -15,11 +15,11 @@ public class AppleBoxScript : MonoBehaviour {
 			return;
 		isGiving = true;
 		audio.Play ();
-		if(Dictionnaries.characters.IndexOf(other.name) != -1)// si c'est un kart
+		if(Game.characters.IndexOf(other.name) != -1)// si c'est un kart
 		{
 			taker = (KartController)other.GetComponent ("KartController");
 		}
-		else if(Dictionnaries.launchWeapons.IndexOf(other.name) != -1) // si c'est une bombe
+		else if(Game.launchWeapons.IndexOf(other.name) != -1) // si c'est une bombe
 		{
 			ExplosionScript es = (ExplosionScript)other.GetComponent ("ExplosionScript");
 			GameObject owner = es.owner;

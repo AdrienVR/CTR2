@@ -88,7 +88,7 @@ public class Menus : MonoBehaviour
 	void testPause()
 	{
 		bool pressStart = false;
-		for (int i = 1; i<5; i++) pressStart |= Input.GetKeyDown (Dictionnaries.playersMapping [i] ["start"]) ;
+		for (int i = 1; i<5; i++) pressStart |= Input.GetKeyDown (Game.playersMapping [i] ["start"]) ;
 		if (pressStart)
 		{
 			Pause();
@@ -176,8 +176,8 @@ public class Menus : MonoBehaviour
 				textbutton.guiText.anchor=TextAnchor.MiddleLeft;
 				textAffiches.Add(textbutton);
 				GameObject textcontrol =(GameObject)Instantiate (Resources.Load ("textControl"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,0),Quaternion.identity);
-				string action =Dictionnaries.actions[menu[i]];
-				KeyCode actual =Dictionnaries.playersMapping[positionH][action];
+				string action =Game.actions[menu[i]];
+				KeyCode actual =Game.playersMapping[positionH][action];
 				textcontrol.guiText.text=actual.ToString();
 				controlAffiches.Add(textcontrol);
 				GameObject flecheD = (GameObject)Instantiate (Resources.Load ("menuFlecheD"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)2.5f)),pos.y,5),Quaternion.identity);
@@ -219,8 +219,8 @@ public class Menus : MonoBehaviour
 			bool down = false;
 			for (int i = 1; i<nControllers; i++)
 			{
-				down |= (Dictionnaries.controllersEnabled[i] && Input.GetAxis (Dictionnaries.axisMapping[i]["stop"]) == 1 );
-				down |= (!Dictionnaries.controllersEnabled[i] && Input.GetKey (Dictionnaries.playersMapping [i] ["moveBack"]));
+				down |= (Game.controllersEnabled[i] && Input.GetAxis (Game.axisMapping[i]["stop"]) == 1 );
+				down |= (!Game.controllersEnabled[i] && Input.GetKey (Game.playersMapping [i] ["moveBack"]));
 			}
 			if (!readyToMove)
 				down = false;
@@ -231,8 +231,8 @@ public class Menus : MonoBehaviour
 			bool up = false;
 			for (int i = 1; i<nControllers; i++)
 			{
-				up |= (Dictionnaries.controllersEnabled[i] && Input.GetAxis (Dictionnaries.axisMapping[i]["stop"]) == -1);
-				up |= (!Dictionnaries.controllersEnabled[i] && Input.GetKey (Dictionnaries.playersMapping [i] ["moveForward"]));
+				up |= (Game.controllersEnabled[i] && Input.GetAxis (Game.axisMapping[i]["stop"]) == -1);
+				up |= (!Game.controllersEnabled[i] && Input.GetKey (Game.playersMapping [i] ["moveForward"]));
 			}
 			if (!readyToMove)
 				up = false;
@@ -243,8 +243,8 @@ public class Menus : MonoBehaviour
 			bool ok = false;
 			for (int i = 1; i<nControllers; i++)
 			{
-				ok |= (Dictionnaries.controllersEnabled[i] && Input.GetKeyDown (Dictionnaries.playersMapping [i] ["moveForward"]));
-				ok |= (!Dictionnaries.controllersEnabled[i] && Input.GetKeyDown (Dictionnaries.playersMapping [i] ["action"]));
+				ok |= (Game.controllersEnabled[i] && Input.GetKeyDown (Game.playersMapping [i] ["moveForward"]));
+				ok |= (!Game.controllersEnabled[i] && Input.GetKeyDown (Game.playersMapping [i] ["action"]));
 			}
 			if(ok)
 			{
@@ -255,13 +255,13 @@ public class Menus : MonoBehaviour
 			bool left = false;
 			for (int i = 1; i<nControllers; i++)
 			{
-				if (Dictionnaries.controllersEnabled[i]){
-					right |= (Input.GetAxis (Dictionnaries.axisMapping[i]["turn"]) == 1 );
-					left |= (Input.GetAxis (Dictionnaries.axisMapping[i]["turn"]) == -1 );
+				if (Game.controllersEnabled[i]){
+					right |= (Input.GetAxis (Game.axisMapping[i]["turn"]) == 1 );
+					left |= (Input.GetAxis (Game.axisMapping[i]["turn"]) == -1 );
 				}
 				else{
-					left |= (Input.GetKey (Dictionnaries.playersMapping [i] ["turnRight"]));
-					right |= (Input.GetKey (Dictionnaries.playersMapping [i] ["turnLeft"]));
+					left |= (Input.GetKey (Game.playersMapping [i] ["turnRight"]));
+					right |= (Input.GetKey (Game.playersMapping [i] ["turnLeft"]));
 				}
 			}
 			if(right && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
@@ -282,8 +282,8 @@ public class Menus : MonoBehaviour
 				textPlayer.guiText.text="Joueur "+positionH;
 				for(int i=0;i<controlAffiches.Count;i++)
 				{
-					string action =Dictionnaries.actions[menuCourant[i+2]];
-					KeyCode actual =Dictionnaries.playersMapping[positionH][action];
+					string action =Game.actions[menuCourant[i+2]];
+					KeyCode actual =Game.playersMapping[positionH][action];
 					controlAffiches[i].guiText.text=actual.ToString();
 				}
 				if(right)
@@ -301,9 +301,9 @@ public class Menus : MonoBehaviour
 			else if((menuCourant[0]=="Reglages Controles") && (menuCourant[position+1]!="Reglages Controles") && (menuCourant[position+1]!="JOUEUR :") && (menuCourant[position+1]!="RETOUR"))
 			{
 				listKeys=  new List <KeyCode>();
-				foreach(string a in Dictionnaries.playersMapping[positionH].Keys)
+				foreach(string a in Game.playersMapping[positionH].Keys)
 				{
-					listKeys.Add(Dictionnaries.playersMapping[positionH][a]);
+					listKeys.Add(Game.playersMapping[positionH][a]);
 				}
 				if(right)
 				{
@@ -349,8 +349,8 @@ public class Menus : MonoBehaviour
 		GameObject flecheD = (GameObject)Instantiate (Resources.Load ("menuFlecheD"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)2.5f)),pos.y,5),Quaternion.identity);
 		flechesD[position-1]=flecheD;
 		Debug.Log (menuCourant [position +1]);
-		string action =Dictionnaries.actions[menuCourant[position+1]];
-		Dictionnaries.playersMapping [positionH] [action] = keyPressed;
+		string action =Game.actions[menuCourant[position+1]];
+		Game.playersMapping [positionH] [action] = keyPressed;
 		for(int i=0;i<25;i++)
 		{
 			yield return new WaitForEndOfFrame ();

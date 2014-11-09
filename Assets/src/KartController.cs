@@ -86,6 +86,21 @@ public class KartController : MonoBehaviour
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 
 		transform.Rotate (0, yTurn, 0);
+
+		controlWheels ();
+	}
+
+	void controlWheels(){
+		if (hasAxis){
+			yTurnWheel = Input.GetAxis (axisMap ["turn"]) * turnCoeff;
+		}
+		else{
+			if(Input.GetKey(keyMap["turnLeft"]))
+				yTurnWheel = 0.5f*turnCoeff;
+			else if(Input.GetKey(keyMap["turnRight"]))
+				yTurnWheel = -0.5f*turnCoeff;
+		}
+
 		wheels ["wheelAL"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + yTurnWheel * 13f));
 		wheels ["wheelAR"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + yTurnWheel * 13f));
 		foreach(string w in wheels.Keys)
@@ -215,9 +230,6 @@ public class KartController : MonoBehaviour
 		if (w == "Aku-Aku" )
 			if (baddie)
 				w = "Uka-Uka";
-		else if (w == "superAku-Aku")
-			if (baddie)
-				w = "superUka-Uka";
 		
 		if (w.IndexOf ("triple") != -1){
 			int j = weapons.Count;
@@ -255,7 +267,7 @@ public class KartController : MonoBehaviour
 			posToAdd = transform.position + 6f * (new Vector3 (forwardNormal.x, forwardNormal.y+0.6f, forwardNormal.z));
 			shield.transform.position = posToAdd;
 			shield.transform.rotation = new Quaternion();
-			shield.activePhysics();
+			shield.EnablePhysics();
 			shield.transform.localScale = new Vector3(0.66f,0.75f,0.66f);
 			shield = null;
 			return;
@@ -264,24 +276,24 @@ public class KartController : MonoBehaviour
 		if (weapons.Count == 0)
 			return;
 		string w = weapons [0];
-		if (IsSuper() && !Dictionnaries.superWeapons.ContainsValue(w) && w!="missile")
+		if (IsSuper() && !Game.superWeapons.ContainsValue(w) && w!="missile")
 		{
 			int n = 0;
-			for(int k=1;k<Dictionnaries.normalWeapons.Count+1;k++)
-				if (Dictionnaries.normalWeapons[k] == w)
+			for(int k=1;k<Game.normalWeapons.Count+1;k++)
+				if (Game.normalWeapons[k] == w)
 					n = k;
-			w = Dictionnaries.superWeapons[n];
+			w = Game.superWeapons[n];
 		}
 		float sens = -1f;
 		if (hasAxis && Input.GetAxis (axisMap ["stop"]) < -0.1f)
 			sens = 1f;
-		else if (Input.GetKey(keyMap["moveForward"]))
+		else if (!hasAxis && Input.GetKey(keyMap["moveForward"]))
 			sens = 1f;
 
 		// computing the distance to instantiate the weapon
 		if (w == "bomb")
 			posToAdd = 6f * (new Vector3 (facteurSens * forwardNormal.x, forwardNormal.y + 0.6f, facteurSens * forwardNormal.z));
-		else if (Dictionnaries.poseWeapons.IndexOf(w) != -1){
+		else if (Game.poseWeapons.IndexOf(w) != -1){
 			if (w == "greenBeaker" || w=="redBeaker")
 				posToAdd = 4f * (new Vector3 (sens*forwardNormal.x, forwardNormal.y + 0.2f, sens*forwardNormal.z));
 			else
@@ -290,10 +302,10 @@ public class KartController : MonoBehaviour
 		else
 			posToAdd = 6f * (new Vector3 (forwardNormal.x, forwardNormal.y + 0.2f, forwardNormal.z));
 		Quaternion q = new Quaternion (0,transform.rotation.y,0,transform.rotation.w);
-		if (Dictionnaries.poseWeapons.IndexOf(w) != -1)
+		if (Game.poseWeapons.IndexOf(w) != -1)
 			q = transform.rotation;
 
-		if (Dictionnaries.instatiableWeapons.IndexOf(w)!=-1){
+		if (Game.instatiableWeapons.IndexOf(w)!=-1){
 			//instantiate the weapon
 			GameObject arme1 = Instantiate(Resources.Load("Weapons/"+w), transform.position + posToAdd, q) as GameObject;
 			arme1.name = arme1.name.Split ('(') [0];
@@ -301,7 +313,7 @@ public class KartController : MonoBehaviour
 			//compute the velocity
 			arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
 		}
-		if (arme!=null)	{
+		if (arme!=null && Game.instatiableWeapons.IndexOf(w)!=-1)	{
 			arme.owner = gameObject;
 			
 			if (w == "bomb") {
@@ -320,9 +332,9 @@ public class KartController : MonoBehaviour
 				shield = arme;
 				shield.lifeTime = 14f;
 			}
-			else if (w == "Aku-Aku" || w == "superAku-Aku") {
+			else if (w == "Aku-Aku" || w == "Uka-Uka") {
 				if (protection!=null){
-					if (kart.nbApples == 10)
+					if (IsSuper())
 						protection.lifeTime = 10f;
 					else
 						protection.lifeTime = 7f;
@@ -559,7 +571,6 @@ public class KartController : MonoBehaviour
 	
 	public void controlPosition()
 	{	
-		yTurnWheel = Input.GetAxis (axisMap ["turn"]) * turnCoeff;
 
 		if(Input.GetAxis (axisMap ["stop"]) > 0.1f)
 				lowForce = -Input.GetAxis (axisMap ["stop"]) * forwardNormal * speedCoeff;
@@ -605,11 +616,6 @@ public class KartController : MonoBehaviour
 	}
 
 	public void controlKeyboard(){
-		
-		if(Input.GetKey(keyMap["turnLeft"]))
-			yTurnWheel = 0.5f*turnCoeff;
-		else if(Input.GetKey(keyMap["turnRight"]))
-			yTurnWheel = -0.5f*turnCoeff;
 
 		if(Input.GetKey(keyMap["moveBack"])) {
 				lowForce = -forwardNormal*speedCoeff;
@@ -672,11 +678,11 @@ public class KartController : MonoBehaviour
 	void InitSelfMapping()
 	{
 		nControllers = Input.GetJoystickNames ().Length;
-		hasAxis = Dictionnaries.controllersEnabled[kart.numeroJoueur];
+		hasAxis = Game.controllersEnabled[kart.numeroJoueur];
 		if (hasAxis)
-			axisMap = Dictionnaries.axisMapping [kart.numeroJoueur];
+			axisMap = Game.axisMapping [kart.numeroJoueur];
 		
-		keyMap = Dictionnaries.playersMapping [kart.numeroJoueur];
+		keyMap = Game.playersMapping [kart.numeroJoueur];
 	}
 	
 }

@@ -22,15 +22,15 @@ public class WeaponBoxScript : MonoBehaviour {
 		StartCoroutine (Take());
 
 		//find who to give weapon
-		if(Dictionnaries.characters.IndexOf(other.name) != -1)// si c'est un kart
+		if(Game.characters.IndexOf(other.name) != -1)// si c'est un kart
 		{
 			taker = (KartController)other.GetComponent ("KartController");
 		}
-		else if(Dictionnaries.launchWeapons.IndexOf(other.name) != -1) // si c'est une bombe
+		else if(Game.launchWeapons.IndexOf(other.name) != -1 || Game.shields.IndexOf(other.name) != -1) // si c'est une bombe
 		{
-			ExplosionScript es = (ExplosionScript)other.GetComponent ("ExplosionScript");
+			ExplosionScript es = other.GetComponent<ExplosionScript>();
 			GameObject owner = es.owner;
-			taker = (KartController)owner.GetComponent ("KartController");
+			taker = owner.GetComponent<KartController>();
 		}
 		else return;
 
@@ -69,7 +69,7 @@ public class WeaponBoxScript : MonoBehaviour {
 		timeLookingWeapon = 0;
 		int nb = 1;
 		while (nbImgArmes < 25) {
-			nb = Random.Range (1, Dictionnaries.normalWeapons.Count+1);
+			nb = Random.Range (1, Game.normalWeapons.Count+1);
 			//nb = 8;
 			taker.GetKart().lastWeaponTextureNb=nb;
 			taker.GetKart().drawWeaponGui();
@@ -78,9 +78,9 @@ public class WeaponBoxScript : MonoBehaviour {
 			timeLookingWeapon += 0.08f;
 		}
 		if (!taker.IsSuper())
-			taker.SetWeapon(Dictionnaries.normalWeapons[nb]);
+			taker.SetWeapon(Game.normalWeapons[nb]);
 		else
-			taker.SetWeapon(Dictionnaries.superWeapons[nb]);
+			taker.SetWeapon(Game.superWeapons[nb]);
 		taker.setWaitingWeapon (false);
 		nbImgArmes = 0;
 	}

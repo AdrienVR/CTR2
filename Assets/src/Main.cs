@@ -27,7 +27,7 @@ public class Main : MonoBehaviour
 
 	void Start()
 	{
-		gameObject.AddComponent ("Dictionnaries");
+		gameObject.AddComponent ("Game");
 		Debug.Log ("Demarrage !");
 		main = this;
 		Kart.setCoefficients (speedCoeff, turnCoeff);
@@ -68,7 +68,7 @@ public class Main : MonoBehaviour
 		players = new List<Kart>();
 		for (int i=0; i<n; i++)
 		{
-			Kart a = new Kart(listRespawn[i].position, listRespawn[i].rotation, Dictionnaries.listKarts[i]);
+			Kart a = new Kart(listRespawn[i].position, listRespawn[i].rotation, Game.listKarts[i]);
 			players.Add(a);
 		}
 	}

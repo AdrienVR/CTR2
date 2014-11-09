@@ -46,7 +46,7 @@ public class Kart
 	{
 		GameObject kart = GameObject.Instantiate (Resources.Load("kart"+kart_name), pos, q) as GameObject;
 		kart.name = kart.name.Split ('(') [0];
-		kc = (KartController)kart.GetComponent ("KartController");
+		kc = kart.GetComponent<KartController> ();
 		foreach (Transform child in kart.transform)
 			kc.wheels[child.name] = child;
 		kc.SetKart(this);
@@ -56,14 +56,14 @@ public class Kart
 	public void InitCamera()
 	{
 		camera = GameObject.Instantiate (Resources.Load("cameraKart")) as GameObject;
-		camera.camera.rect = Dictionnaries.cameraMap[nbPlayers][numeroJoueur-1];
+		camera.camera.rect = Game.cameraMap[nbPlayers][numeroJoueur-1];
 		camera.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer_j"+numeroJoueur));
 		cm1c = (CameraController) camera.GetComponent ("CameraController");
 		cm1c.SetKartController(kc);
 		
 		c2d = GameObject.Instantiate (Resources.Load("cameraGui")) as GameObject;
 		c2d.transform.position = new Vector3 (c2d.transform.position.x, c2d.transform.position.y - numeroJoueur * 500, c2d.transform.position.z);
-		c2d.camera.rect = Dictionnaries.cameraMap[nbPlayers][numeroJoueur-1];
+		c2d.camera.rect = Game.cameraMap[nbPlayers][numeroJoueur-1];
 		c2d.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer2d_j"+numeroJoueur));
 	}
 	
@@ -79,7 +79,7 @@ public class Kart
 
 		GameObject guiApple = GameObject.Instantiate (Resources.Load("guiApple")) as GameObject;
 		Resizer rs = (Resizer)guiApple.GetComponent ("Resizer");
-		rs.rectCam = Dictionnaries.cameraMap [nbPlayers] [numeroJoueur - 1];
+		rs.rectCam = Game.cameraMap [nbPlayers] [numeroJoueur - 1];
 		guiApple.transform.position = new Vector3 (guiApple.transform.position.x, guiApple.transform.position.y - numeroJoueur * 500, guiApple.transform.position.z);
 		guiApple.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 		foreach (Transform child in guiApple.transform)
@@ -126,9 +126,9 @@ public class Kart
 		if (lastWeaponTextureNb == -1)
 			return;
 		if (!IsSuper())
-			guiArme.guiTexture.texture = GameObject.Instantiate (Resources.Load ("Pictures/"+Dictionnaries.normalWeapons[lastWeaponTextureNb])) as Texture;
+			guiArme.guiTexture.texture = GameObject.Instantiate (Resources.Load ("Pictures/"+Game.normalWeapons[lastWeaponTextureNb])) as Texture;
 		else
-			guiArme.guiTexture.texture = GameObject.Instantiate (Resources.Load ("Pictures/"+Dictionnaries.superWeapons[lastWeaponTextureNb])) as Texture;
+			guiArme.guiTexture.texture = GameObject.Instantiate (Resources.Load ("Pictures/"+Game.superWeapons[lastWeaponTextureNb])) as Texture;
 	}
 	
 	public void undrawWeaponGui(){
