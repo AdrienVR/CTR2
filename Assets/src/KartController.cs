@@ -165,7 +165,7 @@ public class KartController : MonoBehaviour
 
 		twTime = System.Math.Min (twTime, 1.5f);
 		twTime = System.Math.Max (twTime, 0f);
-		twLerp = Lerp (twLerp, yTurn*System.Math.Min (rigidbody.velocity.magnitude, 27.5f)*0.5f, twTime/twMaxTime);
+		twLerp = Lerp (twLerp, yTurn*System.Math.Min (rigidbody.velocity.magnitude, 27.5f)*0.25f, twTime/twMaxTime);
 
 		wheels ["wheelAL"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
 		wheels ["wheelAR"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
@@ -422,8 +422,10 @@ public class KartController : MonoBehaviour
 		weapons.RemoveAt (0);
 		if (weapons.Count == 0) {
 			state.Remove ("armed");
-			GetKart().undrawWeaponGui();
+			kart.undrawWeaponGui();
 		}
+		else
+			kart.drawWeaponGui ();
 		if(state.IndexOf("armedEvolute")!=-1)
 		{
 			state.Remove ("armed");
@@ -652,13 +654,13 @@ public class KartController : MonoBehaviour
 
 		if(!Input.GetKey(keyMap["moveBack"]) && System.Math.Abs(Input.GetAxis (axisMap ["turn"]))>0.1f){
 			if(Input.GetAxis (axisMap ["stop"]) > 0.1f){
-				yTurn = -Input.GetAxis (axisMap ["turn"]) * turnCoeff;
+				yTurn = -0.5f*Input.GetAxis (axisMap ["turn"]) * turnCoeff;
 			}
 			else if(Input.GetKey(keyMap["moveForward"]) || Input.GetKeyDown(keyMap["jump"]))
-				yTurn = Input.GetAxis (axisMap ["turn"]) * turnCoeff;
+				yTurn = 0.5f*Input.GetAxis (axisMap ["turn"]) * turnCoeff;
 		}
 		if(Input.GetKey(keyMap["moveBack"])){
-				yTurn = Input.GetAxis (axisMap ["turn"]) * turnCoeff;
+			yTurn = 0.5f*Input.GetAxis (axisMap ["turn"]) * turnCoeff;
 		}
 
 		if (Input.GetKeyDown (keyMap ["action"])) {

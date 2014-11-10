@@ -2,7 +2,6 @@
 using System.Collections;
 
 public class AppleBoxScript : MonoBehaviour {
-	private bool isGiving = false;
 	// Use this for initialization
 	void Start () {
 	}
@@ -11,9 +10,6 @@ public class AppleBoxScript : MonoBehaviour {
 	{
 		collider.enabled = false;
 		KartController taker;
-		if (isGiving)
-			return;
-		isGiving = true;
 		audio.Play ();
 		if(Game.characters.IndexOf(other.name) != -1)// si c'est un kart
 		{
@@ -42,11 +38,9 @@ public class AppleBoxScript : MonoBehaviour {
 	{
 		animation.Play ("boxDisappear");
 		yield return new WaitForSeconds (2f);
-		isGiving = false;
 		animation.Play ("boxGrow");
 		yield return new WaitForSeconds (1.3f);
 		collider.enabled = true;
-		isGiving = false;
 	}
 	
 	// Update is called once per frame

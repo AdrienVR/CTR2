@@ -123,10 +123,29 @@ public class Kart
 	public void drawWeaponGui(){
 		if (lastWeaponTextureNb == -1)
 			return;
-		if (!IsSuper())
-			guiArme.guiTexture.texture = GameObject.Instantiate (Resources.Load ("Pictures/"+Game.normalWeapons[lastWeaponTextureNb])) as Texture;
+		string textureName;
+		if (IsSuper())
+			textureName = Game.superWeapons[lastWeaponTextureNb];
 		else
-			guiArme.guiTexture.texture = GameObject.Instantiate (Resources.Load ("Pictures/"+Game.superWeapons[lastWeaponTextureNb])) as Texture;
+			textureName = Game.normalWeapons[lastWeaponTextureNb];
+		int count = 0;
+		if (textureName == "triple_bomb"){
+			foreach (string element in kc.weapons)
+				if (element=="bomb")
+					count++;
+			if (count == 0)
+				count = 3;
+			textureName = "bomb"+count;
+		}
+		else if (textureName == "triple_missile"){
+			foreach (string element in kc.weapons)
+				if (element=="missile")
+					count++;
+			if (count == 0)
+				count = 3;
+			textureName = "missile"+count;
+		}
+		guiArme.guiTexture.texture = GameObject.Instantiate (Resources.Load ("Pictures/"+textureName)) as Texture;
 	}
 	
 	public void undrawWeaponGui(){
