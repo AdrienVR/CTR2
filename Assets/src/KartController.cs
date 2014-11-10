@@ -79,7 +79,6 @@ public class KartController : MonoBehaviour
 			foreach (Transform w in child.transform)
 				wheels[w.name] = w;
 		}
-		Debug.Log ("ok");
 	}
 	
 	void FixedUpdate()
@@ -132,7 +131,6 @@ public class KartController : MonoBehaviour
 		lerpedSpeed = accelerationTime/maxTime;
 		lerpedSpeed = System.Math.Min (lerpedSpeed, 1f);
 		lerpedSpeed = System.Math.Max (lerpedSpeed, 0f);
-		//Debug.Log ("acc : " + lerpedSpeed);
 	}
 
 	void controlWheels(){
@@ -161,24 +159,17 @@ public class KartController : MonoBehaviour
 			twTime -= ellapsedTime;
 		}
 
-		twTime = System.Math.Min (twTime, 1.5f);
-		twTime = System.Math.Max (twTime, 0f);
 		twTimeWheels = System.Math.Min (twTimeWheels, 1.5f);
 		twTimeWheels = System.Math.Max (twTimeWheels, 0f);
-		twLerp = Lerp (twLerp, yTurn, twTime/twMaxTime);
 		twLerpWheels = Lerp (twLerpWheels, yTurnWheel, twTimeWheels/twMaxTime);
+
+		twTime = System.Math.Min (twTime, 1.5f);
+		twTime = System.Math.Max (twTime, 0f);
+		twLerp = Lerp (twLerp, yTurn*System.Math.Min (rigidbody.velocity.magnitude, 27.5f)*0.5f, twTime/twMaxTime);
 
 		wheels ["wheelAL"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
 		wheels ["wheelAR"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
-		wheels ["steering"].rotation = Quaternion.Euler (transform.eulerAngles 
-		                                                 + new Vector3 (0, twLerp * rigidbody.velocity.magnitude *0.5f
-		                                                                                      ));
-		foreach(string w in wheels.Keys)
-		{
-			if (w == "steering")
-				continue;
-			wheels [w].rotation = Quaternion.Euler (wheels [w].eulerAngles + new Vector3 (0, 0, 0));
-		}
+		wheels ["steering"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, twLerp));
 	}
 
 	
@@ -190,7 +181,7 @@ public class KartController : MonoBehaviour
 		lowForce = new Vector3 ();
 		postForce = new Vector3 ();
 		if (!stop && !stopDie){
-			forwardNormal = transform.forward;
+			forwardNormal = wheels ["steering"].transform.forward;
 			forwardNormal.y = 0;
 			forwardNormal = normalizeVector (forwardNormal);
 			if (hasAxis)
@@ -326,7 +317,7 @@ public class KartController : MonoBehaviour
 			return;
 		}
 		
-		Vector3 forwardNormal = transform.forward;
+		Vector3 forwardNormal = wheels ["steering"].transform.forward;
 		if (transform.forward.y>0)
 			forwardNormal.y = 0;
 		forwardNormal = normalizeVector (forwardNormal);
