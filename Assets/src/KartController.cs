@@ -39,7 +39,7 @@ public class KartController : MonoBehaviour
 	private Kart kart;
 	private bool dansLesAirs = true;
 	private Dictionary <string, string> axisMap;
-	public Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
+	private Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
 	private float ky;
 	private bool baddie = false;
 	
@@ -50,10 +50,21 @@ public class KartController : MonoBehaviour
 	private float currentTime = 0f;
 
 	private float yTurn;
-	private float yTurnWheel;
 
 	public int weaponSize = 1;
 	private static int nControllers;
+
+	private float accelerationTime = 0f;
+	private float maxTime = 2.5f;
+	private float lerpedSpeed = 0f;
+	private float slerpedCoeffSpeed = 0f;
+	
+	private float twTime = 0f;
+	private float twMaxTime = 10.5f;
+	private float twLerp = 0f;
+
+	private float twTimeWheels = 0f;
+	private float twLerpWheels = 0f;
 	
 	// Use this for initialization
 	void Start ()
@@ -62,6 +73,13 @@ public class KartController : MonoBehaviour
 		explosiveWeapon = false;
 		weapons = new List<string>();
 		InitSelfMapping ();
+
+		foreach (Transform child in transform){
+			wheels["steering"] = child;
+			foreach (Transform w in child.transform)
+				wheels[w.name] = w;
+		}
+		Debug.Log ("ok");
 	}
 	
 	void FixedUpdate()
@@ -71,16 +89,24 @@ public class KartController : MonoBehaviour
 
 		ellapsedTime = Time.time - currentTime;
 		currentTime = Time.time;
-		CheckSpeed ();
+		CheckSpeed();
 
 		if (postForce.Equals(new Vector3())){
-			rigidbody.rotation = transform.rotation;
-			rigidbody.position = transform.position;
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x/1.10f, rigidbody.velocity.y, rigidbody.velocity.z/1.10f);
+			accelerationTime -= ellapsedTime;
+			checkAcc();
+			//rigidbody.rotation = transform.rotation;
+			//rigidbody.position = transform.position;
+			slerpedCoeffSpeed = Slerp(slerpedCoeffSpeed, 0.9f, 1.0f);//lerpedSpeed);
+			rigidbody.velocity = new Vector3(rigidbody.velocity.x*slerpedCoeffSpeed, 
+			                                 rigidbody.velocity.y, rigidbody.velocity.z*slerpedCoeffSpeed);
 			rigidbody.velocity = new Vector3(lowForce.x, rigidbody.velocity.y, lowForce.z);
 		}
-		else
-			rigidbody.velocity = new Vector3(postForce.x, rigidbody.velocity.y, postForce.z);
+		else{
+			accelerationTime += ellapsedTime;
+			checkAcc();
+			slerpedCoeffSpeed = Slerp(slerpedCoeffSpeed, 1.0f, lerpedSpeed);
+			rigidbody.velocity = new Vector3(postForce.x*slerpedCoeffSpeed, rigidbody.velocity.y, postForce.z*slerpedCoeffSpeed);
+		}
 
 		if (dansLesAirs)
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
@@ -90,21 +116,67 @@ public class KartController : MonoBehaviour
 		controlWheels ();
 	}
 
+	float Slerp(float a, float b, float f)
+	{
+		return a + f*f * (b - a);
+	}
+	
+	float Lerp(float a, float b, float f)
+	{
+		return a + f * (b - a);
+	}
+
+	void checkAcc(){
+		accelerationTime = System.Math.Min (accelerationTime, maxTime);
+		accelerationTime = System.Math.Max (accelerationTime, 0f);
+		lerpedSpeed = accelerationTime/maxTime;
+		lerpedSpeed = System.Math.Min (lerpedSpeed, 1f);
+		lerpedSpeed = System.Math.Max (lerpedSpeed, 0f);
+		//Debug.Log ("acc : " + lerpedSpeed);
+	}
+
 	void controlWheels(){
+		float yTurnWheel = 0f;
 		if (hasAxis){
-			yTurnWheel = Input.GetAxis (axisMap ["turn"]) * turnCoeff;
+			yTurnWheel = Input.GetAxis (axisMap ["turn"]);
+			if (yTurnWheel <0.1f && yTurnWheel>-0.1f)
+				yTurnWheel = 0f;
 		}
 		else{
 			if(Input.GetKey(keyMap["turnLeft"]))
-				yTurnWheel = 0.5f*turnCoeff;
+				yTurnWheel = 1f;
 			else if(Input.GetKey(keyMap["turnRight"]))
-				yTurnWheel = -0.5f*turnCoeff;
+				yTurnWheel = -1f;
 		}
 
-		wheels ["wheelAL"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + yTurnWheel * 13f));
-		wheels ["wheelAR"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + yTurnWheel * 13f));
+		if (yTurnWheel != 0){
+			twTimeWheels += ellapsedTime;
+			if (!postForce.Equals(new Vector3()))
+				twTime += ellapsedTime;
+			else
+				twTime -= ellapsedTime;
+		}
+		else{
+			twTimeWheels -= ellapsedTime;
+			twTime -= ellapsedTime;
+		}
+
+		twTime = System.Math.Min (twTime, 1.5f);
+		twTime = System.Math.Max (twTime, 0f);
+		twTimeWheels = System.Math.Min (twTimeWheels, 1.5f);
+		twTimeWheels = System.Math.Max (twTimeWheels, 0f);
+		twLerp = Lerp (twLerp, yTurn, twTime/twMaxTime);
+		twLerpWheels = Lerp (twLerpWheels, yTurnWheel, twTimeWheels/twMaxTime);
+
+		wheels ["wheelAL"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
+		wheels ["wheelAR"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
+		wheels ["steering"].rotation = Quaternion.Euler (transform.eulerAngles 
+		                                                 + new Vector3 (0, twLerp * rigidbody.velocity.magnitude *0.5f
+		                                                                                      ));
 		foreach(string w in wheels.Keys)
 		{
+			if (w == "steering")
+				continue;
 			wheels [w].rotation = Quaternion.Euler (wheels [w].eulerAngles + new Vector3 (0, 0, 0));
 		}
 	}
@@ -113,7 +185,6 @@ public class KartController : MonoBehaviour
 	void Update()
 	{
 		yTurn = 0;
-		yTurnWheel = 0;
 		if (Time.timeScale == 0)
 			return;
 		lowForce = new Vector3 ();
@@ -466,7 +537,6 @@ public class KartController : MonoBehaviour
 		//clignotment, invincibilité temporaire
 		if (state.IndexOf("invincible")==-1)
 			state.Add ("invincible");
-		renderer.enabled = false;
 		foreach(string w in wheels.Keys)
 		{
 			wheels [w].renderer.enabled = false;
@@ -481,15 +551,16 @@ public class KartController : MonoBehaviour
 			{
 				last_time = time;
 				clignotement /= 2;
-				renderer.enabled = !renderer.enabled;
-				
 				foreach(string w in wheels.Keys)
 				{
 					wheels [w].renderer.enabled = !wheels [w].renderer.enabled;
 				}
 			}
 		}
-		renderer.enabled = true;
+		foreach(string w in wheels.Keys)
+		{
+			wheels [w].renderer.enabled = true;
+		}
 		state.Remove ("invincible");
 	}
 	

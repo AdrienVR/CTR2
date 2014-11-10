@@ -47,8 +47,6 @@ public class Kart
 		GameObject kart = GameObject.Instantiate (Resources.Load("kart"+kart_name), pos, q) as GameObject;
 		kart.name = kart.name.Split ('(') [0];
 		kc = kart.GetComponent<KartController> ();
-		foreach (Transform child in kart.transform)
-			kc.wheels[child.name] = child;
 		kc.SetKart(this);
 		kc.setCoefficients (speedCoeff, turnCoeff);
 	}

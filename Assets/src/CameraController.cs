@@ -9,7 +9,7 @@ public class CameraController : MonoBehaviour
 	public float reversed = 1f;
 	public Vector3 backward;
 	
-	public float speed = 1.0F;
+	public float speed = 1.5F;
 	private float startTime;
 	private float journeyLength;
 

@@ -168,7 +168,7 @@ public class ExplosionScript : MonoBehaviour {
 		}
 		// for Aku-Aku and shields
 		else if (Game.protectWeapons.IndexOf(name) != -1) {
-			transform.position = owner.rigidbody.transform.position;
+			transform.position = owner.rigidbody.transform.position + new Vector3(0f,-0.2f);
 		}
 	}
 }
