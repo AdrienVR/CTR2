@@ -19,7 +19,7 @@ public class KartController : MonoBehaviour
 	private bool hasAxis = false;
 	private Vector3 postForce;
 	private Vector3 lowForce;
-	private Vector3 forwardNormal;
+	public Vector3 forwardNormal;
 	
 	private bool pressX=false;
 	private bool pressFleche=false;
@@ -29,17 +29,18 @@ public class KartController : MonoBehaviour
 	private bool pressXAndFlecheAndR1 = false;
 
 	private WeaponBoxScript takenWeaponBox;
-	private ExplosionScript shield;
+	public ExplosionScript shield;
 	public ExplosionScript protection;
-	
-	private List<string> state = new List<string>();
+	public GameObject tnt;
+
+	public List<string> state = new List<string>();
 	public List<string> weapons;
 	public Dictionary <string, KeyCode> keyMap;
 
 	private Kart kart;
 	private bool dansLesAirs = true;
 	private Dictionary <string, string> axisMap;
-	private Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
+	public Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
 	private float ky;
 	private bool baddie = false;
 	
@@ -65,6 +66,8 @@ public class KartController : MonoBehaviour
 
 	private float twTimeWheels = 0f;
 	private float twLerpWheels = 0f;
+
+	private int numberOfJump = 0;
 	
 	// Use this for initialization
 	void Start ()
@@ -89,6 +92,19 @@ public class KartController : MonoBehaviour
 		ellapsedTime = Time.time - currentTime;
 		currentTime = Time.time;
 		CheckSpeed();
+
+		if (tnt && numberOfJump > 8) {
+			tnt.transform.position = tnt.transform.position + new Vector3 (0, 5f);
+			ExplosionScript e = tnt.GetComponent <ExplosionScript>();
+			e.animation.Stop();
+			e.disamorced = true;
+			e.SetName("tntDropped");
+			e.transform.parent = null;
+			e.rigidbody.velocity = new Vector3();
+			tnt = null;
+			numberOfJump = 0;
+			state.Remove("isGettingFuckedByATNT");
+		}
 
 		if (postForce.Equals(new Vector3())){
 			accelerationTime -= ellapsedTime;
@@ -395,15 +411,15 @@ public class KartController : MonoBehaviour
 				shield.lifeTime = 14f;
 			}
 			else if (w == "Aku-Aku" || w == "Uka-Uka") {
-				if (protection!=null){
+				if (protection!=null)
+					Destroy(arme.gameObject);
+				else{
+					protection = arme;
 					if (IsSuper())
 						protection.lifeTime = 10f;
 					else
 						protection.lifeTime = 7f;
-					Destroy(arme.gameObject);
 				}
-				else
-					protection = arme;
 				AddSpeed(protection.lifeTime, 1.5f, "aku");
 			}
 			else if (w == "greenBeaker" || w=="redBeaker")
@@ -436,6 +452,8 @@ public class KartController : MonoBehaviour
 	
 	public void Die(GameObject killer, string weapon)
 	{
+		if(tnt)
+			Destroy(tnt);
 		if (shield != null)
 		{
 			StartCoroutine( TempUndead());
@@ -527,6 +545,7 @@ public class KartController : MonoBehaviour
 	
 	IEnumerator Transparence()
 	{
+		numberOfJump = 0;
 		//clignotment, invincibilité temporaire
 		if (state.IndexOf("invincible")==-1)
 			state.Add ("invincible");
@@ -649,6 +668,9 @@ public class KartController : MonoBehaviour
 			if(dansLesAirs==false)
 			{
 				rigidbody.position += new Vector3(0,3f,0);
+				
+				if (tnt)
+					numberOfJump++;
 			}
 		}
 
@@ -703,6 +725,9 @@ public class KartController : MonoBehaviour
 			if(dansLesAirs==false)
 			{
 				rigidbody.position += new Vector3(0,3f,0);
+				
+				if (tnt)
+					numberOfJump++;
 			}
 		}
 		
