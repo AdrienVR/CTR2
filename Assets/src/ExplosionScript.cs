@@ -16,6 +16,9 @@ public class ExplosionScript : MonoBehaviour {
 	private bool exploded=false;
 
 	private bool lockExplosion = false;
+	private KartController kartCollided;
+
+	public bool disamorced = false;
 
 	// Use this for initialization
 	void Start () {
@@ -80,7 +83,11 @@ public class ExplosionScript : MonoBehaviour {
 
 		//find the KartController target
 		KartController touched = other.GetComponent <KartController>();
-
+		kartCollided = touched;
+		
+		if (name == "TNT")
+			if (touched.protection || touched.shield)
+				name = "nitro";
 		// for bombs, missiles and launched shields
 		if (Game.launchWeapons.IndexOf(name)!=-1) {
 			if (other.gameObject != owner)
@@ -90,6 +97,8 @@ public class ExplosionScript : MonoBehaviour {
 			if (!exploded)
 				StartCoroutine (Explode());
 		}
+		else if (name == "TNT")
+			StartCoroutine (Explode());
 		// nitro tnt, beakers
 		else if (Game.poseWeapons.IndexOf(name)!=-1) {
 			touched.Die (owner,name);
@@ -118,6 +127,9 @@ public class ExplosionScript : MonoBehaviour {
 	void OnCollisionEnter(Collision collision)
 	{
 		rigidbody.velocity = new Vector3();
+		if (name == "tntDropped")
+			StartCoroutine(tntExplosion());
+
 	}
 	
 	IEnumerator LockExplosion()
@@ -132,20 +144,52 @@ public class ExplosionScript : MonoBehaviour {
 		owner.GetComponent <KartController>().explosiveWeapon = false;
 		if (explosionClip != null)
 			animation.Play (explosionClip.name);
-		audio.Play ();
-		gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
-		foreach (Transform child in gameObject.transform)
-		{
-			Destroy(child.gameObject);
+		if (name != "TNT"){
+			audio.Play ();
+			gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+			foreach (Transform child in gameObject.transform)
+			{
+				Destroy(child.gameObject);
+			}
+			gameObject.light.color = explosionColor;
+			yield return new WaitForSeconds (0.1f);
+			gameObject.light.color = new Color();
+			yield return new WaitForSeconds (3f);
+			Destroy(gameObject);
 		}
-		gameObject.light.color = explosionColor;
-		yield return new WaitForSeconds (0.1f);
-		gameObject.light.color = new Color();
-		yield return new WaitForSeconds (3f);
-		Destroy(gameObject);
+		else
+		{
+			if(kartCollided.state.IndexOf("isGettingFuckedByATNT")==-1)
+				kartCollided.state.Add("isGettingFuckedByATNT");
+			else{
+				kartCollided.Die (owner,name);
+				Destroy(gameObject);
+			}
+			gameObject.transform.rotation = Quaternion.Euler(new Vector3());
+			name = "tntExploded";
+			gameObject.transform.rotation = kartCollided.wheels["steering"].transform.rotation;
+			gameObject.transform.parent = kartCollided.wheels["steering"].transform;
+			kartCollided.tnt = gameObject;
+			yield return new WaitForSeconds (3f);
+			if (!disamorced)
+				StartCoroutine(tntExplosion());
+		}
 	}
 
-	IEnumerator TimeToLive()
+	IEnumerator tntExplosion(){
+			audio.Play ();
+			gameObject.light.color = explosionColor;
+			yield return new WaitForSeconds (0.1f);
+			gameObject.light.color = new Color();
+			if (!disamorced)
+				kartCollided.Die (owner,name);
+			kartCollided.state.Remove("isGettingFuckedByATNT");
+			gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+			yield return new WaitForSeconds (3f);
+			Destroy(gameObject);
+	}
+
+	public IEnumerator TimeToLive()
 	{
 		while(lifeTime>0f)
 		{
@@ -169,6 +213,10 @@ public class ExplosionScript : MonoBehaviour {
 		// for Aku-Aku and shields
 		else if (Game.protectWeapons.IndexOf(name) != -1) {
 			transform.position = owner.rigidbody.transform.position + new Vector3(0f,-0.2f);
+		}
+		else if (name == "tntExploded") {
+			if (!disamorced)
+				transform.position = kartCollided.wheels["steering"].transform.position + new Vector3(0f,+0.2f) - kartCollided.forwardNormal*0.2f;
 		}
 	}
 }
