@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Menus : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class Menus : MonoBehaviour
 	private static List <GameObject> controlAffiches =  new List <GameObject>();
 	private static Dictionary <int, string> menuCourant = new Dictionary<int, string>();
 	public Main main;
+	public Kart winner;
+	public List <Kart> loosers=  new List <Kart>();
 
 	private bool readyToMove = true;
 
@@ -68,6 +71,16 @@ public class Menus : MonoBehaviour
 		{10,"Mettre en Pause"},
 		{11,"RETOUR"}
 	};
+	private static Dictionary <int, string> menuFin =  new Dictionary<int, string>
+	{
+		{0,"Fin"},
+		{1,"RECOMMENCER"},
+		{2,"STATISTIQUES"},
+		{3,"CHANGER PERSONNAGE"},
+		{4,"CHANGER NIVEAU"},
+		{5,"CHANGER CONFIG"},
+		{6,"QUITTER"}
+	};
 	// Use this for initialization
 	void Start ()
 	{
@@ -82,7 +95,7 @@ public class Menus : MonoBehaviour
 	{
 		navigateMenu ();
 		testPause ();
-
+		testEnd ();
 	}
 
 	void testPause()
@@ -93,6 +106,86 @@ public class Menus : MonoBehaviour
 		{
 			Pause();
 		}
+	}
+
+	void testEnd()
+	{
+		foreach(Kart k in main.players)
+		{
+			if(k.isWinner)
+			{
+				k.isWinner=false;
+				winner = k;
+				greyT = (GameObject)GameObject.Instantiate(Resources.Load("guiBlack"));
+				inPause=true;
+				StartCoroutine(waitAndPause());
+			}
+			if(winner!=null)
+			{
+				Destroy(k.guiArme);
+				Destroy(k.guitextApples);
+				Destroy(k.guiPoints);
+				k.c2d.camera.rect=new Rect ();
+				if(k != winner)
+				{
+					k.camera.camera.rect=new Rect ();
+					if(loosers.IndexOf(k)==-1)
+						loosers.Add(k);
+				}
+			}
+		}
+	}
+
+	IEnumerator waitAndPause()
+	{
+		GameObject test = (GameObject)Instantiate (Resources.Load ("videoFond"));
+		KartController.stop = true;
+
+		StartCoroutine(interpolateCamera());
+		yield return new WaitForSeconds (1);
+		displayMenu(menuFin);
+
+		Destroy (greyT);
+		GameObject j1 =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.27f,0.35f,0),Quaternion.identity);
+		j1.guiText.text = "Joueur "+winner.numeroJoueur+" : "+winner.nbPoints+" Pts";
+		j1.guiText.color = Color.yellow;
+		loosers = loosers.OrderBy(x => x.nbPoints).ToList();
+		loosers.Reverse ();
+		foreach(Kart k in loosers)
+		{
+			GameObject j =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.27f,0.35f-0.08f*(loosers.IndexOf(k)+1),0),Quaternion.identity);
+			j.guiText.text = "Joueur "+k.numeroJoueur+" : "+k.nbPoints+" Pts";
+		}
+		KartController.stop = false;
+		winner.kc.gameObject.transform.position = main.listRespawn [0].position;
+		winner.kc.gameObject.transform.rotation =main.listRespawn[0].rotation;
+		main.executeIA ();
+	}
+
+	
+	IEnumerator interpolateCamera()
+	{
+		Rect rect = winner.camera.camera.rect;
+		Rect obj = new Rect (0.04f, 0.5f, 0.5f, 0.4f);
+		float ellapsed = 0;
+		float total = 200f;
+		float lastTime = Time.time;
+		float percent=0f;
+		while(ellapsed < total)
+		{
+			percent = ellapsed / total;
+			ellapsed += (Time.time - lastTime);
+			yield return new WaitForSeconds (0.01f);
+			winner.camera.camera.rect = Lerp(winner.camera.camera.rect,obj, percent); 
+		}
+	}
+
+	Rect Lerp(Rect a, Rect b, float f)
+	{
+		Rect s = new Rect (a.xMin + f * (b.xMin - a.xMin), a.yMin + f * (b.yMin - a.yMin),
+		                   a.width + f * (b.width - a.width), a.height + f * (b.height - a.height));
+
+		return s;
 	}
 
 	void Pause()
@@ -183,6 +276,17 @@ public class Menus : MonoBehaviour
 				GameObject flecheD = (GameObject)Instantiate (Resources.Load ("menuFlecheD"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)2.5f)),pos.y,5),Quaternion.identity);
 				flechesD.Add(flecheD);
 			}
+			return true;
+		}
+		else if(menu[0]=="Fin")
+		{
+			if(titreAffiche.transform.position.x != 0.8f)
+				titreAffiche.transform.position = new Vector3(0.8f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
+			Vector3 pos =new Vector3(0.8f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
+			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+			textbutton.guiText.text=menu[i];
+			textAffiches.Add(textbutton);
 			return true;
 		}
 		else return false;
@@ -382,6 +486,31 @@ public class Menus : MonoBehaviour
 				break;
 			case "OPTIONS":
 				displayMenu(menuOptions);
+				break;
+			case "CHANGER CONFIG":
+				displayMenu(menuFin);
+				break;
+			case "CHANGER NIVEAU":
+				if (Application.loadedLevelName == "plage")
+					Application.LoadLevel("dinoRace");
+				else
+					Application.LoadLevel("plage");
+				Restart();
+				break;
+			case "QUITTER":
+				Application.Quit();
+				break;
+			default:
+				break;
+			}
+		}
+		if(menu[0]=="Fin")
+		{
+			switch (menu[p+1])
+			{
+			case "RECOMMENCER":
+				Application.LoadLevel (Application.loadedLevel);
+				Restart();
 				break;
 			case "CHANGER NIVEAU":
 				if (Application.loadedLevelName == "plage")

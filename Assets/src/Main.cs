@@ -16,14 +16,47 @@ public class Main : MonoBehaviour
 	public GameObject respawn3;
 	public GameObject respawn4;
 
-	private List<Transform> listRespawn;
+	public List<Transform> listRespawn;
 	public List<Kart> players;
 
-	public static int nbPtsPartie = 15;
+	public static int nbPtsPartie = 1;
 
 	public float speedCoeff;
 	public float turnCoeff;
 	public static Main main;
+
+	private string[] lignesArray;
+
+	public static bool forward;
+	public static bool right=false;
+
+	public void executeIA()
+	{
+		lignesArray = System.IO.File.ReadAllLines(@"Resources\log.txt");
+		StartCoroutine(execute());
+	}
+
+	IEnumerator execute()
+	{
+		Debug.Log ("execute");
+		forward = true;
+		for(int i=0;i<lignesArray.Length;i++)
+		{
+			forward = true;
+			Debug.Log (i);
+			if(lignesArray[i]=="j'ai appuye sur D")
+			{
+				right=true;
+			}
+			if(forward==true)
+				Debug.Log("j'avance");
+			yield return new WaitForSeconds(1f/70f);
+			right=false;
+			if(i==lignesArray.Length-1)
+				i=0;
+		}
+		forward = false;
+	}
 
 	void Start()
 	{
@@ -38,7 +71,7 @@ public class Main : MonoBehaviour
 	{
 		Kart.nbPlayers = main.nbPlayer;
 		main.InitializeRespawn ();
-		
+		forward = false;
 		main.CreateNPersos(main.nbPlayer);
 		main.InitMenus ();
 		Instantiate (Resources.Load ("guiStartFire"));

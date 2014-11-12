@@ -157,7 +157,7 @@ public class KartController : MonoBehaviour
 				yTurnWheel = 0f;
 		}
 		else{
-			if(Input.GetKey(keyMap["turnLeft"]))
+			if(Input.GetKey(keyMap["turnLeft"]) || Main.right)
 				yTurnWheel = 1f;
 			else if(Input.GetKey(keyMap["turnRight"]))
 				yTurnWheel = -1f;
@@ -703,18 +703,18 @@ public class KartController : MonoBehaviour
 
 	public void controlKeyboard(){
 
-		if(Input.GetKey(keyMap["moveBack"])) {
+		if(Input.GetKey(keyMap["moveBack"]) ) {
 				lowForce = -forwardNormal*speedCoeff;
 				if(Input.GetKey(keyMap["turnLeft"]))
 					yTurn = -0.5f*turnCoeff;
-				else if(Input.GetKey(keyMap["turnRight"]))
+			else if(Input.GetKey(keyMap["turnRight"]))
 					yTurn = 0.5f*turnCoeff;
 		}
 		
-		if(Input.GetKey(keyMap["moveForward"]))
+		if(Input.GetKey(keyMap["moveForward"])|| Main.forward)
 		{
 			postForce = forwardNormal*speedCoeff;
-			if(Input.GetKey(keyMap["turnLeft"]))
+			if(Input.GetKey(keyMap["turnLeft"])|| Main.right)
 				yTurn = 0.5f*turnCoeff;
 			if(Input.GetKey(keyMap["turnRight"]))
 				yTurn = -0.5f*turnCoeff;

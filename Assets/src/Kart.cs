@@ -6,7 +6,7 @@ public class Kart
 {
 	
 	public CameraController cm1c;
-	private KartController kc;
+	public KartController kc;
 	private GUIText pointText;
 	public GUIText guitextApples; 
 	
@@ -15,12 +15,14 @@ public class Kart
 	public GameObject c2d;
 	public GameObject superLight;
 	public GameObject superLightWeapon;
+	public GameObject guiPoints;
 	
 	public int lastWeaponTextureNb = -1;
 	public int numeroJoueur;
-	private int nbPoints = 0;
+	public int nbPoints = 0;
 	public int nbApples = 0;
 	public int nbApplesFinal = 0;
+	public bool isWinner=false;
 
 	public static int nPlayer=0;
 	public static int nbPlayers=0;
@@ -67,7 +69,7 @@ public class Kart
 	
 	public void InitGui()
 	{
-		GameObject guiPoints = GameObject.Instantiate (Resources.Load ("guiPoints")) as GameObject;
+		guiPoints = GameObject.Instantiate (Resources.Load ("guiPoints")) as GameObject;
 		//guiPoints.transform.position = new Vector3 (guiPoints.transform.position.x, guiPoints.transform.position.y - numeroJoueur * 500, pointGui.transform.position.z);
 		guiPoints.layer = LayerMask.NameToLayer ("layer_j" + numeroJoueur);
 		pointText = (GUIText)guiPoints.GetComponent ("GUIText");
@@ -145,22 +147,24 @@ public class Kart
 				count = 3;
 			textureName = "missile"+count;
 		}
-		guiArme.guiTexture.texture = GameObject.Instantiate (Resources.Load ("Pictures/"+textureName)) as Texture;
+		if(guiArme)
+			guiArme.guiTexture.texture = GameObject.Instantiate (Resources.Load ("Pictures/"+textureName)) as Texture;
 	}
 	
 	public void undrawWeaponGui(){
 		lastWeaponTextureNb = -1;
-		guiArme.guiTexture.texture = null;
+		if(guiArme)
+			guiArme.guiTexture.texture = null;
 	}
 
 	public void AddPoint(int n)
 	{
 		// n = 1 or n = -1
 		nbPoints+=n;
-		pointText.text = nbPoints.ToString();
+		if(pointText)
+			pointText.text = nbPoints.ToString();
 		if (nbPoints == Main.nbPtsPartie){
-			Main.Restart ();
-			Application.LoadLevel (Application.loadedLevel);
+			isWinner=true;
 		}
 	}
 
@@ -178,7 +182,8 @@ public class Kart
 		nbApplesFinal = System.Math.Max (0, nbApplesFinal);
 		nbApples = System.Math.Max (0, nbApples);
 		if (nbApples != 10) SetIllumination(false);
-		guitextApples.text = "x "+nbApples.ToString();
+		if(guitextApples)
+			guitextApples.text = "x "+nbApples.ToString();
 		drawWeaponGui();
 	}
 	
