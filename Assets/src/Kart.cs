@@ -159,6 +159,7 @@ public class Kart
 		nbPoints+=n;
 		pointText.text = nbPoints.ToString();
 		if (nbPoints == Main.nbPtsPartie){
+			kc.gameObject.AddComponent<Party>();
 			Main.Restart ();
 			Application.LoadLevel (Application.loadedLevel);
 		}

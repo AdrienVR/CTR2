@@ -103,7 +103,6 @@ public class KartController : MonoBehaviour
 			e.rigidbody.velocity = new Vector3();
 			tnt = null;
 			numberOfJump = 0;
-			state.Remove("isGettingFuckedByATNT");
 		}
 
 		if (postForce.Equals(new Vector3())){
@@ -162,17 +161,21 @@ public class KartController : MonoBehaviour
 			else if(Input.GetKey(keyMap["turnRight"]))
 				yTurnWheel = -1f;
 		}
-
+		bool less = false;
 		if (yTurnWheel != 0){
 			twTimeWheels += ellapsedTime;
-			if (!postForce.Equals(new Vector3()))
+			//if (!postForce.Equals(new Vector3()))
+			if (postForce.magnitude > 1f)
 				twTime += ellapsedTime;
-			else
+			else{
 				twTime -= ellapsedTime;
+				less = true;
+			}
 		}
 		else{
 			twTimeWheels -= ellapsedTime;
 			twTime -= ellapsedTime;
+			yTurn = Lerp (yTurn, 0f, 0.8f);
 		}
 
 		twTimeWheels = System.Math.Min (twTimeWheels, 1.5f);
@@ -181,7 +184,10 @@ public class KartController : MonoBehaviour
 
 		twTime = System.Math.Min (twTime, 1.5f);
 		twTime = System.Math.Max (twTime, 0f);
-		twLerp = Lerp (twLerp, yTurn*System.Math.Min (rigidbody.velocity.magnitude, 27.5f)*0.25f, twTime/twMaxTime);
+		if(!less)
+			twLerp = Lerp (twLerp, yTurn*System.Math.Min (rigidbody.velocity.magnitude, 27.5f)*0.25f, twTime/twMaxTime);
+		else
+			twLerp = Lerp (twLerp, yTurn*27.5f*0.25f, twTime/twMaxTime);
 
 		wheels ["wheelAL"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
 		wheels ["wheelAR"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
@@ -332,8 +338,10 @@ public class KartController : MonoBehaviour
 				takenWeaponBox = null;
 			return;
 		}
-		
-		Vector3 forwardNormal = wheels ["steering"].transform.forward;
+
+		if (tnt)
+			return;
+
 		if (transform.forward.y>0)
 			forwardNormal.y = 0;
 		forwardNormal = normalizeVector (forwardNormal);
@@ -452,7 +460,7 @@ public class KartController : MonoBehaviour
 	
 	public void Die(GameObject killer, string weapon)
 	{
-		if(tnt)
+		if(tnt && weapon != "tntExploded")
 			Destroy(tnt);
 		if (shield != null)
 		{
