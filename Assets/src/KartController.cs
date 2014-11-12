@@ -51,6 +51,7 @@ public class KartController : MonoBehaviour
 	private float currentTime = 0f;
 
 	private float yTurn;
+	public static bool IA_enabled = false;
 
 	public int weaponSize = 1;
 	private static int nControllers;
@@ -86,6 +87,11 @@ public class KartController : MonoBehaviour
 	
 	void FixedUpdate()
 	{
+		if(IA_enabled)
+		{
+			rigidbody.velocity = new Vector3(postForce.x, rigidbody.velocity.y, postForce.z);
+		}
+		else{
 		if (Input.GetJoystickNames ().Length != nControllers)
 			InitSelfMapping ();
 
@@ -121,10 +127,10 @@ public class KartController : MonoBehaviour
 			slerpedCoeffSpeed = Slerp(slerpedCoeffSpeed, 1.0f, lerpedSpeed);
 			rigidbody.velocity = new Vector3(postForce.x*slerpedCoeffSpeed, rigidbody.velocity.y, postForce.z*slerpedCoeffSpeed);
 		}
-
+			
+		}
 		if (dansLesAirs)
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
-
 		transform.Rotate (0, yTurn, 0);
 
 		controlWheels ();
@@ -206,12 +212,18 @@ public class KartController : MonoBehaviour
 			forwardNormal = wheels ["steering"].transform.forward;
 			forwardNormal.y = 0;
 			forwardNormal = normalizeVector (forwardNormal);
+			
+			if (IA_enabled)
+				controlIA();
+			else{
 			if (hasAxis)
 				controlPosition ();
 			else
 				controlKeyboard ();
+			}
 		}
-		controlCamera ();
+		if (!IA_enabled)
+			controlCamera ();
 	}
 
 	void OnCollisionStay(Collision collision)
@@ -754,6 +766,55 @@ public class KartController : MonoBehaviour
 			}
 		}
 
+	}
+
+	
+	
+	public void controlIA(){
+		
+		/*if(Input.GetKey(keyMap["moveBack"]) ) {
+			lowForce = -forwardNormal*speedCoeff;
+			if(Input.GetKey(keyMap["turnLeft"]))
+				yTurn = -0.5f*turnCoeff;
+			else if(Input.GetKey(keyMap["turnRight"]))
+				yTurn = 0.5f*turnCoeff;
+		}*/
+		
+		if(Main.forward)
+		{
+			postForce = forwardNormal*speedCoeff;
+			if(Main.right)
+				yTurn = 0.5f*turnCoeff;
+			//if(Input.GetKey(keyMap["turnRight"]))
+			//	yTurn = -0.5f*turnCoeff;
+		}
+		
+		/*if(Input.GetKeyDown(keyMap["jump"]))
+		{
+			if(dansLesAirs==false)
+			{
+				rigidbody.position += new Vector3(0,3f,0);
+				
+				if (tnt)
+					numberOfJump++;
+			}
+		}
+		
+		if (Input.GetKeyDown (keyMap ["action"])) {
+			if (state.IndexOf ("UnableToShoot") != -1)
+				return;
+			facteurSens = 1f;
+			if (Input.GetKey(keyMap["moveBack"]))
+				facteurSens = -1f;
+			
+			if (!explosiveWeapon)
+				UseWeapon ();
+			else {
+				explosiveWeapon = false;
+				arme.ActionExplosion ();
+			}
+		}*/
+		
 	}
 	
 	public void controlCamera()

@@ -138,7 +138,7 @@ public class Menus : MonoBehaviour
 
 	IEnumerator waitAndPause()
 	{
-		GameObject test = (GameObject)Instantiate (Resources.Load ("videoFond"));
+		Instantiate (Resources.Load ("videoFond"));
 		KartController.stop = true;
 
 		StartCoroutine(interpolateCamera());
@@ -165,7 +165,6 @@ public class Menus : MonoBehaviour
 	
 	IEnumerator interpolateCamera()
 	{
-		Rect rect = winner.camera.camera.rect;
 		Rect obj = new Rect (0.04f, 0.5f, 0.5f, 0.4f);
 		float ellapsed = 0;
 		float total = 200f;

@@ -19,7 +19,7 @@ public class Main : MonoBehaviour
 	public List<Transform> listRespawn;
 	public List<Kart> players;
 
-	public static int nbPtsPartie = 1;
+	public static int nbPtsPartie = 8;
 
 	public float speedCoeff;
 	public float turnCoeff;
@@ -38,18 +38,14 @@ public class Main : MonoBehaviour
 
 	IEnumerator execute()
 	{
-		Debug.Log ("execute");
 		forward = true;
 		for(int i=0;i<lignesArray.Length;i++)
 		{
 			forward = true;
-			Debug.Log (i);
 			if(lignesArray[i]=="j'ai appuye sur D")
 			{
 				right=true;
 			}
-			if(forward==true)
-				Debug.Log("j'avance");
 			yield return new WaitForSeconds(1f/70f);
 			right=false;
 			if(i==lignesArray.Length-1)
@@ -109,6 +105,7 @@ public class Main : MonoBehaviour
 	public static void Restart(){
 		Kart.nPlayer = 0;
 		KartController.stop = true;
+		KartController.IA_enabled = false;
 		AudioListener.pause = false;
 	}
 

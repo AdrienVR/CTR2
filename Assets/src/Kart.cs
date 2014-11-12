@@ -160,12 +160,15 @@ public class Kart
 	public void AddPoint(int n)
 	{
 		// n = 1 or n = -1
+		if (KartController.IA_enabled)
+			return;
 		nbPoints+=n;
 		if(pointText)
 			pointText.text = nbPoints.ToString();
 		if (nbPoints == Main.nbPtsPartie){
 			isWinner=true;
 			kc.gameObject.AddComponent<Party>();
+			KartController.IA_enabled = true;
 		}
 	}
 
