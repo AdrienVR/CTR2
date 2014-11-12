@@ -165,6 +165,7 @@ public class Kart
 			pointText.text = nbPoints.ToString();
 		if (nbPoints == Main.nbPtsPartie){
 			isWinner=true;
+			kc.gameObject.AddComponent<Party>();
 		}
 	}
 

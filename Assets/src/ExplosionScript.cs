@@ -86,7 +86,7 @@ public class ExplosionScript : MonoBehaviour {
 		kartCollided = touched;
 		
 		if (name == "TNT")
-			if (touched.protection || touched.shield)
+			if (touched.protection || touched.shield || touched.tnt || touched.state.IndexOf("invincible")!=-1)
 				name = "nitro";
 		// for bombs, missiles and launched shields
 		if (Game.launchWeapons.IndexOf(name)!=-1) {
@@ -97,8 +97,9 @@ public class ExplosionScript : MonoBehaviour {
 			if (!exploded)
 				StartCoroutine (Explode());
 		}
-		else if (name == "TNT")
+		else if (name == "TNT"){
 			StartCoroutine (Explode());
+		}
 		// nitro tnt, beakers
 		else if (Game.poseWeapons.IndexOf(name)!=-1) {
 			touched.Die (owner,name);
@@ -127,8 +128,9 @@ public class ExplosionScript : MonoBehaviour {
 	void OnCollisionEnter(Collision collision)
 	{
 		rigidbody.velocity = new Vector3();
-		if (name == "tntDropped")
+		if (name == "tntDropped"){
 			StartCoroutine(tntExplosion());
+		}
 
 	}
 	
@@ -144,7 +146,7 @@ public class ExplosionScript : MonoBehaviour {
 		owner.GetComponent <KartController>().explosiveWeapon = false;
 		if (explosionClip != null)
 			animation.Play (explosionClip.name);
-		if (name != "TNT"){
+		if (name != "TNT" || !kartCollided){
 			audio.Play ();
 			gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
 			foreach (Transform child in gameObject.transform)
@@ -159,9 +161,7 @@ public class ExplosionScript : MonoBehaviour {
 		}
 		else
 		{
-			if(kartCollided.state.IndexOf("isGettingFuckedByATNT")==-1)
-				kartCollided.state.Add("isGettingFuckedByATNT");
-			else{
+			if(kartCollided.tnt){
 				kartCollided.Die (owner,name);
 				Destroy(gameObject);
 			}
@@ -171,22 +171,22 @@ public class ExplosionScript : MonoBehaviour {
 			gameObject.transform.parent = kartCollided.wheels["steering"].transform;
 			kartCollided.tnt = gameObject;
 			yield return new WaitForSeconds (3f);
-			if (!disamorced)
+			if (!disamorced){
 				StartCoroutine(tntExplosion());
+			}
 		}
 	}
 
 	IEnumerator tntExplosion(){
-			audio.Play ();
-			gameObject.light.color = explosionColor;
-			yield return new WaitForSeconds (0.1f);
-			gameObject.light.color = new Color();
-			if (!disamorced)
-				kartCollided.Die (owner,name);
-			kartCollided.state.Remove("isGettingFuckedByATNT");
-			gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
-			yield return new WaitForSeconds (3f);
-			Destroy(gameObject);
+		audio.Play ();
+		gameObject.light.color = explosionColor;
+		yield return new WaitForSeconds (0.1f);
+		gameObject.light.color = new Color();
+		if (!disamorced)
+			kartCollided.Die (owner,name);
+		gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+		yield return new WaitForSeconds (3f);
+		Destroy(gameObject);
 	}
 
 	public IEnumerator TimeToLive()

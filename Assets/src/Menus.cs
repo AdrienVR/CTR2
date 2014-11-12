@@ -440,14 +440,10 @@ public class Menus : MonoBehaviour
 	IEnumerator getKey()
 	{
 		for(int i=0;i<25;i++)
-		{
 			yield return new WaitForEndOfFrame ();
-		}
 		KeyCode temp = keyPressed;
 		while(keyPressed==temp || listKeys.IndexOf(keyPressed)>-1)
-		{
 			yield return new WaitForEndOfFrame ();
-		}
 		controlAffiches[position-1].guiText.text=keyPressed.ToString();
 		Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menuCourant.Count/2-position-1),-1);
 		GameObject flecheD = (GameObject)Instantiate (Resources.Load ("menuFlecheD"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)2.5f)),pos.y,5),Quaternion.identity);
