@@ -16,7 +16,8 @@ public class Main : MonoBehaviour
 	public Texture triVolume1;
 
 	public List<Transform> listRespawn;
-	public List<Transform> listRespawn;	public List<Kart> players;
+	public AudioSource sourceMusic;
+	public List<Kart> players;
 
 	public static int nbPtsPartie = 1;
 
