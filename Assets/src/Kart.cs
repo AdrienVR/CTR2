@@ -71,7 +71,7 @@ public class Kart
 	{
 		guiPoints = GameObject.Instantiate (Resources.Load ("guiPoints")) as GameObject;
 		//guiPoints.transform.position = new Vector3 (guiPoints.transform.position.x, guiPoints.transform.position.y - numeroJoueur * 500, pointGui.transform.position.z);
-		guiPoints.layer = LayerMask.NameToLayer ("layer_j" + numeroJoueur);
+		guiPoints.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 		pointText = (GUIText)guiPoints.GetComponent ("GUIText");
 		pointText.text="0";
 		if (nbPlayers > 2)
@@ -90,12 +90,12 @@ public class Kart
 		}
 		
 		GameObject nbAppleGui = GameObject.Instantiate (Resources.Load ("guitextApples")) as GameObject;
-		nbAppleGui.layer= LayerMask.NameToLayer ("layer_j" + numeroJoueur);
+		nbAppleGui.layer= LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 		guitextApples = (GUIText)nbAppleGui.GetComponent ("GUIText");
 		guitextApples.text = "x 0";
 
 		guiArme = GameObject.Instantiate (Resources.Load ("guiArme")) as GameObject;
-		guiArme.layer = LayerMask.NameToLayer ("layer_j" + numeroJoueur);
+		guiArme.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 	}
 	
 	public void blackScreen()

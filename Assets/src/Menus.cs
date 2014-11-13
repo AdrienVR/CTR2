@@ -122,10 +122,7 @@ public class Menus : MonoBehaviour
 			}
 			if(winner!=null)
 			{
-				Destroy(k.guiArme);
-				Destroy(k.guitextApples);
-				Destroy(k.guiPoints);
-				k.c2d.camera.rect=new Rect ();
+				k.c2d.camera.enabled=false;
 				if(k != winner)
 				{
 					k.camera.camera.rect=new Rect ();

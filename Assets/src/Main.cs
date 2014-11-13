@@ -19,7 +19,7 @@ public class Main : MonoBehaviour
 	public List<Transform> listRespawn;
 	public List<Kart> players;
 
-	public static int nbPtsPartie = 8;
+	public static int nbPtsPartie = 1;
 
 	public float speedCoeff;
 	public float turnCoeff;
