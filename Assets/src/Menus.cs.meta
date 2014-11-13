@@ -3,11 +3,13 @@ guid: 092200a4b603ddf45ae301470cab5d06
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
+  - soundUp: {fileID: 8300000, guid: 45a155418aa241c4faf0353348f43383, type: 3}
   - normal: {fileID: 2800000, guid: 5d5181cd8056d5b4a949d298a3a45b0b, type: 3}
   - hover: {fileID: 2800000, guid: ec136099a2476e24ebe64ad0f2f6159b, type: 3}
-  - triVolume3: {fileID: 2800000, guid: 5d74e8d9a53585248a92e46c73656a37, type: 3}
-  - triVolume2: {fileID: 2800000, guid: 4518553d4b84ad34fa58cac45ba2c3db, type: 3}
-  - triVolume1: {fileID: 2800000, guid: fde8d5b01cec91849828b078dc1da39b, type: 3}
+  - triVolume3: {instanceID: 0}
+  - triVolume2: {instanceID: 0}
+  - triVolume1: {instanceID: 0}
+  - main: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

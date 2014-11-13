@@ -4,12 +4,18 @@ using System.Collections.Generic;
 
 public class Main : MonoBehaviour
 {
+	public AudioClip soundUp;
+	public AudioClip soundOk;
+	public AudioClip soundCancel;
+	public AudioClip mainMusic;
 	public int nbPlayer;
 	public Texture normal;
 	public Texture hover;
 	public Texture triVolume3;
 	public Texture triVolume2;
 	public Texture triVolume1;
+
+	public AudioSource sourceMusic;
 
 	public GameObject respawn1;
 	public GameObject respawn2;
@@ -29,6 +35,7 @@ public class Main : MonoBehaviour
 
 	public static bool forward;
 	public static bool right=false;
+	private bool musicStarted = false;
 
 	public void executeIA()
 	{
@@ -54,6 +61,15 @@ public class Main : MonoBehaviour
 		forward = false;
 	}
 
+	void Update()
+	{
+		if(KartController.stop==false && musicStarted==false)
+		{
+			musicStarted=true;
+			sourceMusic.enabled=true;
+		}
+	}
+
 	void Start()
 	{
 		gameObject.AddComponent ("Game");
@@ -61,7 +77,12 @@ public class Main : MonoBehaviour
 		main = this;
 		Kart.setCoefficients (speedCoeff, turnCoeff);
 		Init ();
+		AudioSource[] sources = gameObject.GetComponents<AudioSource> ();
+		for (int i =0; i<sources.Length; i++)
+			if (sources [i].loop == true)
+				sourceMusic = sources [i];
 	}
+
 
 	public static void Init()
 	{

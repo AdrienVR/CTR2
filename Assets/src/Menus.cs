@@ -5,6 +5,7 @@ using System.Linq;
 
 public class Menus : MonoBehaviour
 {
+
 	public Texture normal;
 	public Texture hover;
 	public Texture triVolume3;
@@ -34,6 +35,7 @@ public class Menus : MonoBehaviour
 	public Main main;
 	public Kart winner;
 	public List <Kart> loosers=  new List <Kart>();
+
 
 	private bool readyToMove = true;
 
@@ -87,6 +89,7 @@ public class Menus : MonoBehaviour
 		normalTime = Time.timeScale;
 		cameraMenu = (GameObject)GameObject.Instantiate (Resources.Load("cameraMenu"));
 		//AudioListener.volume = 0.5f;
+		//soundUp =(AudioClip)Instantiate (Resources.Load ("Audio/down_menu"));
 	}
 
 	
@@ -104,6 +107,7 @@ public class Menus : MonoBehaviour
 		for (int i = 1; i<5; i++) pressStart |= Input.GetKeyDown (Game.playersMapping [i] ["start"]) ;
 		if (pressStart)
 		{
+			main.gameObject.audio.PlayOneShot (main.soundOk);
 			Pause();
 		}
 	}
@@ -192,7 +196,8 @@ public class Menus : MonoBehaviour
 			inPause=true;
 			displayMenu(menuPause);
 			Time.timeScale=0f;
-			AudioListener.pause = true;
+			main.sourceMusic.enabled=false;
+			//AudioListener.pause = true;
 		}
 		else if (inPause)
 		{
@@ -200,7 +205,8 @@ public class Menus : MonoBehaviour
 			viderMenu ();
 			Destroy(greyT);
 			Time.timeScale=normalTime;
-			AudioListener.pause = false;
+			main.sourceMusic.enabled=true;
+			//AudioListener.pause = false;
 		}
 
 	}
@@ -325,7 +331,10 @@ public class Menus : MonoBehaviour
 			if (!readyToMove)
 				down = false;
 			else if (down && readyToMove)
+			{
+				main.gameObject.audio.PlayOneShot (main.soundUp);
 				StartCoroutine(RestrictMovement());
+			}
 			if (down && position<menuCourant.Count-2) position++;
 			else if(down && !(position<menuCourant.Count-2)) position = 0;
 			bool up = false;
@@ -337,7 +346,10 @@ public class Menus : MonoBehaviour
 			if (!readyToMove)
 				up = false;
 			else if (up && readyToMove)
+			{
+				main.gameObject.audio.PlayOneShot (main.soundUp);
 				StartCoroutine(RestrictMovement());
+			}
 			if (up && position>0) position--;
 			else if(up && !(position>0)) position = menuCourant.Count-2;
 			bool ok = false;
@@ -348,6 +360,10 @@ public class Menus : MonoBehaviour
 			}
 			if(ok)
 			{
+				if(menuCourant[position+1]=="RETOUR")
+					main.gameObject.audio.PlayOneShot (main.soundCancel);
+				else
+					main.gameObject.audio.PlayOneShot (main.soundOk);
 				action(menuCourant,position);
 			}
 			
@@ -463,6 +479,16 @@ public class Menus : MonoBehaviour
 		readyToMove = true;
 	}
 
+	IEnumerator changeLevel(string level)
+	{
+		for(int i=0; i<20;i++)
+			yield return new WaitForEndOfFrame ();
+		if(level=="loaded")
+			Application.LoadLevel (Application.loadedLevel);
+		else
+		Application.LoadLevel (level);
+	}
+
 	void action(Dictionary <int, string> menu,int p)
 	{
 		if(menu[0]=="Start")
@@ -473,7 +499,7 @@ public class Menus : MonoBehaviour
 				Pause();
 				break;
 			case "RECOMMENCER":
-				Application.LoadLevel (Application.loadedLevel);
+				StartCoroutine(changeLevel("loaded"));
 				Restart();
 				break;
 			case "OPTIONS":
@@ -484,9 +510,11 @@ public class Menus : MonoBehaviour
 				break;
 			case "CHANGER NIVEAU":
 				if (Application.loadedLevelName == "plage")
-					Application.LoadLevel("dinoRace");
+					//Application.LoadLevel("dinoRace");
+					StartCoroutine(changeLevel("dinoRace"));
 				else
-					Application.LoadLevel("plage");
+					StartCoroutine(changeLevel("plage"));
+					//Application.LoadLevel("plage");
 				Restart();
 				break;
 			case "QUITTER":
@@ -501,14 +529,14 @@ public class Menus : MonoBehaviour
 			switch (menu[p+1])
 			{
 			case "RECOMMENCER":
-				Application.LoadLevel (Application.loadedLevel);
+				StartCoroutine(changeLevel("loaded"));
 				Restart();
 				break;
 			case "CHANGER NIVEAU":
 				if (Application.loadedLevelName == "plage")
-					Application.LoadLevel("dinoRace");
+					StartCoroutine(changeLevel("dinoRace"));
 				else
-					Application.LoadLevel("plage");
+					StartCoroutine(changeLevel("plage"));
 				Restart();
 				break;
 			case "QUITTER":
