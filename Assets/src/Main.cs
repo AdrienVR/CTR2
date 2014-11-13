@@ -66,7 +66,8 @@ public class Main : MonoBehaviour
 		if(KartController.stop==false && musicStarted==false)
 		{
 			musicStarted=true;
-			sourceMusic.enabled=true;
+			if(sourceMusic)
+				sourceMusic.enabled=true;
 		}
 	}
 
