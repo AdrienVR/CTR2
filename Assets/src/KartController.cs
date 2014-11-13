@@ -89,7 +89,9 @@ public class KartController : MonoBehaviour
 	{
 		if(IA_enabled)
 		{
-			rigidbody.velocity = new Vector3(postForce.x, rigidbody.velocity.y, postForce.z);
+			//rigidbody.velocity = new Vector3(postForce.x, rigidbody.velocity.y, postForce.z);
+			if (dansLesAirs)
+				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 		}
 		else{
 		if (Input.GetJoystickNames ().Length != nControllers)
@@ -127,13 +129,13 @@ public class KartController : MonoBehaviour
 			slerpedCoeffSpeed = Slerp(slerpedCoeffSpeed, 1.0f, lerpedSpeed);
 			rigidbody.velocity = new Vector3(postForce.x*slerpedCoeffSpeed, rigidbody.velocity.y, postForce.z*slerpedCoeffSpeed);
 		}
-			
-		}
+
 		if (dansLesAirs)
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 		transform.Rotate (0, yTurn, 0);
 
-		controlWheels ();
+			controlWheels ();
+		}
 	}
 
 	float Slerp(float a, float b, float f)
@@ -203,6 +205,8 @@ public class KartController : MonoBehaviour
 	
 	void Update()
 	{
+		if (IA_enabled)
+			return;
 		yTurn = 0;
 		if (Time.timeScale == 0)
 			return;
@@ -213,8 +217,8 @@ public class KartController : MonoBehaviour
 			forwardNormal.y = 0;
 			forwardNormal = normalizeVector (forwardNormal);
 			
-			if (IA_enabled)
-				controlIA();
+			if (IA_enabled){}
+				//controlIA();
 			else{
 			if (hasAxis)
 				controlPosition ();

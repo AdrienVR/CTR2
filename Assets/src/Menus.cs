@@ -160,7 +160,10 @@ public class Menus : MonoBehaviour
 		KartController.stop = false;
 		winner.kc.gameObject.transform.position = main.listRespawn [0].position;
 		winner.kc.gameObject.transform.rotation =main.listRespawn[0].rotation;
-		main.executeIA ();
+		AI.kart = winner.kc.gameObject;
+		//AI.children = winner.kc.wheels ["wheelAL"];
+		AI.wheels = winner.kc.wheels;
+		//main.executeIA winner.kc.wheels ();
 	}
 
 	
