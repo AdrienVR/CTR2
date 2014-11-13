@@ -11,12 +11,7 @@ public class Main : MonoBehaviour
 	public Texture triVolume2;
 	public Texture triVolume1;
 
-	public GameObject respawn1;
-	public GameObject respawn2;
-	public GameObject respawn3;
-	public GameObject respawn4;
-
-	public List<Transform> listRespawn;
+	public List<Transform> listRespawn = new List<Transform> ();
 	public List<Kart> players;
 
 	public static int nbPtsPartie = 1;
@@ -30,7 +25,7 @@ public class Main : MonoBehaviour
 	public static bool forward;
 	public static bool right=false;
 
-	public void executeIA()
+	/*public void executeIA()
 	{
 		lignesArray = System.IO.File.ReadAllLines(@"Resources\log.txt");
 		StartCoroutine(execute());
@@ -52,10 +47,15 @@ public class Main : MonoBehaviour
 				i=0;
 		}
 		forward = false;
-	}
+	}*/
 
 	void Start()
 	{
+		foreach(Transform child in transform)
+		{
+			listRespawn.Add(child);
+		}
+
 		gameObject.AddComponent ("Game");
 		Debug.Log ("Demarrage !");
 		main = this;
@@ -66,7 +66,6 @@ public class Main : MonoBehaviour
 	public static void Init()
 	{
 		Kart.nbPlayers = main.nbPlayer;
-		main.InitializeRespawn ();
 		forward = false;
 		main.CreateNPersos(main.nbPlayer);
 		main.InitMenus ();
@@ -82,14 +81,6 @@ public class Main : MonoBehaviour
 		m.triVolume2 = triVolume2;
 		m.triVolume3 = triVolume3;
 		m.main = this;
-	}
-
-	void InitializeRespawn()
-	{
-		listRespawn = new List<Transform> {respawn1.transform,
-			respawn2.transform,
-			respawn3.transform,
-			respawn4.transform};
 	}
 	
 	void CreateNPersos(int n)
