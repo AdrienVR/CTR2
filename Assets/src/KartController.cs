@@ -435,16 +435,19 @@ public class KartController : MonoBehaviour
 				shield.lifeTime = 14f;
 			}
 			else if (w == "Aku-Aku" || w == "Uka-Uka") {
+				/*Main.sourceMusic.clip=(AudioClip)Instantiate(Resources.Load("Audio/akuaku"));
+				Main.sourceMusic.Play();*/
 				if (protection!=null)
 					Destroy(arme.gameObject);
 				else{
 					protection = arme;
-					if (IsSuper())
-						protection.lifeTime = 10f;
-					else
-						protection.lifeTime = 7f;
 				}
-				AddSpeed(protection.lifeTime, 1.5f, "aku");
+				if (IsSuper())
+					protection.lifeTime = 10f;
+				else
+					protection.lifeTime = 7f;
+				AddSpeed(protection.lifeTime+2, 1.5f, "aku");
+				Main.ManageSound ();
 			}
 			else if (w == "greenBeaker" || w=="redBeaker")
 				if (sens == 1f)

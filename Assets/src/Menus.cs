@@ -199,8 +199,8 @@ public class Menus : MonoBehaviour
 			inPause=true;
 			displayMenu(menuPause);
 			Time.timeScale=0f;
-			if(main.sourceMusic)
-				main.sourceMusic.enabled=false;
+			if(Main.sourceMusic)
+				Main.sourceMusic.enabled=false;
 			//AudioListener.pause = true;
 		}
 		else if (inPause)
@@ -209,8 +209,8 @@ public class Menus : MonoBehaviour
 			viderMenu ();
 			Destroy(greyT);
 			Time.timeScale=normalTime;
-			if(main.sourceMusic)
-				main.sourceMusic.enabled=true;
+			if(Main.sourceMusic)
+				Main.sourceMusic.enabled=true;
 			//AudioListener.pause = false;
 		}
 

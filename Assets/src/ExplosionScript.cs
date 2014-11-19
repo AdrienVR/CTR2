@@ -196,10 +196,20 @@ public class ExplosionScript : MonoBehaviour {
 			yield return new WaitForSeconds (0.05f);
 			lifeTime -= 0.05f;
 		}
+		if (Game.protectWeapons.IndexOf(name)!=-1){
+			KartController ownerKart = owner.GetComponent <KartController>();
+			ownerKart.protection = null;
+		}
 		//maybe not clean but works...
 		//do not delete the shield if it's launched
 		if (Game.launchWeapons.IndexOf(name)==-1)
 			Destroy(gameObject);
+		/*if(Game.protectors.IndexOf(name)>-1 && !Main.isPlayingAku())
+		{
+			Main.sourceMusic.clip=(AudioClip)Instantiate(Resources.Load("Audio/skullrock"));
+			Main.sourceMusic.Play();
+		}*/
+		Main.ManageSound ();
 	}
 
 	// Update is called once per frame

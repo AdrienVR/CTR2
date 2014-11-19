@@ -16,10 +16,10 @@ public class Main : MonoBehaviour
 	public Texture triVolume1;
 
 	public List<Transform> listRespawn;
-	public AudioSource sourceMusic;
+	public static AudioSource sourceMusic;
 	public List<Kart> players;
 
-	public static int nbPtsPartie = 1;
+	public static int nbPtsPartie = 8;
 
 	public float speedCoeff;
 	public float turnCoeff;
@@ -30,6 +30,12 @@ public class Main : MonoBehaviour
 	public static bool forward;
 	public static bool right=false;
 	private bool musicStarted = false;
+
+
+	private static AudioClip akuClip;
+	private static AudioClip mapClip;
+
+	private static Kart kartAkuPlaying;
 
 	/*public void executeIA()
 	{
@@ -81,8 +87,42 @@ public class Main : MonoBehaviour
 		for (int i =0; i<sources.Length; i++)
 			if (sources [i].loop == true)
 				sourceMusic = sources [i];
+		
+		akuClip=(AudioClip)Instantiate(Resources.Load("Audio/akuaku"));
+		mapClip=(AudioClip)Instantiate(Resources.Load("Audio/skullrock"));
 	}
 
+	public static bool isPlayingAku()
+	{
+		bool b=false;
+		foreach(Kart k in main.players)
+		{
+			if(k.kc.protection!=null)
+				b=true;
+		}
+		return b;
+	}
+	
+	public static void ManageSound()
+	{
+		Kart akuFound = null;
+		foreach(Kart k in main.players)
+		{
+			if(k.kc.protection!=null){
+				akuFound = k;
+				
+				if (akuFound != kartAkuPlaying){
+					sourceMusic.clip = akuClip;
+					sourceMusic.Play();
+				}
+			}
+		}
+		if(akuFound == null) {
+			sourceMusic.clip = mapClip;
+			sourceMusic.Play();
+		}
+		kartAkuPlaying = akuFound;
+	}
 
 	public static void Init()
 	{
