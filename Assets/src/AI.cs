@@ -28,15 +28,19 @@ public class AI : MonoBehaviour {
 				                                       dist*speed);
 
 
-			kart.transform.rotation = Quaternion.Euler(Vector3.Lerp(kart.transform.rotation.eulerAngles,
-			                                       listTransform[position].rotation.eulerAngles,
-			                                                        dist*speed));
+			kart.transform.rotation = Quaternion.Euler(kart.transform.rotation.eulerAngles+ new Vector3(0,0.07f));
+			
+			wheels["steering"].rotation = Quaternion.Euler(wheels["steering"].rotation.eulerAngles+ new Vector3(0,-0.07f));
 			wheels["steering"].rotation = Quaternion.Euler(
 				Vector3.Lerp(wheels["steering"].rotation.eulerAngles,
 			                 kart.transform.rotation.eulerAngles + new Vector3(0, listTransform[position].rotation.eulerAngles.y%45f),
 			             dist*speed));
-			wheels["wheelAL"].rotation = Quaternion.Euler (wheels["steering"].rotation.eulerAngles*3 + new Vector3 (0, 90f)) ;
-			wheels["wheelAR"].rotation = Quaternion.Euler (wheels["steering"].rotation.eulerAngles*3 + new Vector3 (0, 90f)) ;
+			wheels["steering"].rotation = Quaternion.Euler(Vector3.Lerp(wheels["steering"].rotation.eulerAngles,
+			                                      listTransform[position].rotation.eulerAngles,
+			                                                      dist*speed));
+
+			//wheels["wheelAL"].rotation = Quaternion.Euler (wheels["steering"].rotation.eulerAngles*3 + new Vector3 (0, 90f)) ;
+			//wheels["wheelAR"].rotation = Quaternion.Euler (wheels["steering"].rotation.eulerAngles*3 + new Vector3 (0, 90f)) ;
 
 			if (Vector3.Distance(kart.transform.position, listTransform[position].position)< 2.0f)
 				position++;

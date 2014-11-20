@@ -25,15 +25,14 @@ public class Kart
 	public bool isWinner=false;
 
 	public static int nPlayer=0;
-	public static int nbPlayers=0;
+	public static int totalPlayers=1;
 	private static float speedCoeff;
 	private static float turnCoeff;
 
 	public Kart(Vector3 pos, Quaternion q, string kart)
 	{
 		nbPoints = 0;
-		nPlayer++;
-		numeroJoueur = nPlayer;
+		numeroJoueur = ++nPlayer;
 		InitObjet (pos, q, kart);
 		InitCamera ();
 		InitGui();
@@ -56,14 +55,14 @@ public class Kart
 	public void InitCamera()
 	{
 		camera = GameObject.Instantiate (Resources.Load("cameraKart")) as GameObject;
-		camera.camera.rect = Game.cameraMap[nbPlayers][numeroJoueur-1];
+		camera.camera.rect = Game.cameraMap[totalPlayers][numeroJoueur-1];
 		camera.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer_j"+numeroJoueur));
 		cm1c = (CameraController) camera.GetComponent ("CameraController");
 		cm1c.SetKartController(kc);
 		
 		c2d = GameObject.Instantiate (Resources.Load("cameraGui")) as GameObject;
 		c2d.transform.position = new Vector3 (c2d.transform.position.x, c2d.transform.position.y - numeroJoueur * 500, c2d.transform.position.z);
-		c2d.camera.rect = Game.cameraMap[nbPlayers][numeroJoueur-1];
+		c2d.camera.rect = Game.cameraMap[totalPlayers][numeroJoueur-1];
 		c2d.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer2d_j"+numeroJoueur));
 	}
 	
@@ -74,12 +73,12 @@ public class Kart
 		guiPoints.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 		pointText = (GUIText)guiPoints.GetComponent ("GUIText");
 		pointText.text="0";
-		if (nbPlayers > 2)
+		if (totalPlayers > 2)
 			pointText.transform.position = new Vector3(0.8f,pointText.transform.position.y,pointText.transform.position.z) ;
 
 		GameObject guiApple = GameObject.Instantiate (Resources.Load("guiApple")) as GameObject;
 		Resizer rs = (Resizer)guiApple.GetComponent ("Resizer");
-		rs.rectCam = Game.cameraMap [nbPlayers] [numeroJoueur - 1];
+		rs.rectCam = Game.cameraMap [totalPlayers] [numeroJoueur - 1];
 		guiApple.transform.position = new Vector3 (guiApple.transform.position.x, guiApple.transform.position.y - numeroJoueur * 500, guiApple.transform.position.z);
 		guiApple.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 		foreach (Transform child in guiApple.transform)

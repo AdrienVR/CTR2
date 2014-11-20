@@ -4,9 +4,8 @@ using System.Collections.Generic;
 
 public class Game : MonoBehaviour
 {
+	public static float thresholdAxis = 0.3f;
 	// src : http://crashbandicoot.wikia.com/wiki/Crash_Team_Racing
-	public static Dictionary <int, bool> controllersEnabled = new Dictionary <int, bool> {
-		{1,false},{2,false},{3,false},{4,false}};
 	public static Dictionary <int, string> normalWeapons =  new Dictionary<int, string> {
 		{1,"greenBeaker"},{2,"greenShield"},{3,"bomb"},{4,"triple_bomb"},{5,"triple_missile"},
 		{6,"Aku-Aku"},{7,"TNT"},{8,"turbo"}	};
@@ -32,113 +31,12 @@ public class Game : MonoBehaviour
 	public static List<string> protectors = new List<string>() {"Aku-Aku", "Uka-Uka"};
 	public static List<string> shields = new List<string>() {"greenShield", "blueShield"};
 	
-	public static Dictionary <int, Dictionary<string, KeyCode>> playersMapping;
-	public static Dictionary <int, Dictionary<string, string>> axisMapping;
+	public static Dictionary<int, string> playersMapping;// {1:xbox1, etc}
+
 	public static List<string> listKarts = new List<string>{"Crash","Crash","Crash","Crash"};
 	public static List<string> characters = new List<string>() {"kartCrash"};
 	public static List<string> listMap = new List<string>() {"dinoRace", "plage"};
 
-	// AXIS
-	private static Dictionary <string, string> ps1_axis = new Dictionary<string, string> {
-		{"turn","J1_TurnAxis"}, {"stop","J1_StopAxis"}		};
-	private static Dictionary <string, string> ps2_axis = new Dictionary<string, string> {
-		{"turn","J2_TurnAxis"}, {"stop","J2_StopAxis"}		};
-	private static Dictionary <string, string> ps3_axis = new Dictionary<string, string> {
-		{"turn","J3_TurnAxis"}, {"stop","J3_StopAxis"}		};
-	private static Dictionary <string, string> ps4_axis = new Dictionary<string, string> {
-		{"turn","J4_TurnAxis"}, {"stop","J4_StopAxis"}		};
 
-	// BUTTONS
-	public static Dictionary <string, KeyCode> pc1 = new Dictionary<string, KeyCode> {
-		{"moveForward",KeyCode.Z}, {"moveBack",KeyCode.S},
-		{"turnRight",KeyCode.Q}, {"turnLeft",KeyCode.D},
-		{"jump",KeyCode.Space}, {"jump2",KeyCode.F5}, 
-		{"action",KeyCode.A}, {"start",KeyCode.Escape}, 
-		{"viewChange",KeyCode.F1}, {"viewInverse",KeyCode.F2},
-		{"bip",KeyCode.F3}, {"bip2",KeyCode.F4}
-	};
-	public static Dictionary <string, KeyCode> pc2 = new Dictionary<string, KeyCode> {
-		{"moveForward",KeyCode.I}, {"moveBack",KeyCode.K},
-		{"turnRight",KeyCode.J}, {"turnLeft",KeyCode.L},
-		{"jump",KeyCode.B}, {"jump2",KeyCode.F11}, 
-		{"action",KeyCode.U}, {"start",KeyCode.F12}, 
-		{"viewChange",KeyCode.F7}, {"viewInverse",KeyCode.F8},
-		{"bip",KeyCode.F9}, {"bip2",KeyCode.F10}
-	};
-	public static Dictionary <string, KeyCode> ps1 = new Dictionary<string, KeyCode> {
-		{"moveForward",KeyCode.Joystick1Button2}, {"moveBack",KeyCode.Joystick1Button3},
-		{"jump",KeyCode.Joystick1Button7}, {"jump2",KeyCode.Joystick1Button6},
-		{"action",KeyCode.Joystick1Button1},{"start",KeyCode.Joystick1Button9},
-		{"viewChange",KeyCode.Joystick1Button4}, {"viewInverse",KeyCode.Joystick1Button5},
-		{"bip",KeyCode.Joystick1Button10}, {"bip2",KeyCode.Joystick1Button11}
-	};
-	public static Dictionary <string, KeyCode> ps2 = new Dictionary<string, KeyCode> {
-		{"moveForward",KeyCode.Joystick2Button2}, {"moveBack",KeyCode.Joystick2Button3},
-		{"jump",KeyCode.Joystick2Button7}, {"jump2",KeyCode.Joystick2Button6},
-		{"action",KeyCode.Joystick2Button1},{"start",KeyCode.Joystick2Button9},
-		{"viewChange",KeyCode.Joystick2Button4}, {"viewInverse",KeyCode.Joystick2Button5},
-		{"bip",KeyCode.Joystick2Button10}, {"bip2",KeyCode.Joystick2Button11}
-	};
-	public static Dictionary <string, KeyCode> ps3 = new Dictionary<string, KeyCode> {
-		{"moveForward",KeyCode.Joystick3Button2}, {"moveBack",KeyCode.Joystick3Button3},
-		{"jump",KeyCode.Joystick3Button7}, {"jump2",KeyCode.Joystick3Button6},
-		{"action",KeyCode.Joystick3Button1},{"start",KeyCode.Joystick3Button9},
-		{"viewChange",KeyCode.Joystick3Button4}, {"viewInverse",KeyCode.Joystick3Button5},
-		{"bip",KeyCode.Joystick3Button10}, {"bip2",KeyCode.Joystick3Button11}
-	};
-	public static Dictionary <string, KeyCode> ps4 = new Dictionary<string, KeyCode> {
-		{"moveForward",KeyCode.Joystick4Button2}, {"moveBack",KeyCode.Joystick4Button3},
-		{"jump",KeyCode.Joystick4Button7}, {"jump2",KeyCode.Joystick4Button6},
-		{"action",KeyCode.Joystick4Button1},{"start",KeyCode.Joystick4Button9},
-		{"viewChange",KeyCode.Joystick4Button4}, {"viewInverse",KeyCode.Joystick4Button5},
-		{"bip",KeyCode.Joystick4Button10}, {"bip2",KeyCode.Joystick4Button11}
-	};
-	public static Dictionary <string, string> actions = new Dictionary<string, string>
-	{
-		{"Avancer","moveForward"},
-		{"Reculer","moveBack"},
-		{"Sauter","jump"},
-		{"rien1","jump2"},
-		{"Actionner Arme","action"},
-		{"Mettre en Pause","start"},
-		{"Changer Vue","viewChange"},
-		{"Inverser Camera","viewInverse"},
-		{"Tourner Gauche","turnLeft"},
-		{"Tourner Droite","turnRight"},
-		{"rien2","bip"},
-		{"rien3","bip2"}
-	};
-
-	private static int nControllers;
-
-	// Use this for initialization
-	void Start ()
-	{
-		InitJoysticks ();
-	}
-
-	void FixedUpdate() {
-		if (Input.GetJoystickNames ().Length != nControllers)
-			InitJoysticks ();
-	}
-
-	public static void InitJoysticks()
-	{
-		nControllers = Input.GetJoystickNames ().Length;
-
-		int n = nControllers;
-		if (n > 4)
-			n = 4;
-		for(int i = 1; i < n+1 ; i++)
-			controllersEnabled[i] = true;
-
-		// AXIS ---------------------------------------------------------
-		axisMapping = new Dictionary<int, Dictionary<string, string>> {{1,ps1_axis},{2,ps2_axis},{3,ps3_axis},{4,ps4_axis}};
-
-		// BUTTONS -------------------------------------------------------
-		playersMapping = new Dictionary<int, Dictionary<string, KeyCode>> {{1,ps1},{2,ps2},{3,ps3},{4,ps4}};
-		playersMapping[n + 1] = pc1;
-		playersMapping[n + 2] = pc2;
-	}
 }
 

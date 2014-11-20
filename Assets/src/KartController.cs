@@ -15,8 +15,7 @@ public class KartController : MonoBehaviour
 	public float coeffInitSpeed;
 	public Dictionary <string, float> speedDuration = new Dictionary <string,  float>();
 	public Dictionary <string, float> speedToAdd = new Dictionary <string,  float>();
-	
-	private bool hasAxis = false;
+
 	private Vector3 postForce;
 	private Vector3 lowForce;
 	public Vector3 forwardNormal;
@@ -35,11 +34,9 @@ public class KartController : MonoBehaviour
 
 	public List<string> state = new List<string>();
 	public List<string> weapons;
-	public Dictionary <string, KeyCode> keyMap;
 
 	private Kart kart;
 	private bool dansLesAirs = true;
-	private Dictionary <string, string> axisMap;
 	public Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
 	private float ky;
 	private bool baddie = false;
@@ -69,6 +66,7 @@ public class KartController : MonoBehaviour
 	private float twLerpWheels = 0f;
 
 	private int numberOfJump = 0;
+	private ControllerAPI controller;
 	
 	// Use this for initialization
 	void Start ()
@@ -76,13 +74,42 @@ public class KartController : MonoBehaviour
 		coeffInitSpeed = speedCoeff;
 		explosiveWeapon = false;
 		weapons = new List<string>();
-		InitSelfMapping ();
 
 		foreach (Transform child in transform){
 			wheels["steering"] = child;
 			foreach (Transform w in child.transform)
 				wheels[w.name] = w;
 		}
+		controller = new ControllerAPI (kart.numeroJoueur);
+	}
+	
+	void Update()
+	{
+		if (IA_enabled)
+			return;
+		yTurn = 0;
+		if (Time.timeScale == 0)
+			return;
+		lowForce = new Vector3 ();
+		postForce = new Vector3 ();
+		if (!stop && !stopDie){
+			forwardNormal = wheels ["steering"].transform.forward;
+			forwardNormal.y = 0;
+			forwardNormal = normalizeVector (forwardNormal);
+			
+			if (IA_enabled){}
+			//controlIA();
+			else{
+				controle ();
+				/*
+				if (hasAxis)
+					controlPosition ();
+				else
+					controlKeyboard ();*/
+			}
+		}
+		if (!IA_enabled)
+			controlCamera ();
 	}
 	
 	void FixedUpdate()
@@ -94,8 +121,6 @@ public class KartController : MonoBehaviour
 				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 		}
 		else{
-		if (Input.GetJoystickNames ().Length != nControllers)
-			InitSelfMapping ();
 
 		ellapsedTime = Time.time - currentTime;
 		currentTime = Time.time;
@@ -158,17 +183,10 @@ public class KartController : MonoBehaviour
 
 	void controlWheels(){
 		float yTurnWheel = 0f;
-		if (hasAxis){
-			yTurnWheel = Input.GetAxis (axisMap ["turn"]);
-			if (yTurnWheel <0.1f && yTurnWheel>-0.1f)
-				yTurnWheel = 0f;
-		}
-		else{
-			if(Input.GetKey(keyMap["turnLeft"]) || Main.right)
-				yTurnWheel = 1f;
-			else if(Input.GetKey(keyMap["turnRight"]))
-				yTurnWheel = -1f;
-		}
+		if(controller.IsPressed("turnLeft"))
+			yTurnWheel = -controller.KeyValue("turnLeft");
+		else if(controller.IsPressed("turnRight"))
+			yTurnWheel = controller.KeyValue("turnRight");
 		bool less = false;
 		if (yTurnWheel != 0){
 			twTimeWheels += ellapsedTime;
@@ -200,34 +218,6 @@ public class KartController : MonoBehaviour
 		wheels ["wheelAL"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
 		wheels ["wheelAR"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
 		wheels ["steering"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, twLerp));
-	}
-
-	
-	void Update()
-	{
-		if (IA_enabled)
-			return;
-		yTurn = 0;
-		if (Time.timeScale == 0)
-			return;
-		lowForce = new Vector3 ();
-		postForce = new Vector3 ();
-		if (!stop && !stopDie){
-			forwardNormal = wheels ["steering"].transform.forward;
-			forwardNormal.y = 0;
-			forwardNormal = normalizeVector (forwardNormal);
-			
-			if (IA_enabled){}
-				//controlIA();
-			else{
-			if (hasAxis)
-				controlPosition ();
-			else
-				controlKeyboard ();
-			}
-		}
-		if (!IA_enabled)
-			controlCamera ();
 	}
 
 	void OnCollisionStay(Collision collision)
@@ -387,14 +377,12 @@ public class KartController : MonoBehaviour
 			w = Game.superWeapons[n];
 		}
 		float sens = -1f;
-		if (hasAxis && Input.GetAxis (axisMap ["stop"]) < -0.1f)
-			sens = 1f;
-		else if (!hasAxis && Input.GetKey(keyMap["moveForward"]))
+		if (controller.IsPressed("throw"))
 			sens = 1f;
 
 		// computing the distance to instantiate the weapon
 		if (w == "bomb")
-			posToAdd = 6f * (new Vector3 (facteurSens * forwardNormal.x, forwardNormal.y + 0.6f, facteurSens * forwardNormal.z));
+			posToAdd = 6f * (new Vector3 (facteurSens * forwardNormal.x, forwardNormal.y + 0.2f, facteurSens * forwardNormal.z));
 		else if (Game.poseWeapons.IndexOf(w) != -1){
 			if (w == "greenBeaker" || w=="redBeaker")
 				posToAdd = 4f * (new Vector3 (sens*forwardNormal.x, forwardNormal.y + 0.2f, sens*forwardNormal.z));
@@ -628,11 +616,11 @@ public class KartController : MonoBehaviour
 	public void controlDerapage()
 	{
 		
-		if(Input.GetKeyDown(keyMap["moveForward"]))
+		if(controller.IsPressed("moveForward"))
 		{
 			pressX=true;
 		}
-		if(Input.GetKeyUp(keyMap["moveForward"]))
+		if(controller.IsPressed("moveForward"))
 		{
 			pressX=false;
 			pressXAndFleche=false;
@@ -640,22 +628,22 @@ public class KartController : MonoBehaviour
 			//turnCoeff=2;
 			//speedCoeff=3;
 		}
-		if(Input.GetKeyDown(keyMap["jump"]))
+		if(controller.IsPressed("jump"))
 		{
 			pressR1=true;
 		}
-		if(Input.GetKeyUp(keyMap["jump"]))
+		if(controller.IsPressed("jump"))
 		{
 			pressR1=false;
 			pressXAndFlecheAndR1=false;
 			//turnCoeff=2;
 			//speedCoeff=3;
 		}
-		if(Input.GetKeyDown(keyMap["jump2"]))
+		if(controller.IsPressed("jump2"))
 		{
 			pressL1=true;
 		}
-		if(Input.GetKeyUp(keyMap["jump2"]))
+		if(controller.IsPressed("jump2"))
 		{
 			pressL1=false;
 		}
@@ -678,19 +666,19 @@ public class KartController : MonoBehaviour
 		{
 		}
 	}
+
 	
-	public void controlPosition()
+	public void controle()
 	{	
-
-		if(Input.GetAxis (axisMap ["stop"]) > 0.1f)
-				lowForce = -Input.GetAxis (axisMap ["stop"]) * forwardNormal * speedCoeff;
+		if(controller.IsPressed("moveBack"))
+			lowForce = -controller.KeyValue("moveBack") * forwardNormal * speedCoeff;
 		
-		if(Input.GetKey(keyMap["moveForward"]))
+		if(controller.IsPressed("moveForward"))
 		{
 			postForce = forwardNormal*speedCoeff;
 		}
-
-		if(Input.GetKeyDown(keyMap["jump"]))
+		
+		if(controller.GetKeyDown("jump"))
 		{
 			if(dansLesAirs==false)
 			{
@@ -701,69 +689,28 @@ public class KartController : MonoBehaviour
 			}
 		}
 
-		if(!Input.GetKey(keyMap["moveBack"]) && System.Math.Abs(Input.GetAxis (axisMap ["turn"]))>0.1f){
-			if(Input.GetAxis (axisMap ["stop"]) > 0.1f){
-				yTurn = -0.5f*Input.GetAxis (axisMap ["turn"]) * turnCoeff;
-			}
-			else if(Input.GetKey(keyMap["moveForward"]) || Input.GetKeyDown(keyMap["jump"]))
-				yTurn = 0.5f*Input.GetAxis (axisMap ["turn"]) * turnCoeff;
+		if (!controller.IsPressed("moveBack") && (controller.IsPressed("stop") || controller.IsPressed("moveForward"))){
+			if(controller.IsPressed("turnRight"))
+				yTurn = 0.5f*controller.KeyValue("turnRight") * turnCoeff;
+			else if(controller.IsPressed("turnLeft"))
+				yTurn = -0.5f*controller.KeyValue("turnLeft") * turnCoeff;
 		}
-		if(Input.GetKey(keyMap["moveBack"])){
-			yTurn = 0.5f*Input.GetAxis (axisMap ["turn"]) * turnCoeff;
+		else if (controller.IsPressed("moveBack")){
+			lowForce = -forwardNormal * speedCoeff;
+			if(controller.IsPressed("turnRight"))
+				yTurn = -0.5f*controller.KeyValue("turnRight") * turnCoeff;
+			else if(controller.IsPressed("turnLeft"))
+				yTurn = 0.5f*controller.KeyValue("turnLeft") * turnCoeff;
 		}
-
-		if (Input.GetKeyDown (keyMap ["action"])) {
+		
+		if (controller.GetKeyDown("action")) {
 			if (state.IndexOf ("UnableToShoot") != -1)
 				return;
 			facteurSens = 1f;
-			if (Input.GetAxis (axisMap ["stop"]) > 0.1f)
-				facteurSens = -1f;
-
-			if (!explosiveWeapon)
-				UseWeapon ();
-			else {
-				explosiveWeapon = false;
-				arme.ActionExplosion ();
-			}
-		}
-	}
-
-	public void controlKeyboard(){
-
-		if(Input.GetKey(keyMap["moveBack"]) ) {
-				lowForce = -forwardNormal*speedCoeff;
-				if(Input.GetKey(keyMap["turnLeft"]))
-					yTurn = -0.5f*turnCoeff;
-			else if(Input.GetKey(keyMap["turnRight"]))
-					yTurn = 0.5f*turnCoeff;
-		}
-		
-		if(Input.GetKey(keyMap["moveForward"])|| Main.forward)
-		{
-			postForce = forwardNormal*speedCoeff;
-			if(Input.GetKey(keyMap["turnLeft"])|| Main.right)
-				yTurn = 0.5f*turnCoeff;
-			if(Input.GetKey(keyMap["turnRight"]))
-				yTurn = -0.5f*turnCoeff;
-		}
-		
-		if(Input.GetKeyDown(keyMap["jump"]))
-		{
-			if(dansLesAirs==false)
-			{
-				rigidbody.position += new Vector3(0,3f,0);
-				
-				if (tnt)
-					numberOfJump++;
-			}
-		}
-		
-		if (Input.GetKeyDown (keyMap ["action"])) {
-			if (state.IndexOf ("UnableToShoot") != -1)
-				return;
-			facteurSens = 1f;
-			if (Input.GetKey(keyMap["moveBack"]))
-				facteurSens = -1f;
+			if (controller.IsPressed("moveBack"))
+				facteurSens = -controller.KeyValue("throw");
+			if (System.Math.Abs(facteurSens)<Game.thresholdAxis)
+				facteurSens = 1f;
 			
 			if (!explosiveWeapon)
 				UseWeapon ();
@@ -772,82 +719,21 @@ public class KartController : MonoBehaviour
 				arme.ActionExplosion ();
 			}
 		}
-
-	}
-
-	
-	
-	public void controlIA(){
-		
-		/*if(Input.GetKey(keyMap["moveBack"]) ) {
-			lowForce = -forwardNormal*speedCoeff;
-			if(Input.GetKey(keyMap["turnLeft"]))
-				yTurn = -0.5f*turnCoeff;
-			else if(Input.GetKey(keyMap["turnRight"]))
-				yTurn = 0.5f*turnCoeff;
-		}*/
-		
-		if(Main.forward)
-		{
-			postForce = forwardNormal*speedCoeff;
-			if(Main.right)
-				yTurn = 0.5f*turnCoeff;
-			//if(Input.GetKey(keyMap["turnRight"]))
-			//	yTurn = -0.5f*turnCoeff;
-		}
-		
-		/*if(Input.GetKeyDown(keyMap["jump"]))
-		{
-			if(dansLesAirs==false)
-			{
-				rigidbody.position += new Vector3(0,3f,0);
-				
-				if (tnt)
-					numberOfJump++;
-			}
-		}
-		
-		if (Input.GetKeyDown (keyMap ["action"])) {
-			if (state.IndexOf ("UnableToShoot") != -1)
-				return;
-			facteurSens = 1f;
-			if (Input.GetKey(keyMap["moveBack"]))
-				facteurSens = -1f;
-			
-			if (!explosiveWeapon)
-				UseWeapon ();
-			else {
-				explosiveWeapon = false;
-				arme.ActionExplosion ();
-			}
-		}*/
-		
 	}
 	
 	public void controlCamera()
 	{
-		if (Input.GetKeyDown (keyMap ["viewInverse"])) {
+		if (controller.GetKeyDown ("viewInverse")) {
 			kart.cm1c.reversed = -1f ;
 		}
-		if (Input.GetKeyUp (keyMap ["viewInverse"])) {
+		if (controller.GetKeyUp ("viewInverse")) {
 			kart.cm1c.reversed = 1f ;
 		}
-		if (Input.GetKeyDown (keyMap ["viewChange"])) {
+		if (controller.GetKeyDown ("viewChange")) {
 			if (kart.cm1c.positionForward == 1f)
 				kart.cm1c.positionForward = 0.85f ;
 			else
 				kart.cm1c.positionForward = 1f ;
 		}
 	}
-	
-	void InitSelfMapping()
-	{
-		nControllers = Input.GetJoystickNames ().Length;
-		hasAxis = Game.controllersEnabled[kart.numeroJoueur];
-		if (hasAxis)
-			axisMap = Game.axisMapping [kart.numeroJoueur];
-		
-		keyMap = Game.playersMapping [kart.numeroJoueur];
-	}
-	
 }

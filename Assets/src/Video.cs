@@ -18,7 +18,7 @@ public class Video : MonoBehaviour {
 		for(int i=0;i<textureList.Count;i++)
 		{
 			gt.texture = textureList [i];
-			yield return new WaitForSeconds(1f/48f);
+			yield return new WaitForSeconds(1f/25f);
 			if(i==textureList.Count-1)
 				i=-1;
 		}

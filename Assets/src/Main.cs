@@ -61,7 +61,7 @@ public class Main : MonoBehaviour
 		forward = false;
 	}*/
 
-	void Update()
+	void FixedUpdate()
 	{
 		if(KartController.stop==false && musicStarted==false)
 		{
@@ -69,17 +69,20 @@ public class Main : MonoBehaviour
 			if(sourceMusic)
 				sourceMusic.enabled=true;
 		}
+		ControllerAPI.CheckJoysticks ();
 	}
 
 	void Start()
 	{
+		nbPlayer = System.Math.Max (nbPlayer, 1);
+		nbPlayer = System.Math.Min (nbPlayer, 4);
+
 		foreach(Transform child in transform)
 		{
 			listRespawn.Add(child);
 		}
 
 		gameObject.AddComponent ("Game");
-		Debug.Log ("Demarrage !");
 		main = this;
 		Kart.setCoefficients (speedCoeff, turnCoeff);
 		Init ();
@@ -90,6 +93,9 @@ public class Main : MonoBehaviour
 		
 		akuClip=(AudioClip)Instantiate(Resources.Load("Audio/akuaku"));
 		mapClip=(AudioClip)Instantiate(Resources.Load("Audio/skullrock"));
+		Screen.showCursor = false; 
+		ControllerAPI.InitJoysticks ();
+		Debug.Log ("Starting with "+ ControllerAPI.nControllers + " controllers.");
 	}
 
 	public static bool isPlayingAku()
@@ -126,7 +132,7 @@ public class Main : MonoBehaviour
 
 	public static void Init()
 	{
-		Kart.nbPlayers = main.nbPlayer;
+		Kart.totalPlayers = main.nbPlayer;
 		forward = false;
 		main.CreateNPersos(main.nbPlayer);
 		main.InitMenus ();

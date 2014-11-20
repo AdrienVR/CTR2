@@ -6,7 +6,7 @@ public class Resizer : MonoBehaviour {
 	public Rect rectCam;
 	// Use this for initialization
 	void Start () {
-		Debug.Log ("screen : " + Screen.width+","+Screen.height);
+		//Debug.Log ("screen : " + Screen.width+","+Screen.height);
 		ResizeLocation ();
 	}
 
