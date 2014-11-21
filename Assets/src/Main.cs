@@ -96,6 +96,7 @@ public class Main : MonoBehaviour
 		Screen.showCursor = false; 
 		ControllerAPI.InitJoysticks ();
 		Debug.Log ("Starting with "+ ControllerAPI.nControllers + " controllers.");
+
 	}
 
 	public static bool isPlayingAku()

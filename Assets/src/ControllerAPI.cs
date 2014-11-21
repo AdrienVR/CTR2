@@ -93,19 +93,25 @@ public class ControllerAPI {
 		{"rien3","bip2"}
 	};
 	public static int nControllers;	
+
 	public static Dictionary <string, Dictionary <string, KeyCode>> buttonProfiles = 
 	new Dictionary <string, Dictionary <string, KeyCode>>{{"keyboard1",pc1}, {"keyboard2",pc2},
 		{"xbox1",ps1}, {"xbox2",ps2}, {"xbox3",ps3}, {"xbox4",ps4}};
 	private static Dictionary <string, Dictionary <string, string>> axisProfiles = 
 	new Dictionary <string, Dictionary <string, string>>{{"keyboard1",pc_axis}, {"keyboard2",pc_axis},
 		{"xbox1",ps1_axis}, {"xbox2",ps2_axis}, {"xbox3",ps3_axis}, {"xbox4",ps4_axis}};
+	
+	private static Dictionary <string, float> last_axis_up = new Dictionary <string, float>();
+	private static Dictionary <string, float> last_axis_down = new Dictionary <string, float>();
+
 	private static bool initialized = false;
+	public static bool waitingKey = false;
+	public static string keyToChange;
+	public static string actionToChange;
 	
 	private string controllerName;
 	private int controllerNumber;
 	private List<string> buttonList;
-	private Dictionary <string, float> last_axis_up = new Dictionary <string, float>();
-	private Dictionary <string, float> last_axis_down = new Dictionary <string, float>();
 	private Dictionary <string, string> axis;
 	private Dictionary <string, KeyCode> buttons;
 
@@ -117,6 +123,11 @@ public class ControllerAPI {
 			InitJoysticks ();
 		AffectControl (Game.playersMapping[i]);
 		allControllers [i] = this;
+
+		if (i == 1){
+			Debug.Log ("Test saving + loading binary dictionary");
+			ControllerAPI.Test (1);//player 1 = keyboard 1 or xbox1
+		}
 	}
 
 	public static void CheckJoysticks() {
@@ -137,13 +148,20 @@ public class ControllerAPI {
 		Game.playersMapping[n + 1] = "keyboard1";
 		Game.playersMapping[n + 2] = "keyboard2";
 
-		if (initialized) {
+		if (!initialized) {
+			foreach(Dictionary <string, string> axis_dict in axisProfiles.Values){
+				foreach(string key in axis_dict.Keys){
+					last_axis_up[key] = 0;
+					last_axis_down[key] = 0;
+				}
+			}
+			initialized = true;
+		}
+		else{
 			Debug.Log ("Now "+nControllers+" controllers detected");
 			foreach(ControllerAPI a in allControllers.Values)
 				a.SetDefaultFor(0);
 		}
-		else
-			initialized = true;;
 	}
 
 	public void SetDefaultFor(int n){
@@ -162,83 +180,154 @@ public class ControllerAPI {
 		axis = axisProfiles [controllerName];
 		buttons = buttonProfiles[controllerName];
 		buttonList = new List<string> (buttons.Keys);
-
-		foreach(string key in axis.Keys)
-			last_axis_up[key] = 0;
-		foreach(string key in axis.Keys)
-			last_axis_down[key] = 0;
 	}
 
-	public bool IsPressed(string key)
+	public bool IsPressed(string action)
 	{
-		if (buttonList.IndexOf (key) != -1){
-			return Input.GetKey (buttons [key]);}
+		if (buttonList.IndexOf (action) != -1){
+			return Input.GetKey (buttons [action]);}
 		else{
-			if (axisValues[key] < 0)
-				return (Input.GetAxis (axis[key]) > axisValues[key] && Input.GetAxis (axis[key]) < Game.thresholdAxis);
+			if (axisValues[action] < 0)
+				return (Input.GetAxis (axis[action]) > axisValues[action] && Input.GetAxis (axis[action]) < Game.thresholdAxis);
 			else
-				return (Input.GetAxis (axis[key]) < axisValues[key] && Input.GetAxis (axis[key]) > Game.thresholdAxis);
+				return (Input.GetAxis (axis[action]) < axisValues[action] && Input.GetAxis (axis[action]) > Game.thresholdAxis);
 		}
 	}
 	
-	public bool GetKeyDown(string key)
+	public bool GetKeyDown(string action)
 	{
-		if (buttonList.IndexOf (key) != -1)
-			return Input.GetKeyDown (buttons [key]);
-		else if (Input.GetAxis (axis[key]) != last_axis_down[key]){
-			last_axis_down[key] = Input.GetAxis (axis[key]);
-			if (axisValues[key] < 0)
-				return (Input.GetAxis (axis[key]) > axisValues[key] && Input.GetAxis (axis[key]) < Game.thresholdAxis);
+		//Debug.Log ("key : " + action);
+		if (buttonList.IndexOf (action) != -1)
+			return Input.GetKeyDown (buttons [action]);
+		else if (!(Input.GetAxis (axis[action]) < last_axis_down[action]+Game.thresholdAxis && 
+		           Input.GetAxis (axis[action]) > last_axis_down[action]-Game.thresholdAxis)){
+			if (System.Math.Abs (Input.GetAxis (axis[action]))<Game.thresholdAxis){
+				last_axis_down[action] = 0;
+				return false;
+			}
+			last_axis_down[action] = Input.GetAxis (axis[action]);
+			if (axisValues[action] < 0)
+				return (Input.GetAxis (axis[action]) > axisValues[action] && Input.GetAxis (axis[action]) < Game.thresholdAxis);
 			else
-				return (Input.GetAxis (axis[key]) < axisValues[key] && Input.GetAxis (axis[key]) > Game.thresholdAxis);
-		}
-		return false;
-	}
-	
-	public static bool StaticGetKeyDown(int i, string key)
-	{
-		if (i > Kart.totalPlayers)
-			return false;
-		return allControllers [i].GetKeyDown (key);
-	}
-	
-	public bool GetKeyUp(string key)
-	{
-		if (buttonList.IndexOf (key) != -1)
-			return Input.GetKeyUp (buttons [key]);
-		else if (Input.GetAxis (axis[key]) != last_axis_up[key]){
-			last_axis_up[key] = Input.GetAxis (axis[key]);
-			if (axisValues[key] < 0)
-					return (Input.GetAxis (axis[key]) > axisValues[key] && Input.GetAxis (axis[key]) < Game.thresholdAxis);
-			else
-				return (Input.GetAxis (axis[key]) < axisValues[key] && Input.GetAxis (axis[key]) > Game.thresholdAxis);
+				return (Input.GetAxis (axis[action]) < axisValues[action] && Input.GetAxis (axis[action]) > Game.thresholdAxis);
 		}
 		return false;
 	}
 	
-	public static bool StaticIsPressed(int i, string key)
+	public static void ListenForKey(string action, string key)
 	{
-		return (allControllers [i].IsPressed (key) && allControllers [i].KeyValue(key)>Game.thresholdAxis);
+		waitingKey = true;
+		keyToChange = key;
+		actionToChange = action;
+	}
+
+	public static bool CheckForAxis(){
+		if (waitingKey){
+			foreach(Dictionary <string, string> ax in axisProfiles.Values){
+				foreach(string action in ax.Keys){
+					if (CheckDownAxis(action, ax)){
+						waitingKey = false;
+						foreach(ControllerAPI c in allControllers.Values){
+							List<string> axisList = new List<string> (c.axis.Keys);
+							if (c.buttonList.IndexOf(actionToChange)!=-1 && c.buttons[actionToChange].ToString() == keyToChange)
+							{
+								c.buttons.Remove(actionToChange);
+								c.axis[actionToChange] = ax[action];
+								last_axis_down[actionToChange] = 0;
+								last_axis_up[actionToChange] = 0;
+								c.Update();
+								break;
+							}
+							else if(axisList.IndexOf(actionToChange)!=-1 && c.axis[actionToChange] == keyToChange)
+							{
+								c.axis[actionToChange] = ax[action];
+								last_axis_down[actionToChange] = 0;
+								last_axis_up[actionToChange] = 0;
+								c.Update();
+								break;
+							}
+						}
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
-	public float KeyValue(string key)
+	public static bool CheckForKey(){
+		if (waitingKey){
+			foreach(KeyCode key in KeyCodes.codes){
+				if (Input.GetKeyDown(key)){
+					waitingKey = false;
+					foreach(ControllerAPI c in allControllers.Values){
+						List<string> axisList = new List<string> (c.axis.Keys);
+						if (c.buttonList.IndexOf(actionToChange)!=-1 && c.buttons[actionToChange].ToString() == keyToChange)
+						{
+							c.buttons[actionToChange] = key;
+							c.Update();
+							break;
+						}
+						else if(axisList.IndexOf(actionToChange)!=-1 && c.axis[actionToChange] == keyToChange)
+						{
+							c.axis.Remove(actionToChange);
+							c.buttons[actionToChange] = key;
+							c.Update();
+							break;
+						}
+					}
+					return true;
+				}
+				}
+		}
+		return false;
+	}
+	
+	public static bool StaticGetKeyDown(int i, string action)
 	{
-		if (buttonList.IndexOf (key) != -1){
-			if (Input.GetKey (buttons [key])){
+		return allControllers [i].GetKeyDown (action);
+	}
+	
+	public bool GetKeyUp(string action)
+	{
+		if (buttonList.IndexOf (action) != -1)
+			return Input.GetKeyUp (buttons [action]);
+		else if (Input.GetAxis (axis[action]) != last_axis_up[action]){
+			last_axis_up[action] = Input.GetAxis (axis[action]);
+			if (axisValues[action] < 0)
+				return (Input.GetAxis (axis[action]) > axisValues[action] && Input.GetAxis (axis[action]) < Game.thresholdAxis);
+			else
+				return (Input.GetAxis (axis[action]) < axisValues[action] && Input.GetAxis (axis[action]) > Game.thresholdAxis);
+		}
+		return false;
+	}
+	
+	public static bool StaticIsPressed(int i, string action)
+	{
+		return (allControllers [i].IsPressed (action) && allControllers [i].KeyValue(action)>Game.thresholdAxis);
+	}
+	
+	public float KeyValue(string action)
+	{
+		if (buttonList.IndexOf (action) != -1){
+			if (Input.GetKey (buttons [action])){
 				//Debug.Log("Emulate axis for "+key);
 				return 1.0f;
 			}
 		}
 		else
-			return System.Math.Abs(Input.GetAxis (axis[key]));
+			return System.Math.Abs(Input.GetAxis (axis[action]));
 		return 0;
 	}
 
-	// something like contrary of GetActionName... TODO
-	public string KeyIs(string key)
+	// return the name of the button corresponding to the action
+	public static string KeyIs(int controllerN, string action)
 	{
-		Debug.Log ("keyn:" + key);
-		return "jump";
+		ControllerAPI c = allControllers[controllerN];
+		if (c.buttonList.IndexOf(action) != -1)
+			return c.buttons[action].ToString();
+		else
+			return c.axis[action];
 	}
 
 	// retourne le nom du boutton correspondant à l'action
@@ -248,15 +337,15 @@ public class ControllerAPI {
 	}
 
 	// TODO
-	public void Test()
+	public static void Test(int i)
 	{
 		var dictionary = new Dictionary<string, string>();
 		dictionary["perls"] = "dot";
 		dictionary["net"] = "perls";
 		dictionary["dot"] = "net";
-		Write(dictionary, "C:\\dictionary"+controllerName+".bin");
+		Write(dictionary, "C:\\dictionary"+allControllers[i].controllerName+".bin");
 
-		dictionary = Read( "C:\\dictionary"+controllerName+".bin");
+		dictionary = Read( "C:\\dictionary"+allControllers[i].controllerName+".bin");
 		foreach (var pair in dictionary)
 		{
 			Debug.Log(pair);
@@ -296,5 +385,24 @@ public class ControllerAPI {
 			}
 		}
 		return result;
+	}
+
+	private static bool CheckDownAxis(string action, Dictionary <string, string> axis_dict)
+	{
+		float axisValue = Input.GetAxis (axis_dict [action]);
+		if (!(axisValue < last_axis_down[action]+Game.thresholdAxis && 
+		      axisValue > last_axis_down[action]-Game.thresholdAxis))
+		{
+			if (System.Math.Abs (axisValue)<Game.thresholdAxis){
+				last_axis_down[action] = 0;
+				return false;
+			}
+			last_axis_down[action] = axisValue;
+			if (axisValues[action] < 0)
+				return (axisValue > axisValues[action] && axisValue < Game.thresholdAxis);
+			else
+				return (axisValue < axisValues[action] && axisValue > Game.thresholdAxis);
+		}
+		return false;
 	}
 }

@@ -378,8 +378,9 @@ public class KartController : MonoBehaviour
 		}
 		float sens = -1f;
 		if (controller.IsPressed("throw"))
-			sens = 1f;
-
+			sens = controller.KeyValue("throw");
+		if (System.Math.Abs(sens)<Game.thresholdAxis)
+			sens = -1f;
 		// computing the distance to instantiate the weapon
 		if (w == "bomb")
 			posToAdd = 6f * (new Vector3 (facteurSens * forwardNormal.x, forwardNormal.y + 0.2f, facteurSens * forwardNormal.z));
