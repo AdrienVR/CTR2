@@ -8,10 +8,13 @@ public class ControllerAPI {
 	private static Dictionary <int,ControllerAPI> allControllers = new Dictionary <int,ControllerAPI>();
 
 	// AXIS
-	private static Dictionary <string, float> axisValues = new Dictionary<string, float> {
+	private static Dictionary <string, float> defaultAxisValues = new Dictionary<string, float> {
 		{"throw",-2f}, {"moveBack",2f},
 		{"turnRight",2f}, {"turnLeft",-2f}
 	};
+	private static Dictionary <string, float> axisValues = new Dictionary<string, float> ();
+	private static Dictionary <string, float> newAxisValues = new Dictionary<string, float> ();
+
 	private static Dictionary <string, string> ps1_axis = new Dictionary<string, string> {
 		{"throw","J1_StopAxis"}, {"moveBack","J1_StopAxis"},
 		{"turnRight","J1_TurnAxis"}, {"turnLeft","J1_TurnAxis"}
@@ -134,7 +137,7 @@ public class ControllerAPI {
 		if (Input.GetJoystickNames ().Length != nControllers)
 			InitJoysticks ();
 	}
-	
+
 	public static void InitJoysticks()
 	{
 		nControllers = Input.GetJoystickNames ().Length;
@@ -149,18 +152,27 @@ public class ControllerAPI {
 		Game.playersMapping[n + 2] = "keyboard2";
 
 		if (!initialized) {
-			foreach(Dictionary <string, string> axis_dict in axisProfiles.Values){
-				foreach(string key in axis_dict.Keys){
-					last_axis_up[key] = 0;
-					last_axis_down[key] = 0;
-				}
-			}
+			InitAxisSides();
 			initialized = true;
 		}
 		else{
 			Debug.Log ("Now "+nControllers+" controllers detected");
 			foreach(ControllerAPI a in allControllers.Values)
 				a.SetDefaultFor(0);
+		}
+	}
+	
+	// put axisValue[action+axisName] to default float value (=side)
+	private static void InitAxisSides(){
+		foreach (Dictionary <string, string> axisNameDict in axisProfiles.Values){
+			foreach(string action in axisNameDict.Keys){
+				axisValues[action+axisNameDict[action]] = defaultAxisValues[action];
+				last_axis_up[action+axisNameDict[action]] = 0;
+				last_axis_down[action+axisNameDict[action]] = 0;
+			}
+		}
+		foreach (string axisName in KeyCodes.axisNames) {
+			newAxisValues[axisName] = Input.GetAxis(axisName);
 		}
 	}
 
@@ -187,29 +199,33 @@ public class ControllerAPI {
 		if (buttonList.IndexOf (action) != -1){
 			return Input.GetKey (buttons [action]);}
 		else{
-			if (axisValues[action] < 0)
-				return (Input.GetAxis (axis[action]) > axisValues[action] && Input.GetAxis (axis[action]) < Game.thresholdAxis);
+			string name = axis[action];
+			//Debug.Log("d"+action+name);
+			if (axisValues[action+name] < 0)
+				return (Input.GetAxis (name) > axisValues[action+name] && Input.GetAxis (name) < -Game.thresholdAxis);
 			else
-				return (Input.GetAxis (axis[action]) < axisValues[action] && Input.GetAxis (axis[action]) > Game.thresholdAxis);
+				return (Input.GetAxis (name) < axisValues[action+name] && Input.GetAxis (name) > Game.thresholdAxis);
 		}
 	}
 	
 	public bool GetKeyDown(string action)
 	{
-		//Debug.Log ("key : " + action);
+		//buttons management
 		if (buttonList.IndexOf (action) != -1)
 			return Input.GetKeyDown (buttons [action]);
-		else if (!(Input.GetAxis (axis[action]) < last_axis_down[action]+Game.thresholdAxis && 
-		           Input.GetAxis (axis[action]) > last_axis_down[action]-Game.thresholdAxis)){
+		string name = axis [action];
+		//axis management
+		if (!(Input.GetAxis (name) < last_axis_down[action+name]+Game.thresholdAxis && 
+		           Input.GetAxis (name) > last_axis_down[action+name]-Game.thresholdAxis)){
 			if (System.Math.Abs (Input.GetAxis (axis[action]))<Game.thresholdAxis){
-				last_axis_down[action] = 0;
+				last_axis_down[action+name] = 0;
 				return false;
 			}
-			last_axis_down[action] = Input.GetAxis (axis[action]);
-			if (axisValues[action] < 0)
-				return (Input.GetAxis (axis[action]) > axisValues[action] && Input.GetAxis (axis[action]) < Game.thresholdAxis);
+			last_axis_down[action+name] = Input.GetAxis (name);
+			if (axisValues[action+name] < 0)
+				return (Input.GetAxis (name) > axisValues[action+name] && Input.GetAxis (name) < Game.thresholdAxis);
 			else
-				return (Input.GetAxis (axis[action]) < axisValues[action] && Input.GetAxis (axis[action]) > Game.thresholdAxis);
+				return (Input.GetAxis (name) < axisValues[action+name] && Input.GetAxis (name) > Game.thresholdAxis);
 		}
 		return false;
 	}
@@ -223,8 +239,12 @@ public class ControllerAPI {
 
 	public static bool CheckForAxis(){
 		if (waitingKey){
+
+			List<string> joyNames =new List<string>();
+			// si l'axe appartient à un des joueurs : on peut effectuer un keydown
 			foreach(Dictionary <string, string> ax in axisProfiles.Values){
 				foreach(string action in ax.Keys){
+					joyNames.Add(ax[action]);
 					if (CheckDownAxis(action, ax)){
 						waitingKey = false;
 						foreach(ControllerAPI c in allControllers.Values){
@@ -232,27 +252,49 @@ public class ControllerAPI {
 							if (c.buttonList.IndexOf(actionToChange)!=-1 && c.buttons[actionToChange].ToString() == keyToChange)
 							{
 								c.buttons.Remove(actionToChange);
-								c.axis[actionToChange] = ax[action];
-								last_axis_down[actionToChange] = 0;
-								last_axis_up[actionToChange] = 0;
-								c.Update();
-								break;
+								return SetAxis(c, ax[action]);
 							}
-							else if(axisList.IndexOf(actionToChange)!=-1 && c.axis[actionToChange] == keyToChange)
+							if(c.axis.ContainsKey(actionToChange) && c.axis[actionToChange] == keyToChange)
 							{
-								c.axis[actionToChange] = ax[action];
-								last_axis_down[actionToChange] = 0;
-								last_axis_up[actionToChange] = 0;
-								c.Update();
-								break;
+								return SetAxis(c, ax[action]);
 							}
 						}
-						return true;
 					}
 				}
 			}
+			// sinon on regarde l'axe par rapport à 0
+			foreach(string axisName in KeyCodes.axisNames){
+				if (joyNames.IndexOf(axisName)!=-1)
+					continue;
+				if (CheckDownNewAxis(axisName)){
+					waitingKey = false;
+					foreach(ControllerAPI c in allControllers.Values){
+						if (c.buttonList.IndexOf(actionToChange)!=-1 && c.buttons[actionToChange].ToString() == keyToChange)
+						{
+							c.buttons.Remove(actionToChange);
+							return SetAxis(c, axisName);
+						}
+						if(c.axis.ContainsKey(actionToChange) && c.axis[actionToChange] == keyToChange)
+						{
+							return SetAxis(c, axisName);
+						}
+					}
+					}
+			}
 		}
 		return false;
+	}
+
+	public static bool SetAxis(ControllerAPI c, string name){
+		c.axis[actionToChange] = name;
+		if (Input.GetAxis(name) > 0)
+			axisValues[actionToChange+name] = 2f;
+		else
+			axisValues[actionToChange+name] = -2f;
+		last_axis_down[actionToChange+name] = 0;
+		last_axis_up[actionToChange+name] = 0;
+		c.Update();
+		return true;
 	}
 	
 	public static bool CheckForKey(){
@@ -261,14 +303,13 @@ public class ControllerAPI {
 				if (Input.GetKeyDown(key)){
 					waitingKey = false;
 					foreach(ControllerAPI c in allControllers.Values){
-						List<string> axisList = new List<string> (c.axis.Keys);
 						if (c.buttonList.IndexOf(actionToChange)!=-1 && c.buttons[actionToChange].ToString() == keyToChange)
 						{
 							c.buttons[actionToChange] = key;
 							c.Update();
 							break;
 						}
-						else if(axisList.IndexOf(actionToChange)!=-1 && c.axis[actionToChange] == keyToChange)
+						else if(c.axis.ContainsKey(actionToChange) && c.axis[actionToChange] == keyToChange)
 						{
 							c.axis.Remove(actionToChange);
 							c.buttons[actionToChange] = key;
@@ -292,12 +333,13 @@ public class ControllerAPI {
 	{
 		if (buttonList.IndexOf (action) != -1)
 			return Input.GetKeyUp (buttons [action]);
-		else if (Input.GetAxis (axis[action]) != last_axis_up[action]){
-			last_axis_up[action] = Input.GetAxis (axis[action]);
-			if (axisValues[action] < 0)
-				return (Input.GetAxis (axis[action]) > axisValues[action] && Input.GetAxis (axis[action]) < Game.thresholdAxis);
+		string name = axis [action];
+		if (Input.GetAxis (name) != last_axis_up[action+name]){
+			last_axis_up[action+name] = Input.GetAxis (name);
+			if (axisValues[action+name] < 0)
+				return (Input.GetAxis (name) > axisValues[action+name] && Input.GetAxis (name) < Game.thresholdAxis);
 			else
-				return (Input.GetAxis (axis[action]) < axisValues[action] && Input.GetAxis (axis[action]) > Game.thresholdAxis);
+				return (Input.GetAxis (name) < axisValues[action+name] && Input.GetAxis (name) > Game.thresholdAxis);
 		}
 		return false;
 	}
@@ -389,19 +431,31 @@ public class ControllerAPI {
 
 	private static bool CheckDownAxis(string action, Dictionary <string, string> axis_dict)
 	{
-		float axisValue = Input.GetAxis (axis_dict [action]);
-		if (!(axisValue < last_axis_down[action]+Game.thresholdAxis && 
-		      axisValue > last_axis_down[action]-Game.thresholdAxis))
+		string name = axis_dict[action];
+		float floatValue = Input.GetAxis (name);
+		if (!(floatValue < last_axis_down[action+name]+Game.thresholdAxis && 
+		      floatValue > last_axis_down[action+name]-Game.thresholdAxis))
 		{
-			if (System.Math.Abs (axisValue)<Game.thresholdAxis){
-				last_axis_down[action] = 0;
+			if (System.Math.Abs (floatValue)<Game.thresholdAxis){
+				last_axis_down[action+name] = 0;
 				return false;
 			}
-			last_axis_down[action] = axisValue;
-			if (axisValues[action] < 0)
-				return (axisValue > axisValues[action] && axisValue < Game.thresholdAxis);
+			last_axis_down[action+name] = floatValue;
+			if (axisValues[action+name] < 0)
+				return (floatValue > axisValues[action+name] && floatValue < Game.thresholdAxis);
 			else
-				return (axisValue < axisValues[action] && axisValue > Game.thresholdAxis);
+				return (floatValue < axisValues[action+name] && floatValue > Game.thresholdAxis);
+		}
+		return false;
+	}
+
+	private static bool CheckDownNewAxis(string name)
+	{
+		float floatValue = Input.GetAxis (name);
+		if (!(floatValue < newAxisValues[name]+Game.thresholdAxis && 
+		      floatValue > newAxisValues[name]-Game.thresholdAxis))
+		{
+			return true;
 		}
 		return false;
 	}

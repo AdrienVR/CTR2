@@ -28,7 +28,7 @@ public class AI : MonoBehaviour {
 				                                       dist*speed);
 
 
-			kart.transform.rotation = Quaternion.Euler(kart.transform.rotation.eulerAngles+ new Vector3(0,0.07f));
+			kart.transform.rotation = Quaternion.Euler(kart.transform.rotation.eulerAngles+ new Vector3(0,0.4f));
 			
 			wheels["steering"].rotation = Quaternion.Euler(wheels["steering"].rotation.eulerAngles+ new Vector3(0,-0.07f));
 			wheels["steering"].rotation = Quaternion.Euler(

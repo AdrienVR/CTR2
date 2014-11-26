@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class AppleBoxScript : MonoBehaviour {
+
+	//private int coll = 0;
 	// Use this for initialization
 	void Start () {
 	}
@@ -9,6 +11,7 @@ public class AppleBoxScript : MonoBehaviour {
 	void OnTriggerEnter(Collider other)
 	{
 		collider.enabled = false;
+		//Debug.Log ("collision apples n" + ++coll + other.isTrigger);
 		KartController taker;
 		audio.Play ();
 		if(Game.characters.IndexOf(other.name) != -1)// si c'est un kart

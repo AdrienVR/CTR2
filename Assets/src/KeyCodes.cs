@@ -247,4 +247,48 @@ public class KeyCodes {
 		{KeyCode.Joystick4Button19}
 
 	};
+
+
+	public static List<string> axisNames = new List<string> {
+		{"J1_StopAxis"},
+		{"J1_TurnAxis"},
+		{"J2_StopAxis"},
+		{"J2_TurnAxis"},
+		{"J3_StopAxis"},
+		{"J3_TurnAxis"},
+		{"J4_StopAxis"},
+		{"J4_TurnAxis"},
+	};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
