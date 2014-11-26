@@ -12,12 +12,14 @@ public class WeaponBoxScript : MonoBehaviour {
 	private KartController taker;
 
 	public bool baddie = false;
+	//private int coll = 0;
 
 
 	void OnTriggerEnter(Collider other)
 	{
 		//animation
 		collider.enabled = false;
+		//Debug.Log ("collision arme n" + ++coll);
 		audio.Play ();
 		StartCoroutine (Take());
 

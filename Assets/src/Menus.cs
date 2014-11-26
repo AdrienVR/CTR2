@@ -95,11 +95,12 @@ public class Menus : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		navigateMenu ();
+		if (!waitingForKey)
+			navigateMenu ();
+		else
+			CheckNewKey();
 		testPause ();
 		testEnd ();
-		if (waitingForKey)
-			CheckNewKey();
 	}
 	
 	void testPause()
@@ -442,15 +443,19 @@ public class Menus : MonoBehaviour
 	
 	IEnumerator setKey(string action, string name)
 	{
-		for(int i=0;i<25;++i)
+		for(int i=0;i<10;++i)
 		{
 			yield return new WaitForEndOfFrame ();
 		}
 		ControllerAPI.ListenForKey(action, name);
 	}
 	
-	void getKey()
+	IEnumerator getKey()
 	{
+		for(int i=0;i<10;++i)
+		{
+			yield return new WaitForEndOfFrame ();
+		}
 		waitingForKey = false;
 		flechesD[position-1].SetActive(true);
 		authorizeNavigate=true;
@@ -462,7 +467,7 @@ public class Menus : MonoBehaviour
 	void CheckNewKey()
 	{
 		if (ControllerAPI.CheckForAxis() || ControllerAPI.CheckForKey())
-			getKey();
+			StartCoroutine(getKey());
 	}
 	
 	IEnumerator RestrictMovement()

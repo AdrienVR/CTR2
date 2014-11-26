@@ -59,7 +59,6 @@ public class KartController : MonoBehaviour
 	private float slerpedCoeffSpeed = 0f;
 	
 	private float twTime = 0f;
-	private float twMaxTime = 10.5f;
 	private float twLerp = 0f;
 
 	private float twTimeWheels = 0f;
@@ -121,43 +120,42 @@ public class KartController : MonoBehaviour
 				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 		}
 		else{
+			ellapsedTime = Time.time - currentTime;
+			currentTime = Time.time;
+			CheckSpeed();
 
-		ellapsedTime = Time.time - currentTime;
-		currentTime = Time.time;
-		CheckSpeed();
+			if (tnt && numberOfJump > 8) {
+				tnt.transform.position = tnt.transform.position + new Vector3 (0, 5f);
+				ExplosionScript e = tnt.GetComponent <ExplosionScript>();
+				e.animation.Stop();
+				e.disamorced = true;
+				e.SetName("tntDropped");
+				e.transform.parent = null;
+				e.rigidbody.velocity = new Vector3();
+				tnt = null;
+				numberOfJump = 0;
+			}
 
-		if (tnt && numberOfJump > 8) {
-			tnt.transform.position = tnt.transform.position + new Vector3 (0, 5f);
-			ExplosionScript e = tnt.GetComponent <ExplosionScript>();
-			e.animation.Stop();
-			e.disamorced = true;
-			e.SetName("tntDropped");
-			e.transform.parent = null;
-			e.rigidbody.velocity = new Vector3();
-			tnt = null;
-			numberOfJump = 0;
-		}
+			if (postForce.Equals(new Vector3())){
+				accelerationTime -= ellapsedTime;
+				checkAcc();
+				//rigidbody.rotation = transform.rotation;
+				//rigidbody.position = transform.position;
+				slerpedCoeffSpeed = Slerp(slerpedCoeffSpeed, 0.9f, 1.0f);//lerpedSpeed);
+				rigidbody.velocity = new Vector3(rigidbody.velocity.x*slerpedCoeffSpeed, 
+				                                 rigidbody.velocity.y, rigidbody.velocity.z*slerpedCoeffSpeed);
+				rigidbody.velocity = new Vector3(lowForce.x, rigidbody.velocity.y, lowForce.z);
+			}
+			else{
+				accelerationTime += ellapsedTime;
+				checkAcc();
+				slerpedCoeffSpeed = Slerp(slerpedCoeffSpeed, 1.0f, lerpedSpeed);
+				rigidbody.velocity = new Vector3(postForce.x*slerpedCoeffSpeed, rigidbody.velocity.y, postForce.z*slerpedCoeffSpeed);
+			}
 
-		if (postForce.Equals(new Vector3())){
-			accelerationTime -= ellapsedTime;
-			checkAcc();
-			//rigidbody.rotation = transform.rotation;
-			//rigidbody.position = transform.position;
-			slerpedCoeffSpeed = Slerp(slerpedCoeffSpeed, 0.9f, 1.0f);//lerpedSpeed);
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x*slerpedCoeffSpeed, 
-			                                 rigidbody.velocity.y, rigidbody.velocity.z*slerpedCoeffSpeed);
-			rigidbody.velocity = new Vector3(lowForce.x, rigidbody.velocity.y, lowForce.z);
-		}
-		else{
-			accelerationTime += ellapsedTime;
-			checkAcc();
-			slerpedCoeffSpeed = Slerp(slerpedCoeffSpeed, 1.0f, lerpedSpeed);
-			rigidbody.velocity = new Vector3(postForce.x*slerpedCoeffSpeed, rigidbody.velocity.y, postForce.z*slerpedCoeffSpeed);
-		}
-
-		if (dansLesAirs)
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
-		transform.Rotate (0, yTurn, 0);
+			if (dansLesAirs)
+				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
+			transform.Rotate (0, yTurn, 0);
 
 			controlWheels ();
 		}
@@ -187,37 +185,48 @@ public class KartController : MonoBehaviour
 			yTurnWheel = -controller.KeyValue("turnLeft");
 		else if(controller.IsPressed("turnRight"))
 			yTurnWheel = controller.KeyValue("turnRight");
-		bool less = false;
-		if (yTurnWheel != 0){
-			twTimeWheels += ellapsedTime;
-			//if (!postForce.Equals(new Vector3()))
-			if (postForce.magnitude > 1f)
-				twTime += ellapsedTime;
-			else{
-				twTime -= ellapsedTime;
-				less = true;
-			}
+		if (System.Math.Abs (yTurnWheel) < Game.thresholdAxis)
+			yTurnWheel = 0;
+
+		// WHEELS
+		if (yTurnWheel==0){
+			if (System.Math.Abs (twTimeWheels) < 0.1f)
+				twTimeWheels = 0;
+			if (twTimeWheels>0)
+				twTimeWheels -= ellapsedTime;
+			else if (twTimeWheels<0)
+				twTimeWheels += ellapsedTime;
 		}
 		else{
-			twTimeWheels -= ellapsedTime;
-			twTime -= ellapsedTime;
-			yTurn = Lerp (yTurn, 0f, 0.8f);
+			twTimeWheels += yTurnWheel*ellapsedTime;
+		}
+		
+		twTimeWheels = System.Math.Max (twTimeWheels,-0.25f);
+		twTimeWheels = System.Math.Min (twTimeWheels,0.25f);
+
+		// STEERING WHEEL
+		if (yTurnWheel==0 || System.Math.Abs(rigidbody.velocity.magnitude) < 1f){
+			if (System.Math.Abs (twTime) < 0.1f)
+				twTime = 0;
+			if (twTime>0)
+				twTime -= ellapsedTime;
+			else if (twTime<0)
+				twTime += ellapsedTime;
+		}
+		else{
+			twTime += yTurnWheel*ellapsedTime;
 		}
 
-		twTimeWheels = System.Math.Min (twTimeWheels, 1.5f);
-		twTimeWheels = System.Math.Max (twTimeWheels, 0f);
-		twLerpWheels = Lerp (twLerpWheels, yTurnWheel, twTimeWheels/twMaxTime);
+		twTime = System.Math.Max (twTime,-0.33f);
+		twTime = System.Math.Min (twTime,0.33f);
 
-		twTime = System.Math.Min (twTime, 1.5f);
-		twTime = System.Math.Max (twTime, 0f);
-		if(!less)
-			twLerp = Lerp (twLerp, yTurn*System.Math.Min (rigidbody.velocity.magnitude, 27.5f)*0.25f, twTime/twMaxTime);
-		else
-			twLerp = Lerp (twLerp, yTurn*27.5f*0.25f, twTime/twMaxTime);
 
-		wheels ["wheelAL"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
-		wheels ["wheelAR"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, 90f + twLerpWheels * 40f));
+		twLerpWheels = Lerp (0, 160f, twTimeWheels);
+		twLerp = Lerp (0, 60f, twTime);
+
 		wheels ["steering"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, twLerp));
+		wheels ["wheelAL"].rotation = Quaternion.Euler (wheels ["steering"].eulerAngles + new Vector3 (0, 90f + twLerpWheels));
+		wheels ["wheelAR"].rotation = Quaternion.Euler (wheels ["steering"].eulerAngles + new Vector3 (0, 90f + twLerpWheels));
 	}
 
 	void OnCollisionStay(Collision collision)
@@ -671,10 +680,10 @@ public class KartController : MonoBehaviour
 	
 	public void controle()
 	{	
-		if(controller.IsPressed("moveBack"))
+		if(controller.IsPressed("moveBack") && !controller.IsPressed("moveForward"))
 			lowForce = -controller.KeyValue("moveBack") * forwardNormal * speedCoeff;
 		
-		if(controller.IsPressed("moveForward"))
+		if(controller.IsPressed("moveForward") && !controller.IsPressed("moveBack"))
 		{
 			postForce = forwardNormal*speedCoeff;
 		}
@@ -683,7 +692,7 @@ public class KartController : MonoBehaviour
 		{
 			if(dansLesAirs==false)
 			{
-				rigidbody.position += new Vector3(0,3f,0);
+				rigidbody.MovePosition(rigidbody.position + new Vector3(0,1.75f,0));
 				
 				if (tnt)
 					numberOfJump++;
@@ -697,7 +706,6 @@ public class KartController : MonoBehaviour
 				yTurn = -0.5f*controller.KeyValue("turnLeft") * turnCoeff;
 		}
 		else if (controller.IsPressed("moveBack")){
-			lowForce = -forwardNormal * speedCoeff;
 			if(controller.IsPressed("turnRight"))
 				yTurn = -0.5f*controller.KeyValue("turnRight") * turnCoeff;
 			else if(controller.IsPressed("turnLeft"))
