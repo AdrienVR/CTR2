@@ -75,6 +75,7 @@ public class KartController : MonoBehaviour
 		weapons = new List<string>();
 
 		foreach (Transform child in transform){
+			if (child.name != "steering")continue;
 			wheels["steering"] = child;
 			foreach (Transform w in child.transform)
 				wheels[w.name] = w;
@@ -206,7 +207,7 @@ public class KartController : MonoBehaviour
 
 		// STEERING WHEEL
 		if (yTurnWheel==0 || System.Math.Abs(rigidbody.velocity.magnitude) < 1f){
-			if (System.Math.Abs (twTime) < 0.1f)
+			if (System.Math.Abs (twTime) < 0.01f)
 				twTime = 0;
 			if (twTime>0)
 				twTime -= ellapsedTime;
@@ -217,12 +218,12 @@ public class KartController : MonoBehaviour
 			twTime += yTurnWheel*ellapsedTime;
 		}
 
-		twTime = System.Math.Max (twTime,-0.33f);
-		twTime = System.Math.Min (twTime,0.33f);
+		twTime = System.Math.Max (twTime,-0.25f);
+		twTime = System.Math.Min (twTime,0.25f);
 
 
 		twLerpWheels = Lerp (0, 160f, twTimeWheels);
-		twLerp = Lerp (0, 60f, twTime);
+		twLerp = Lerp (0, 45f, twTime);
 
 		wheels ["steering"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, twLerp));
 		wheels ["wheelAL"].rotation = Quaternion.Euler (wheels ["steering"].eulerAngles + new Vector3 (0, 90f + twLerpWheels));

@@ -26,6 +26,12 @@ public class ExplosionScript : MonoBehaviour {
 			StartCoroutine (TimeToLive());
 	}
 
+	public void SetAllCollidersStatus (bool active) {
+		foreach(Collider c in GetComponents<Collider> ()) {
+			c.enabled = active;
+		}
+	}
+
 	public void SetName(string n)
 	{
 		name = n;
@@ -142,6 +148,9 @@ public class ExplosionScript : MonoBehaviour {
 	
 	IEnumerator Explode()
 	{
+		if (exploded)
+			yield return 0;
+		SetAllCollidersStatus (false);
 		exploded = true;
 		owner.GetComponent <KartController>().explosiveWeapon = false;
 		if (explosionClip != null)
