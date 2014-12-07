@@ -20,13 +20,10 @@ public class KartController : MonoBehaviour
 	private Vector3 lowForce;
 	public Vector3 forwardNormal;
 	
-	private bool pressX=false;
-	private bool pressFleche=false;
-	private bool pressR1=false;
-	private bool pressL1=false;
-	private bool pressXAndFleche = false;
-	private bool pressXAndFlecheAndR1 = false;
+	private bool inAirAfterJump=true;
+	private bool computeInAirAfterJump=false;
 
+	private List<GameObject> smoke = new List<GameObject>();
 	private WeaponBoxScript takenWeaponBox;
 	public ExplosionScript shield;
 	public ExplosionScript protection;
@@ -49,14 +46,13 @@ public class KartController : MonoBehaviour
 
 	private float yTurn;
 	public static bool IA_enabled = false;
+	private bool forward = false;
+	private bool backward = false;
 
 	public int weaponSize = 1;
 	private static int nControllers;
 
 	private float accelerationTime = 0f;
-	private float maxTime = 2.5f;
-	private float lerpedSpeed = 0f;
-	private float slerpedCoeffSpeed = 0f;
 	
 	private float twTime = 0f;
 	private float twLerp = 0f;
@@ -75,6 +71,10 @@ public class KartController : MonoBehaviour
 		weapons = new List<string>();
 
 		foreach (Transform child in transform){
+			if (child.name == "kartSmoke"){
+				smoke.Add(child.gameObject);
+				continue;
+			}
 			if (child.name != "steering")continue;
 			wheels["steering"] = child;
 			foreach (Transform w in child.transform)
@@ -90,8 +90,6 @@ public class KartController : MonoBehaviour
 		yTurn = 0;
 		if (Time.timeScale == 0)
 			return;
-		lowForce = new Vector3 ();
-		postForce = new Vector3 ();
 		if (!stop && !stopDie){
 			forwardNormal = wheels ["steering"].transform.forward;
 			forwardNormal.y = 0;
@@ -137,22 +135,30 @@ public class KartController : MonoBehaviour
 				numberOfJump = 0;
 			}
 
-			if (postForce.Equals(new Vector3())){
-				accelerationTime -= ellapsedTime;
-				checkAcc();
-				//rigidbody.rotation = transform.rotation;
-				//rigidbody.position = transform.position;
-				slerpedCoeffSpeed = Slerp(slerpedCoeffSpeed, 0.9f, 1.0f);//lerpedSpeed);
-				rigidbody.velocity = new Vector3(rigidbody.velocity.x*slerpedCoeffSpeed, 
-				                                 rigidbody.velocity.y, rigidbody.velocity.z*slerpedCoeffSpeed);
-				rigidbody.velocity = new Vector3(lowForce.x, rigidbody.velocity.y, lowForce.z);
+			if (!forward){
+				if (System.Math.Abs(accelerationTime)<0.01f)
+					accelerationTime = 0f;
+				if (accelerationTime>0)
+					accelerationTime -= ellapsedTime;
+				else if (backward && accelerationTime>-1){
+					backward = false;
+					accelerationTime -= ellapsedTime;
+				}
+				else if (accelerationTime<0)
+					accelerationTime += ellapsedTime;
 			}
 			else{
-				accelerationTime += ellapsedTime;
-				checkAcc();
-				slerpedCoeffSpeed = Slerp(slerpedCoeffSpeed, 1.0f, lerpedSpeed);
-				rigidbody.velocity = new Vector3(postForce.x*slerpedCoeffSpeed, rigidbody.velocity.y, postForce.z*slerpedCoeffSpeed);
+				forward = false;
+				if (accelerationTime<1)
+					accelerationTime += ellapsedTime;
+				//rigidbody.velocity = new Vector3(postForce.x, 
+				//                                 rigidbody.velocity.y, postForce.z);
+
 			}
+			if (accelerationTime>0)
+				rigidbody.velocity = Vector3.Slerp(new Vector3(),postForce,accelerationTime);
+			else
+				rigidbody.velocity = Vector3.Slerp(new Vector3(),lowForce,-accelerationTime);
 
 			if (dansLesAirs)
 				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
@@ -170,14 +176,6 @@ public class KartController : MonoBehaviour
 	float Lerp(float a, float b, float f)
 	{
 		return a + f * (b - a);
-	}
-
-	void checkAcc(){
-		accelerationTime = System.Math.Min (accelerationTime, maxTime);
-		accelerationTime = System.Math.Max (accelerationTime, 0f);
-		lerpedSpeed = accelerationTime/maxTime;
-		lerpedSpeed = System.Math.Min (lerpedSpeed, 1f);
-		lerpedSpeed = System.Math.Max (lerpedSpeed, 0f);
 	}
 
 	void controlWheels(){
@@ -225,9 +223,9 @@ public class KartController : MonoBehaviour
 		twLerpWheels = Lerp (0, 160f, twTimeWheels);
 		twLerp = Lerp (0, 45f, twTime);
 
-		wheels ["steering"].rotation = Quaternion.Euler (transform.eulerAngles + new Vector3 (0, twLerp));
-		wheels ["wheelAL"].rotation = Quaternion.Euler (wheels ["steering"].eulerAngles + new Vector3 (0, 90f + twLerpWheels));
-		wheels ["wheelAR"].rotation = Quaternion.Euler (wheels ["steering"].eulerAngles + new Vector3 (0, 90f + twLerpWheels));
+		wheels ["steering"].localRotation = Quaternion.Euler (new Vector3 (0, twLerp));
+		wheels ["wheelAL"].localRotation = Quaternion.Euler (new Vector3 (0, 90f + twLerpWheels));
+		wheels ["wheelAR"].localRotation = Quaternion.Euler (new Vector3 (0, 90f + twLerpWheels));
 	}
 
 	void OnCollisionStay(Collision collision)
@@ -402,12 +400,12 @@ public class KartController : MonoBehaviour
 		}
 		else
 			posToAdd = 6f * (new Vector3 (forwardNormal.x, forwardNormal.y + 0.2f, forwardNormal.z));
-		Quaternion q = new Quaternion (0,transform.rotation.y,0,transform.rotation.w);
+		Quaternion q = Quaternion.Euler (new Vector3(0,transform.rotation.eulerAngles.y,0));
 		if (Game.poseWeapons.IndexOf(w) != -1)
 			q = transform.rotation;
-
+		
+		//instantiate the weapon
 		if (Game.instatiableWeapons.IndexOf(w)!=-1){
-			//instantiate the weapon
 			GameObject arme1 = Instantiate(Resources.Load("Weapons/"+w), transform.position + posToAdd, q) as GameObject;
 			arme1.name = arme1.name.Split ('(') [0];
 
@@ -523,15 +521,32 @@ public class KartController : MonoBehaviour
 
 		string [] copy = new string[speedDuration.Keys.Count];
 		speedDuration.Keys.CopyTo(copy, 0);
+		bool fire = false;
 
 		foreach(string key in copy)
 		{
 			if (speedDuration [key] > 0f){
+				if (key == "turbo")
+					fire = true;
 				speedDuration [key] -= ellapsedTime;
 				speedCoeff *= speedToAdd[key];
 			}
 		}
-	}
+		if (fire){
+			foreach(GameObject w in smoke)
+				w.GetComponent<ParticleRenderer>().material.SetColor ("_TintColor", Color.red);
+		}
+		else{
+			float rgb = 0.1f;
+			if (rigidbody.velocity.magnitude>1)
+				rgb = 0.05f;
+			else if (controller.IsPressed("moveForward"))
+				rgb = 0.5f;
+			Color smokeColor = new Color(rgb,rgb,rgb);
+			foreach(GameObject w in smoke)
+				w.GetComponent<ParticleRenderer>().material.SetColor ("_TintColor", smokeColor);
+		}
+    }
 
 	IEnumerator TempUndead()
 	{
@@ -582,6 +597,9 @@ public class KartController : MonoBehaviour
 		float time = 0f;
 		float last_time = 0f;
 		float clignotement = 0.3f;
+		foreach(GameObject w in smoke){
+			w.SetActive(false);
+		}
 		while (time < 4f) {
 			yield return new WaitForSeconds (0.1f);
 			time += 0.1f;
@@ -593,11 +611,17 @@ public class KartController : MonoBehaviour
 				{
 					wheels [w].renderer.enabled = !wheels [w].renderer.enabled;
 				}
+				/*foreach(GameObject w in smoke){
+					w.SetActive(!w.activeSelf);
+				}*/
 			}
 		}
 		foreach(string w in wheels.Keys)
 		{
 			wheels [w].renderer.enabled = true;
+		}
+		foreach(GameObject w in smoke){
+			w.SetActive(true);
 		}
 		state.Remove ("invincible");
 	}
@@ -623,81 +647,48 @@ public class KartController : MonoBehaviour
 		a.z /= div;
 		return a;
 	}
-	
-	public void controlDerapage()
-	{
-		
-		if(controller.IsPressed("moveForward"))
-		{
-			pressX=true;
-		}
-		if(controller.IsPressed("moveForward"))
-		{
-			pressX=false;
-			pressXAndFleche=false;
-			pressXAndFlecheAndR1=false;
-			//turnCoeff=2;
-			//speedCoeff=3;
-		}
-		if(controller.IsPressed("jump"))
-		{
-			pressR1=true;
-		}
-		if(controller.IsPressed("jump"))
-		{
-			pressR1=false;
-			pressXAndFlecheAndR1=false;
-			//turnCoeff=2;
-			//speedCoeff=3;
-		}
-		if(controller.IsPressed("jump2"))
-		{
-			pressL1=true;
-		}
-		if(controller.IsPressed("jump2"))
-		{
-			pressL1=false;
-		}
-		if(pressX && pressFleche)
-		{
-			pressXAndFleche=true;
-		}
-		if(pressXAndFleche && pressR1)
-		{
-			pressXAndFlecheAndR1=true;
-		}
-		if(pressXAndFlecheAndR1)
-		{
-			Debug.Log("JE DERAPE");
-			//turnCoeff=4;
-			//speedCoeff=3;
-		}
-		
-		if(!pressXAndFlecheAndR1 || !pressL1)
-		{
-		}
-	}
 
 	
 	public void controle()
 	{	
-		if(controller.IsPressed("moveBack") && !controller.IsPressed("moveForward"))
+		if(controller.IsPressed("moveBack") && !controller.IsPressed("moveForward")){
 			lowForce = -controller.KeyValue("moveBack") * forwardNormal * speedCoeff;
+			backward = true;
+		}
 		
 		if(controller.IsPressed("moveForward") && !controller.IsPressed("moveBack"))
 		{
 			postForce = forwardNormal*speedCoeff;
+			forward = true;
 		}
 		
 		if(controller.GetKeyDown("jump"))
 		{
 			if(dansLesAirs==false)
 			{
-				rigidbody.MovePosition(rigidbody.position + new Vector3(0,1.75f,0));
+				if (rigidbody.velocity.magnitude < 5 && inAirAfterJump){
+					rigidbody.MovePosition(rigidbody.position + new Vector3(0,1.75f,0));
+				}
+				else {
+					float high = transform.localRotation.eulerAngles.x;
+					if (high > 180)
+						high = System.Math.Abs(high-360);
+					else 
+						high = 0;
+					Debug.Log("Angle : "+high);
+					high = System.Math.Min(high, 9f);
+					high = System.Math.Max(high, 1.75f);
+					rigidbody.MovePosition(rigidbody.position + new Vector3(0,high,0));
+				}
 				
 				if (tnt)
 					numberOfJump++;
 			}
+		}
+		if(controller.IsPressed("jump") )//&& System.Math.Abs(Vector3.Angle(rigidbody.velocity,forwardNormal))>45)
+		{
+			//Debug.Log("Angle : "+transform.localRotation.eulerAngles.x+","+transform.localRotation.eulerAngles.z);
+			//rigidbody.velocity = new Vector3(0,-26f,0);
 		}
 
 		if (!controller.IsPressed("moveBack") && (controller.IsPressed("stop") || controller.IsPressed("moveForward"))){

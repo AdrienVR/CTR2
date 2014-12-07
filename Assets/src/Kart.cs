@@ -46,10 +46,12 @@ public class Kart
 	public void InitObjet(Vector3 pos, Quaternion q, string kart_name)
 	{
 		GameObject kart = GameObject.Instantiate (Resources.Load("kart"+kart_name), pos, q) as GameObject;
+		GameObject kart_angles = GameObject.Instantiate (Resources.Load("GameplayObject"), pos, q) as GameObject;
 		kart.name = kart.name.Split ('(') [0];
 		kc = kart.GetComponent<KartController> ();
 		kc.SetKart(this);
 		kc.setCoefficients (speedCoeff, turnCoeff);
+		kart_angles.GetComponent<Gameplay> ().SetKart (kart.transform);
 	}
 
 	public void InitCamera()
