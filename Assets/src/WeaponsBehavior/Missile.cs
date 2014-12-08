@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ExplosionScript : MonoBehaviour {
+public class Missile : MonoBehaviour {
 	
 	public AnimationClip explosionClip;
 	public Color explosionColor;
@@ -54,7 +54,7 @@ public class ExplosionScript : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.isTrigger == false)
+		if (other.collider.isTrigger == false)
 			return;
 		else if (other.name == "Ground_trigger"){
 			StartCoroutine (Explode());
@@ -185,8 +185,8 @@ public class ExplosionScript : MonoBehaviour {
 			}
 			gameObject.transform.rotation = Quaternion.Euler(new Vector3());
 			name = "tntExploded";
-			gameObject.transform.rotation = kartCollided.transform.rotation;
-			gameObject.transform.parent = kartCollided.transform;
+			gameObject.transform.rotation = kartCollided.wheels["steering"].transform.rotation;
+			gameObject.transform.parent = kartCollided.wheels["steering"].transform;
 			kartCollided.tnt = gameObject;
 			yield return new WaitForSeconds (3f);
 			if (!disamorced){
@@ -244,7 +244,7 @@ public class ExplosionScript : MonoBehaviour {
 		}
 		else if (name == "tntExploded") {
 			if (!disamorced)
-				transform.position = kartCollided.transform.position + new Vector3(0f,+0.2f) - kartCollided.forwardNormal*0.2f;
+				transform.position = kartCollided.wheels["steering"].transform.position + new Vector3(0f,+0.2f) - kartCollided.forwardNormal*0.2f;
 		}
 	}
 }

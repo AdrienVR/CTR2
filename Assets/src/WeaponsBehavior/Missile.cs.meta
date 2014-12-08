@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 52a9dbb05102bf04ea54b997606e69d7
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - explosionClip: {instanceID: 0}
+  - bombExplose: {fileID: 8300000, guid: fafbb213704f24642bc19903c8ca36e0, type: 3}
+  - owner: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

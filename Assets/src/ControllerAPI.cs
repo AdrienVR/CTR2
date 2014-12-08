@@ -380,7 +380,7 @@ public class ControllerAPI {
 
 	// TODO
 	public static void Test(int i)
-	{
+	{/*
 		var dictionary = new Dictionary<string, string>();
 		dictionary["perls"] = "dot";
 		dictionary["net"] = "perls";
@@ -391,7 +391,7 @@ public class ControllerAPI {
 		foreach (var pair in dictionary)
 		{
 			Debug.Log(pair);
-		}
+		}*/
 	}
 			
 	static void Write(Dictionary<string, string> dictionary, string file)

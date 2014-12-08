@@ -509,11 +509,9 @@ public class Menus : MonoBehaviour
 				break;
 			case "CHANGER NIVEAU":
 				if (Application.loadedLevelName == "plage")
-					//Application.LoadLevel("dinoRace");
 					StartCoroutine(changeLevel("dinoRace"));
 				else
 					StartCoroutine(changeLevel("plage"));
-				//Application.LoadLevel("plage");
 				Restart();
 				break;
 			case "QUITTER":

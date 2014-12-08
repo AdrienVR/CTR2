@@ -6,68 +6,65 @@ using System.Collections.Generic;
 
 public class KartController : MonoBehaviour
 {
+	// static 
+
+	public static bool IA_enabled = false;
 	public static bool stop = true;
+
+	// ---------- propriete du kart --------------
+
 	private bool stopDie = false;
-	private bool isGoingInAir = false;
-	
 	private float speedCoeff;
 	private float turnCoeff;
-	public float coeffInitSpeed;
-	public Dictionary <string, float> speedDuration = new Dictionary <string,  float>();
-	public Dictionary <string, float> speedToAdd = new Dictionary <string,  float>();
-
+	private float coeffInitSpeed;
+	private Dictionary <string, float> speedDuration = new Dictionary <string,  float>();
+	private Dictionary <string, float> speedToAdd = new Dictionary <string,  float>();
 	private Vector3 postForce;
 	private Vector3 lowForce;
-	public Vector3 forwardNormal;
-	
-	private bool inAirAfterJump=true;
-	private bool computeInAirAfterJump=false;
 
+	public Vector3 forwardNormal;
+
+	// ------------ pointeurs d'objets ------------
+
+	private Kart kart;
+	private ControllerAPI controller;
 	private List<GameObject> smoke = new List<GameObject>();
 	private WeaponBoxScript takenWeaponBox;
+	private ExplosionScript arme;
+	private Bomb bomb;
+
+	public bool explosiveWeapon = false;
+	public Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
 	public ExplosionScript shield;
 	public ExplosionScript protection;
 	public GameObject tnt;
-
-	public List<string> state = new List<string>();
 	public List<string> weapons;
 
-	private Kart kart;
-	private bool dansLesAirs = true;
-	public Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
-	private float ky;
+	// ----------------- etat --------------------
+
+	public List<string> state = new List<string>();
+	private bool isInAir = true;
+	private bool isOnWall = false;
 	private bool baddie = false;
+	private bool forward = false;
+	private bool backward = false;
 	
-	private ExplosionScript arme;
-	public bool explosiveWeapon;
+	private int numberOfJump = 0;
+
+	private float yTurn;
 	private float facteurSens = 1f;
 	private float ellapsedTime = 0f;
 	private float currentTime = 0f;
-
-	private float yTurn;
-	public static bool IA_enabled = false;
-	private bool forward = false;
-	private bool backward = false;
-
-	public int weaponSize = 1;
-	private static int nControllers;
-
 	private float accelerationTime = 0f;
-	
 	private float twTime = 0f;
 	private float twLerp = 0f;
-
 	private float twTimeWheels = 0f;
 	private float twLerpWheels = 0f;
-
-	private int numberOfJump = 0;
-	private ControllerAPI controller;
 	
 	// Use this for initialization
 	void Start ()
 	{
 		coeffInitSpeed = speedCoeff;
-		explosiveWeapon = false;
 		weapons = new List<string>();
 
 		foreach (Transform child in transform){
@@ -115,7 +112,7 @@ public class KartController : MonoBehaviour
 		if(IA_enabled)
 		{
 			//rigidbody.velocity = new Vector3(postForce.x, rigidbody.velocity.y, postForce.z);
-			if (dansLesAirs)
+			if (isInAir)
 				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 		}
 		else{
@@ -160,7 +157,7 @@ public class KartController : MonoBehaviour
 			else
 				rigidbody.velocity = Vector3.Slerp(new Vector3(),lowForce,-accelerationTime);
 
-			if (dansLesAirs)
+			if (isInAir)
 				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 			transform.Rotate (0, yTurn, 0);
 
@@ -231,33 +228,32 @@ public class KartController : MonoBehaviour
 	void OnCollisionStay(Collision collision)
 	{
 		if(collision.gameObject.name=="Ground")
-			dansLesAirs = false;
-		
-		/*if(collision.gameObject.name=="accelerateur")
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x*3,rigidbody.velocity.y*3,rigidbody.velocity.z*3);*/
+			isInAir = false;
 	}
 	
-	void OnCollisionExit(Collision collision)
+	void OnCollisionExit(Collision other)
 	{
-		if(collision.gameObject.name=="Ground") {
-			if (!isGoingInAir)
-				StartCoroutine(FreeAir());
-		}
+		if(other.gameObject.name=="Ground")
+			isInAir = true;
+	}
+	
+	void OnTriggerStay(Collider other)
+	{
+		if(other.name=="Ground_trigger")
+			isOnWall = true;
+	}
+
+	void OnTriggerExit(Collider other)
+	{
+		if(other.name=="Ground_trigger")
+			isOnWall = false;
 	}
 
 	public void setCoefficients(float speed, float turn){
 		speedCoeff = speed;
 		turnCoeff = turn;
 	}
-	
-	IEnumerator FreeAir()
-	{
-		isGoingInAir = true;
-		yield return 0;
-		dansLesAirs = true;
-		isGoingInAir = false;
-	}
-	
+
 	public bool IsArmed()
 	{
 		return state.IndexOf("armed")!=-1;
@@ -356,9 +352,6 @@ public class KartController : MonoBehaviour
 		if (tnt)
 			return;
 
-		if (transform.forward.y>0)
-			forwardNormal.y = 0;
-		forwardNormal = normalizeVector (forwardNormal);
 		Vector3 posToAdd = new Vector3();
 		//launch the shield
 		if (shield != null) {
@@ -403,35 +396,40 @@ public class KartController : MonoBehaviour
 		Quaternion q = Quaternion.Euler (new Vector3(0,transform.rotation.eulerAngles.y,0));
 		if (Game.poseWeapons.IndexOf(w) != -1)
 			q = transform.rotation;
-		
+
+		GameObject arme1;
 		//instantiate the weapon
 		if (Game.instatiableWeapons.IndexOf(w)!=-1){
-			GameObject arme1 = Instantiate(Resources.Load("Weapons/"+w), transform.position + posToAdd, q) as GameObject;
+			arme1 = Instantiate(Resources.Load("Weapons/"+w), transform.position + posToAdd, q) as GameObject;
 			arme1.name = arme1.name.Split ('(') [0];
 
 			//compute the velocity
-			arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
+			if (w!="bomb")
+				arme = arme1.GetComponent <ExplosionScript>();
+			else
+				bomb = arme1.GetComponent <Bomb>();
 		}
-		if (arme!=null && Game.instatiableWeapons.IndexOf(w)!=-1)	{
-			arme.owner = gameObject;
+		if ((arme!=null||bomb!=null) && Game.instatiableWeapons.IndexOf(w)!=-1)	{
 			
 			if (w == "bomb") {
 				explosiveWeapon = true;
-				arme.vitesseInitiale =  3*speedCoeff*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
-				if (kart.nbApples == 10)
-					arme.explosionRadius *= 2.5f;
+				bomb.owner = gameObject;
+				bomb.vitesseInitiale =  3*speedCoeff*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
 			}
 			else if (w == "missile"){
+				arme.owner = gameObject;
 				if (IsSuper())
 					arme.vitesseInitiale =  4*speedCoeff*forwardNormal;
 				else
 					arme.vitesseInitiale =  2.75f*speedCoeff*forwardNormal;
 			}
 			else if (w == "greenShield"|| w == "blueShield"){
+				arme.owner = gameObject;
 				shield = arme;
 				shield.lifeTime = 14f;
 			}
 			else if (w == "Aku-Aku" || w == "Uka-Uka") {
+				arme.owner = gameObject;
 				/*Main.sourceMusic.clip=(AudioClip)Instantiate(Resources.Load("Audio/akuaku"));
 				Main.sourceMusic.Play();*/
 				if (protection!=null)
@@ -446,10 +444,12 @@ public class KartController : MonoBehaviour
 				AddSpeed(protection.lifeTime+2, 1.5f, "aku");
 				Main.ManageSound ();
 			}
-			else if (w == "greenBeaker" || w=="redBeaker")
+			else if (w == "greenBeaker" || w=="redBeaker"){
+				arme.owner = gameObject;
 				if (sens == 1f)
 					arme.rigidbody.AddForce(2000f*new Vector3(sens * forwardNormal.x, 0.2f, sens * forwardNormal.z));
 					//arme.vitesseInstant =  90f*new Vector3(sens * forwardNormal.x, 0, sens * forwardNormal.z);
+			}
 		}
 		else if (w=="turbo"){
 			if (IsSuper())
@@ -664,9 +664,9 @@ public class KartController : MonoBehaviour
 		
 		if(controller.GetKeyDown("jump"))
 		{
-			if(dansLesAirs==false)
+			if(!isInAir && !isOnWall)
 			{
-				if (rigidbody.velocity.magnitude < 5 && inAirAfterJump){
+				if (rigidbody.velocity.magnitude < 5){
 					rigidbody.MovePosition(rigidbody.position + new Vector3(0,1.75f,0));
 				}
 				else {
@@ -675,7 +675,7 @@ public class KartController : MonoBehaviour
 						high = System.Math.Abs(high-360);
 					else 
 						high = 0;
-					Debug.Log("Angle : "+high);
+					//Debug.Log("Angle : "+high);
 					high = System.Math.Min(high, 9f);
 					high = System.Math.Max(high, 1.75f);
 					rigidbody.MovePosition(rigidbody.position + new Vector3(0,high,0));
@@ -713,11 +713,14 @@ public class KartController : MonoBehaviour
 			if (System.Math.Abs(facteurSens)<Game.thresholdAxis)
 				facteurSens = 1f;
 			
-			if (!explosiveWeapon)
+			if (!explosiveWeapon){
 				UseWeapon ();
+			}
 			else {
 				explosiveWeapon = false;
-				arme.ActionExplosion ();
+				if (kart.nbApples == 10)
+					bomb.explosionRadius = 8f;
+				bomb.ActionExplosion ();
 			}
 		}
 	}
