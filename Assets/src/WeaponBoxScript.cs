@@ -80,7 +80,7 @@ public class WeaponBoxScript : MonoBehaviour {
 			nb = Random.Range (1, Game.normalWeapons.Count+1);
 			//{1,"redBeaker"},{2,"blueShield"},{3,"bomb"},{4,"triple_bomb"},{5,"triple_missile"},
 			//{6,"Aku-Aku"},{7,"nitro"},{8,"turbo"}	};
-			nb = 4;
+			//nb = 4;
 			taker.GetKart().lastWeaponTextureNb=nb;
 			taker.GetKart().drawWeaponGui();
 			nbImgArmes++;
