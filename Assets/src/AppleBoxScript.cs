@@ -10,8 +10,6 @@ public class AppleBoxScript : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.isTrigger == false)
-			return;
 		collider.enabled = false;
 		//Debug.Log ("collision apples n" + ++coll + other.isTrigger);
 		KartController taker;

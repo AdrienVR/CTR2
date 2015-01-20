@@ -47,19 +47,10 @@ public class ExplosionScript : MonoBehaviour {
 	{
 		CapsuleCollider cc = GetComponent <CapsuleCollider> ();
 		cc.radius = explosionRadius;
-		
-		if (!exploded)
-			StartCoroutine (Explode());
 	}
 	
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.isTrigger == false)
-			return;
-		else if (other.name == "Ground_trigger"){
-			StartCoroutine (Explode());
-			return;
-		}
 		if (lockExplosion)
 			return;
 		// check if other is a valid target, else return
@@ -185,8 +176,8 @@ public class ExplosionScript : MonoBehaviour {
 			}
 			gameObject.transform.rotation = Quaternion.Euler(new Vector3());
 			name = "tntExploded";
-			gameObject.transform.rotation = kartCollided.transform.rotation;
-			gameObject.transform.parent = kartCollided.transform;
+			gameObject.transform.rotation = kartCollided.wheels["steering"].transform.rotation;
+			gameObject.transform.parent = kartCollided.wheels["steering"].transform;
 			kartCollided.tnt = gameObject;
 			yield return new WaitForSeconds (3f);
 			if (!disamorced){
@@ -244,7 +235,7 @@ public class ExplosionScript : MonoBehaviour {
 		}
 		else if (name == "tntExploded") {
 			if (!disamorced)
-				transform.position = kartCollided.transform.position + new Vector3(0f,+0.2f) - kartCollided.forwardNormal*0.2f;
+				transform.position = kartCollided.wheels["steering"].transform.position + new Vector3(0f,+0.2f) - kartCollided.forwardNormal*0.2f;
 		}
 	}
 }

@@ -12,13 +12,14 @@ public class WeaponBoxScript : MonoBehaviour {
 	private KartController taker;
 
 	public bool baddie = false;
-	
+	//private int coll = 0;
+
+
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.isTrigger == false)
-			return;
-
+		//animation
 		collider.enabled = false;
+		//Debug.Log ("collision arme n" + ++coll);
 		audio.Play ();
 		StartCoroutine (Take());
 
@@ -29,15 +30,8 @@ public class WeaponBoxScript : MonoBehaviour {
 		}
 		else if(Game.launchWeapons.IndexOf(other.name) != -1 || Game.shields.IndexOf(other.name) != -1) // si c'est une bombe
 		{
-			GameObject owner;
-			if (other.name!="bomb"){
-				ExplosionScript es = other.GetComponent<ExplosionScript>();
-				owner = es.owner;
-			}
-			else{
-				Bomb es = other.GetComponent<Bomb>();
-				owner = es.owner;
-			}
+			ExplosionScript es = other.GetComponent<ExplosionScript>();
+			GameObject owner = es.owner;
 			taker = owner.GetComponent<KartController>();
 		}
 		else return;
@@ -78,9 +72,7 @@ public class WeaponBoxScript : MonoBehaviour {
 		int nb = 1;
 		while (nbImgArmes < 25) {
 			nb = Random.Range (1, Game.normalWeapons.Count+1);
-			//{1,"redBeaker"},{2,"blueShield"},{3,"bomb"},{4,"triple_bomb"},{5,"triple_missile"},
-			//{6,"Aku-Aku"},{7,"nitro"},{8,"turbo"}	};
-			nb = 4;
+			//nb = 6;
 			taker.GetKart().lastWeaponTextureNb=nb;
 			taker.GetKart().drawWeaponGui();
 			nbImgArmes++;
