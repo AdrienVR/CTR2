@@ -13,7 +13,7 @@ CTR2 is an open source remake of Crash Team Racing - developed by [Naughty Dog](
 
 ## Project Details
 
-The project began in June 2014 and should release a stable version for December 2014.  
+The project began in June 2014 and should release a final version on February 2015.  
   
 4 players in local and network mode.
 
