@@ -4,19 +4,43 @@ using System.Collections.Generic;
 
 public class Gameplay : MonoBehaviour {
 
-	public Dictionary <string, GameplayGravity> wheels = new Dictionary <string, GameplayGravity>();
+	public Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
 
 	public Transform kart;
 
 	// Use this for initialization
 	void Start () {
 		foreach (Transform child in transform){
-			wheels[child.name] = child.GetComponent<GameplayGravity>();
+			wheels[child.name] = child;
 		}
+		//SetPhysics (false);
 	}
 
 	public void SetKart(Transform k){
 		kart = k;
+	}
+	
+	public void SetPhysics(bool a){
+		foreach(Transform t in wheels.Values){
+			t.gameObject.collider.enabled = a;
+		}
+	}
+
+	private void ResetBalls(){
+		foreach(Transform t in wheels.Values)
+			t.transform.localPosition += (new Vector3(t.transform.localPosition.x,0f, t.transform.localPosition.z) - t.transform.localPosition);
+	}
+
+	private void CheckDistance(){
+		
+		foreach(Transform t in wheels.Values){
+			if (t.transform.localPosition.y < -1.66f)
+				ResetBalls();/*
+			if (t.transform.localPosition.y < -1.66f)
+				t.transform.localPosition += new Vector3(0,1f);
+			if (t.transform.localPosition.y > 1)
+				t.transform.localPosition += new Vector3(0,-1);*/
+		}
 	}
 
 	private void SmoothApply(Vector3 newAngles){
@@ -50,16 +74,16 @@ public class Gameplay : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 		//copy parent
-		//CheckDistance ();
+		CheckDistance ();
 		transform.localPosition = kart.transform.position + Vector3.up * 0.2f;
 
 		Vector3 nextRot = kart.transform.localRotation.eulerAngles;
-		nextRot.x = Vector3.Angle(Vector3.forward, wheels["forward"].posCollided - wheels["backward"].posCollided);
-		nextRot.z = 0;//Vector3.Angle(Vector3.right,wheels["right"].posCollided - wheels["left"].posCollided);
+		nextRot.x = Vector3.Angle(Vector3.forward, wheels["forward"].localPosition - wheels["backward"].localPosition);
+		nextRot.z = Vector3.Angle(Vector3.right,wheels["right"].localPosition - wheels["left"].localPosition);
 
-		if (wheels ["forward"].posCollided.y > wheels ["backward"].posCollided.y)
+		if (wheels ["forward"].localPosition.y > wheels ["backward"].localPosition.y)
 			nextRot.x *= -1;
-		if (wheels ["left"].posCollided.y > wheels ["right"].posCollided.y)
+		if (wheels ["left"].localPosition.y > wheels ["right"].localPosition.y)
 			nextRot.z *= -1;
 		//if (kart.rigidbody.velocity.magnitude>2 && (kart.transform.localRotation.eulerAngles-nextRot).magnitude<2)
 			SmoothApply (nextRot);

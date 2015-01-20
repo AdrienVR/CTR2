@@ -450,8 +450,6 @@ public class KartController : MonoBehaviour
 					arme.rigidbody.AddForce(2000f*new Vector3(sens * forwardNormal.x, 0.2f, sens * forwardNormal.z));
 					//arme.vitesseInstant =  90f*new Vector3(sens * forwardNormal.x, 0, sens * forwardNormal.z);
 			}
-			else
-				arme.owner = gameObject;
 		}
 		else if (w=="turbo"){
 			if (IsSuper())
@@ -492,8 +490,6 @@ public class KartController : MonoBehaviour
 		if (state.IndexOf ("invincible") == -1)
 		{
 			StartCoroutine (Transparence ());
-			StartCoroutine (JumpDie ());
-			StartCoroutine (TurnDie ());
 			StartCoroutine (UnableToMove ());
 			// mise en etat empechant de tirer : 
 			if (state.IndexOf ("UnableToShoot") == -1)
@@ -586,32 +582,6 @@ public class KartController : MonoBehaviour
 			time += 0.1f;
 		}
 		state.Remove ("UnableToShoot");
-	}
-	
-	IEnumerator JumpDie()
-	{
-		float time = 0;
-		float high = 5f;
-		while (time < 2.5f) {
-			rigidbody.MovePosition(rigidbody.position + new Vector3(0,high));
-			yield return new WaitForSeconds (0.25f);
-			time += 0.25f;
-			high -= 0.25f;
-		}
-	}
-	
-	IEnumerator TurnDie()
-	{
-		float time = 0;
-		float x = 0, y = 0, z = 0;
-		while (time < 2f) {
-			yield return new WaitForSeconds (0.01f);
-			wheels["steering"].transform.rotation = Quaternion.Euler(new Vector3(x,y,z));
-			time += 0.01f;
-			x = 360 * time ;
-			y = x;
-			//z = x;
-		}
 	}
 	
 	IEnumerator Transparence()

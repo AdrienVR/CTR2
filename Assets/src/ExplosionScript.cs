@@ -58,7 +58,6 @@ public class ExplosionScript : MonoBehaviour {
 			return;
 		else if (other.name == "Ground_trigger"){
 			StartCoroutine (Explode());
-			//Debug.Log ("trigger ground detected");
 			return;
 		}
 		if (lockExplosion)
@@ -162,7 +161,6 @@ public class ExplosionScript : MonoBehaviour {
 			yield return 0;
 		SetAllCollidersStatus (false);
 		exploded = true;
-		//if (name=="bomb")
 		owner.GetComponent <KartController>().explosiveWeapon = false;
 		if (explosionClip != null)
 			animation.Play (explosionClip.name);
