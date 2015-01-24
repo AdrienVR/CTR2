@@ -56,7 +56,7 @@ public class Gameplay : MonoBehaviour {
 		else if (smooth.z < -180)
 			smooth.z += 360;
 		//Debug.Log ( smooth.x+",z:" +smooth.z);
-		float coeffSmooth = 0.5f;
+		float coeffSmooth = 0.05f;
 		smooth.x = System.Math.Min (smooth.x, coeffSmooth);
 		smooth.z = System.Math.Min (smooth.z, coeffSmooth);
 

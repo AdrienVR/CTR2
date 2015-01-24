@@ -128,8 +128,8 @@ public class ControllerAPI {
 		allControllers [i] = this;
 
 		if (i == 1){
-			Debug.Log ("Test saving + loading binary dictionary");
-			ControllerAPI.Test (1);//player 1 = keyboard 1 or xbox1
+			//Debug.Log ("Test saving + loading binary dictionary");
+			//ControllerAPI.Test (1);//player 1 = keyboard 1 or xbox1
 		}
 	}
 
