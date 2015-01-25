@@ -75,7 +75,7 @@ public class ExplosionScript : MonoBehaviour {
 		}
 
 		// explosion if bad/false collision
-		if (Game.launchWeapons.IndexOf(name)!=-1 && (other.name == "Ground" || Game.poseWeapons.IndexOf(other.name)!=-1))
+		if (Game.launchWeapons.IndexOf(name)!=-1 && (other.name == "Ground" || other.name == "Wall" || Game.poseWeapons.IndexOf(other.name)!=-1))
 			StartCoroutine (Explode());
 		// not a target
 		if (Game.characters.IndexOf (other.name) == -1 ) {
