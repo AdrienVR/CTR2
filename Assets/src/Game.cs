@@ -33,9 +33,9 @@ public class Game : MonoBehaviour
 	
 	public static Dictionary<int, string> playersMapping;// {1:xbox1, etc}
 
-	public static List<string> listKarts = new List<string>{"Crash","Crash","Crash","Crash"};
-	public static List<string> characters = new List<string>() {"kartCrash"};
-	public static List<string> listMap = new List<string>() {"dinoRace", "plage"};
+	public static List<string> listKarts = new List<string>{"Crash","Coca","Crash","Crash"};
+	public static List<string> characters = new List<string>() {"kartCrash", "kartCoco", "kartCoca"};
+	public static List<string> listMap = new List<string>() {"parking", "plage"};
 
 
 }
