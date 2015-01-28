@@ -505,7 +505,6 @@ public class Menus : MonoBehaviour
 				displayMenu(menuOptions);
 				break;
 			case "CHANGER CONFIG":
-				displayMenu(menuFin);
 				break;
 			case "CHANGER NIVEAU":
 				if (Application.loadedLevelName == "plage")
