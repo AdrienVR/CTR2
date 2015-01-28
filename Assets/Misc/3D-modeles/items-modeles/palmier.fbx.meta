@@ -1,23 +1,14 @@
 fileFormatVersion: 2
-guid: e3ed69f292a04874685e289a43c052c0
+guid: c58a732207ee215418a3676fbe3c7c87
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
-    100000: Bone
-    100002: Cube
-    100004: //RootNode
-    400000: Bone
-    400002: Cube
-    400004: //RootNode
-    2300000: Cube
-    3300000: Cube
-    4300000: Cube
-    7400000: Armature|ArmatureAction
-    7400002: Armature|TNT_animation
-    7400004: Cube|ArmatureAction
-    7400006: Cube|TNT_animation
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: Circle
     9500000: //RootNode
-    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -33,39 +24,7 @@ ModelImporter:
     animationScaleError: .5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    clipAnimations:
-    - serializedVersion: 16
-      name: Cube|TNT_animation
-      takeName: Cube|TNT_animation
-      firstFrame: 0
-      lastFrame: 79
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: Bone
-        weight: 1
-      - path: Cube
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
+    clipAnimations: []
     isReadable: 1
   meshes:
     lODScreenPercentages: []
@@ -101,6 +60,6 @@ ModelImporter:
     feetSpacing: 0
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 1
+  animationType: 0
   additionalBone: 0
   userData: 

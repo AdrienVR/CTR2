@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ExplosionScript : MonoBehaviour {
+public class TNTScript : MonoBehaviour {
 	
 	public AnimationClip explosionClip;
 	public Color explosionColor;

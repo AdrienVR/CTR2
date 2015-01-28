@@ -7,12 +7,14 @@ public class Gameplay : MonoBehaviour {
 	public Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
 
 	public Transform kart;
+	private Transform kartSteering;
 
 	// Use this for initialization
 	void Start () {
 		foreach (Transform child in transform){
 			wheels[child.name] = child;
 		}
+		kartSteering = kart.FindChild("steering");
 		//SetPhysics (false);
 	}
 
@@ -56,7 +58,7 @@ public class Gameplay : MonoBehaviour {
 		else if (smooth.z < -180)
 			smooth.z += 360;
 		//Debug.Log ( smooth.x+",z:" +smooth.z);
-		float coeffSmooth = 0.05f;
+		float coeffSmooth = 0.5f;
 		smooth.x = System.Math.Min (smooth.x, coeffSmooth);
 		smooth.z = System.Math.Min (smooth.z, coeffSmooth);
 
@@ -67,7 +69,8 @@ public class Gameplay : MonoBehaviour {
 		new_smooth.z = System.Math.Min (new_smooth.z, 20);
 		new_smooth.x = System.Math.Max (new_smooth.x, -45);
 		new_smooth.z = System.Math.Max (new_smooth.z, -20);*/
-		kart.transform.localRotation = Quaternion.Euler (new_smooth);
+		//kartSteering.localRotation = Quaternion.Euler (new_smooth);
+		//kart.transform.localRotation = Quaternion.Euler (new_smooth);
 
 	}
 	

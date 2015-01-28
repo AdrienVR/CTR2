@@ -675,7 +675,7 @@ public class KartController : MonoBehaviour
 						high = System.Math.Abs(high-360);
 					else 
 						high = 0;
-					Debug.Log("Angle : "+high);
+					//Debug.Log("Angle : "+high);
 					high = System.Math.Min(high, 9f);
 					high = System.Math.Max(high, 1.75f);
 					rigidbody.MovePosition(rigidbody.position + new Vector3(0,high,0));
