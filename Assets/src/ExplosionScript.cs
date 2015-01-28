@@ -51,6 +51,15 @@ public class ExplosionScript : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider other)
 	{
+		if (other.name == "Ground" && name != "tntExploded" && name != "tntDropped" && name != "tnt")
+						return;
+		else if (other.name == "Ground" && (name == "tntExploded" || name == "tntDropped" || name== "tnt")){
+			if (name == "tntDropped")
+				StartCoroutine(tntExplosion());
+			else
+				StartCoroutine (Explode());
+		}
+
 		if (lockExplosion)
 			return;
 		// check if other is a valid target, else return
@@ -75,7 +84,7 @@ public class ExplosionScript : MonoBehaviour {
 		}
 
 		// explosion if bad/false collision
-		if (Game.launchWeapons.IndexOf(name)!=-1 && (other.name == "Ground" || other.name == "Wall" || Game.poseWeapons.IndexOf(other.name)!=-1))
+		if (Game.launchWeapons.IndexOf(name)!=-1 && ( other.name == "Wall" || Game.poseWeapons.IndexOf(other.name)!=-1))
 			StartCoroutine (Explode());
 		// not a target
 		if (Game.characters.IndexOf (other.name) == -1 ) {
