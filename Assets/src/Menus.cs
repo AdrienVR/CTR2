@@ -34,10 +34,14 @@ public class Menus : MonoBehaviour
 	public Main main;
 	public Kart winner;
 	public List <Kart> loosers=  new List <Kart>();
-	
-	
+	public GameObject cadre1;
+	public GameObject cadre5;
+
 	private bool readyToMove = true;
-	
+	private int j = 5;
+	private List<string> persos=new List <string>();
+	public bool falseok=true;
+	public int numSelection = 1;
 	// menus :
 	private static Dictionary <int, string> menuPause =  new Dictionary<int, string>
 	{
@@ -82,6 +86,28 @@ public class Menus : MonoBehaviour
 		{5,"CHANGER CONFIG"},
 		{6,"QUITTER"}
 	};
+	private static Dictionary <int, string> mainMenu =  new Dictionary<int, string>
+	{
+		{0,"Crash Team Racing II"},
+		{1,"BATAILLE"},
+		{2,"CREDITS"},
+		{3,"QUITTER"}
+	};
+	private static Dictionary <int, string> menuCredits =  new Dictionary<int, string>
+	{
+		{0,"Credits"},
+		{1,"RETOUR"}
+	};
+	private static Dictionary <int, string> menuPersos =  new Dictionary<int, string>
+	{
+		{0,"Personnages"},
+		{1,"Crash"},
+		{2,"Coco"},
+		{3,"Crash"},
+		{4,"Crash"},
+		{5,"VALIDER"},
+		{6,"RETOUR"}
+	};
 	// Use this for initialization
 	void Start ()
 	{
@@ -89,6 +115,18 @@ public class Menus : MonoBehaviour
 		cameraMenu = (GameObject)GameObject.Instantiate (Resources.Load("cameraMenu"));
 		//AudioListener.volume = 0.5f;
 		//soundUp =(AudioClip)Instantiate (Resources.Load ("Audio/down_menu"));
+		cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre1"), textureAffichees [position].transform.position, Quaternion.identity);
+		cadre5=(GameObject)Instantiate (Resources.Load ("cadre5"),new Vector3(0.85f,0.5f,0),Quaternion.identity);
+		if(cadre5)
+			cadre5.guiTexture.enabled = false;
+		if(cadre1)
+		{
+			cadre1.guiTexture.enabled = false;
+			foreach( Transform child in cadre1.transform)
+			{	
+				child.guiTexture.enabled = false;
+			}
+		}
 	}
 	
 	
@@ -99,8 +137,11 @@ public class Menus : MonoBehaviour
 			navigateMenu ();
 		else
 			CheckNewKey();
-		testPause ();
-		testEnd ();
+		if(main!=null)
+		{
+			testPause ();
+			testEnd ();
+		}
 	}
 	
 	void testPause()
@@ -220,7 +261,7 @@ public class Menus : MonoBehaviour
 	void displayMenu(Dictionary <int, string> menu)
 	{
 		viderMenu ();
-		cameraMenu.SetActive (true);
+		if(cameraMenu) cameraMenu.SetActive (true);
 		position = 0;
 		GameObject textTitre =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*menu.Count/2f,0),Quaternion.identity);
 		textTitre.guiText.text=menu[0];
@@ -299,6 +340,70 @@ public class Menus : MonoBehaviour
 			textAffiches.Add(textbutton);
 			return true;
 		}
+		else if(menu[0]==mainMenu[0])
+		{		
+			if(i==1) triangleFond=(GameObject)GameObject.Instantiate (Resources.Load("404"));
+			titreAffiche.transform.position = new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
+			Vector3 pos =new Vector3(0.8f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
+			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+			textbutton.guiText.text=menu[i];
+			textAffiches.Add(textbutton);
+			return true;
+		}
+		else if(menu[0]==menuCredits[0])
+		{
+			titreAffiche.transform.position = new Vector3(0.5f,0.55f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
+			Vector3 pos =new Vector3(0.5f,0.15f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
+			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+			textbutton.guiText.text=menu[i];
+			textAffiches.Add(textbutton);
+			return true;
+		}
+		else if(menu[0]==menuPersos[0])
+		{	
+			titreAffiche.transform.position = new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
+			if(i>0 && i<menuPersos.Count()-2)
+			{
+				Vector3 pos =new Vector3(0.5f-(((float)70)/(float)Screen.width)*2*(((float)(menu.Count-4)/2f-i)+1),0.3f,-1);
+				GameObject p;
+				switch (i)
+				{
+				case 1: //crash
+					p =(GameObject)Instantiate (Resources.Load ("iconCrash"),pos,Quaternion.identity);
+					break;
+				case 2://coco
+					p =(GameObject)Instantiate (Resources.Load ("iconCoco"),pos,Quaternion.identity);
+					break;
+				case 3://crash
+					p =(GameObject)Instantiate (Resources.Load ("iconCrash"),pos,Quaternion.identity);
+					break;
+				case 4://crash
+					p =(GameObject)Instantiate (Resources.Load ("iconCrash"),pos,Quaternion.identity);
+					break;
+				default:
+					p=new GameObject();
+					break;
+				}
+
+				textureAffichees.Add(p);
+				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y-(float)80/(float)Screen.width,0),Quaternion.identity);
+				textbutton.guiText.text=menu[i];
+				textAffiches.Add(textbutton);
+			}
+			else
+			{
+				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(1-j),-1);
+				if(j==5) j++;
+				else if(j==6) j--;
+				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+				textbutton.guiText.text=menu[i];
+				textAffiches.Add(textbutton);
+			}
+			return true;
+		}
 		else return false;
 	}
 	
@@ -308,26 +413,53 @@ public class Menus : MonoBehaviour
 		{
 			if(position < textureAffichees.Count)
 			{
-				for(int i=0; i<textAffiches.Count;i++)
+				if(menuCourant[0]!=menuPersos[0])
 				{
-					textureAffichees [i].guiTexture.texture = normal;
-					textureAffichees [position].guiTexture.texture = hover;
-					textAffiches[i].guiText.color=Color.white;
-					textAffiches[position].guiText.color=Color.black;
-					if(menuCourant[0]=="Reglages Controles")
+					for(int i=0; i<textAffiches.Count;i++)
 					{
-						textPlayer.guiText.color=Color.white; 
-						if(menuCourant[position+1]=="JOUEUR :")
+						textureAffichees [i].guiTexture.texture = normal;
+						textureAffichees [position].guiTexture.texture = hover;
+						textAffiches[i].guiText.color=Color.white;
+						textAffiches[position].guiText.color=Color.black;
+						if(menuCourant[0]=="Reglages Controles")
 						{
-							textPlayer.guiText.color=Color.black;
-						}
-						if(i<controlAffiches.Count) controlAffiches[i].guiText.color=Color.white;
-						if(position>0 && position<menuCourant.Count-2)
-						{
-							controlAffiches[position-1].guiText.color=Color.black;
+							textPlayer.guiText.color=Color.white; 
+							if(menuCourant[position+1]=="JOUEUR :")
+							{
+								textPlayer.guiText.color=Color.black;
+							}
+							if(i<controlAffiches.Count) controlAffiches[i].guiText.color=Color.white;
+							if(position>0 && position<menuCourant.Count-2)
+							{
+								controlAffiches[position-1].guiText.color=Color.black;
+							}
 						}
 					}
 				}
+				else
+				{
+					textureAffichees [menuPersos.Count-3].guiTexture.texture = normal;
+					textureAffichees [menuPersos.Count-2].guiTexture.texture = normal;
+					textAffiches[menuPersos.Count-3].guiText.color=Color.white;
+					textAffiches[menuPersos.Count-2].guiText.color=Color.white;
+					if(position>=menuPersos.Count-3)
+					{
+						textureAffichees [position].guiTexture.texture = hover;
+						textAffiches[position].guiText.color=Color.black;
+					}
+					else if (cadre1)
+					{
+						cadre1.transform.position=textureAffichees[position].transform.position+new Vector3(0,0,2f);
+						cadre1.guiTexture.enabled = true;
+						foreach( Transform child in cadre1.transform)
+						{	
+							child.guiTexture.enabled = true;
+						}
+					}
+
+
+				}
+
 			}
 			bool down = false;
 			for (int i = 1; i<Kart.totalPlayers+1; i++)
@@ -338,11 +470,19 @@ public class Menus : MonoBehaviour
 				down = false;
 			else if (down && readyToMove)
 			{
-				main.gameObject.audio.PlayOneShot (main.soundUp);
+				if(main)
+					main.gameObject.audio.PlayOneShot (main.soundUp);
 				StartCoroutine(RestrictMovement());
 			}
-			if (down && position<menuCourant.Count-2) position++;
-			else if(down && !(position<menuCourant.Count-2)) position = 0;
+			if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
+			{
+				if(down) position=menuPersos.Count-3;
+			}
+			else
+			{
+				if (down && position<menuCourant.Count-2) position++;
+				else if(down && !(position<menuCourant.Count-2)) position = 0;
+			}
 			bool up = false;
 			for (int i = 1; i<Kart.totalPlayers+1; i++)
 				up |=  ControllerAPI.StaticIsPressed(i, "throw");
@@ -350,11 +490,19 @@ public class Menus : MonoBehaviour
 				up = false;
 			else if (up && readyToMove)
 			{
-				main.gameObject.audio.PlayOneShot (main.soundUp);
+				if(main)
+					main.gameObject.audio.PlayOneShot (main.soundUp);
 				StartCoroutine(RestrictMovement());
 			}
-			if (up && position>0) position--;
-			else if(up && !(position>0)) position = menuCourant.Count-2;
+			if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
+			{
+				if(up) position=menuPersos.Count-2;
+			}
+			else
+			{
+				if (up && position>0) position--;
+				else if(up && !(position>0)) position = menuCourant.Count-2;
+			}
 			bool ok = false;
 			for (int i = 1; i<Kart.totalPlayers+1; i++)
 			{
@@ -362,9 +510,9 @@ public class Menus : MonoBehaviour
 			}
 			if(ok)
 			{
-				if(menuCourant[position+1]=="RETOUR")
+				if(menuCourant[position+1]=="RETOUR" && main)
 					main.gameObject.audio.PlayOneShot (main.soundCancel);
-				else
+				else if(main)
 					main.gameObject.audio.PlayOneShot (main.soundOk);
 				action(menuCourant,position);
 			}
@@ -438,6 +586,60 @@ public class Menus : MonoBehaviour
 					StartCoroutine(setKey(action, name));
 				}
 			}
+			else if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
+			{
+				if(rightDown)
+				{
+					if(position==menuPersos.Count-4) position=0;
+					else position++;
+				}
+				else if(leftDown)
+				{
+					if(position==0) position=menuPersos.Count-4;
+					else position--;
+				}
+				else if(ok)
+				{
+					if(falseok==false)
+					{
+						persos.Add(menuCourant[position+1]);
+						Destroy(cadre1);
+						Color c;
+						switch (numSelection)
+						{
+							case 1:
+							c=new Color(2f/255f,41f/255f,237f/255f);
+								break;
+							case 2:
+							c=new Color(238f/255f,19f/255f,2f/255f);
+								break;
+							case 3:
+							c=new Color(238f/255f,230f/255f,2f/255f);
+								break;
+							case 4:
+							c=new Color(32f/255f,214f/255f,2f/255f);
+								break;
+							default:
+								c=new Color();
+								break;
+						}
+						GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(0.85f,0.66f-0.07f*numSelection,0),Quaternion.identity);
+						textbutton.guiText.text="J"+numSelection+" : "+menuCourant[position+1];
+						textbutton.guiText.color=c;
+						textbutton.guiText.fontSize=40;
+						textAffiches.Add(textbutton);
+						if(numSelection<4)
+						{
+							numSelection++;
+							cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre"+numSelection), textureAffichees [position].transform.position+new Vector3(0,0,2f), Quaternion.identity);
+						}
+						else
+							position=menuCourant.Count-3;
+					}
+					falseok=false;
+				}
+			}
+			
 		}
 	}
 	
@@ -469,7 +671,12 @@ public class Menus : MonoBehaviour
 		if (ControllerAPI.CheckForAxis() || ControllerAPI.CheckForKey())
 			StartCoroutine(getKey());
 	}
-	
+
+	public void startMainMenu()
+	{
+			displayMenu(mainMenu);
+	}
+
 	IEnumerator RestrictMovement()
 	{
 		readyToMove = false;
@@ -569,6 +776,62 @@ public class Menus : MonoBehaviour
 				break;
 			}
 		}
+		if(menu[0]==mainMenu[0])
+		{
+			switch (menu[p+1])
+			{
+			case "QUITTER":
+				Application.Quit();
+				break;
+			case "CREDITS":
+				displayMenu(menuCredits);
+				break;
+			case "BATAILLE":
+				displayMenu(menuPersos);
+				cadre1.guiTexture.enabled=true;
+				cadre5.guiTexture.enabled = true;
+				break;
+			default:
+				break;
+			}
+		}
+		if(menu[0]==menuCredits[0])
+		{
+			switch (menu[p+1])
+			{
+			case "RETOUR":
+				displayMenu(mainMenu);
+				break;
+			default:
+				break;
+			}
+		}
+		if(menu[0]==menuPersos[0])
+		{
+			switch (menu[p+1])
+			{
+			case "RETOUR":
+				cadre5.guiTexture.enabled = false;
+				for(int n=0;n<persos.Count;n++)
+					persos.RemoveAt(n);
+				displayMenu(mainMenu);
+				numSelection=1;
+				cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre1"), textureAffichees [position].transform.position+new Vector3(0,0,2f), Quaternion.identity);
+				cadre1.guiTexture.enabled=false;
+				foreach( Transform child in cadre1.transform)
+				{	
+					child.guiTexture.enabled = false;
+				}
+				falseok=true;
+				break;
+			case "VALIDER":
+				for(int m=0;m<persos.Count;m++)
+					Debug.Log (persos[m]);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	
 	void Restart()
@@ -581,6 +844,14 @@ public class Menus : MonoBehaviour
 	
 	void viderMenu()
 	{
+		if(cadre1)
+		{
+			cadre1.guiTexture.enabled = false;
+			foreach( Transform child in cadre1.transform)
+			{	
+				child.guiTexture.enabled = false;
+			}
+		}
 		authorizeNavigate = false;
 		Destroy (titreAffiche);
 		Destroy (triangleFond);
@@ -595,7 +866,8 @@ public class Menus : MonoBehaviour
 		textAffiches =  new List <GameObject>();
 		controlAffiches =  new List <GameObject>();
 		flechesD =  new List <GameObject>();
-		cameraMenu.SetActive (false);
+		if(cameraMenu)
+			cameraMenu.SetActive (false);
 	}
 	
 }
