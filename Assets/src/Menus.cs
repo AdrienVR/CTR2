@@ -592,11 +592,13 @@ public class Menus : MonoBehaviour
 				{
 					if(position==menuPersos.Count-4) position=0;
 					else position++;
+					ShowRoom.ShowCharacter(menuPersos[position+1]);
 				}
 				else if(leftDown)
 				{
 					if(position==0) position=menuPersos.Count-4;
 					else position--;
+					ShowRoom.ShowCharacter(menuPersos[position+1]);
 				}
 				else if(ok)
 				{
@@ -790,6 +792,7 @@ public class Menus : MonoBehaviour
 				displayMenu(menuPersos);
 				cadre1.guiTexture.enabled=true;
 				cadre5.guiTexture.enabled = true;
+				ShowRoom.ShowCharacter(menuPersos[position+1]);
 				break;
 			default:
 				break;
@@ -811,6 +814,7 @@ public class Menus : MonoBehaviour
 			switch (menu[p+1])
 			{
 			case "RETOUR":
+				ShowRoom.Leave();
 				cadre5.guiTexture.enabled = false;
 				for(int n=0;n<persos.Count;n++)
 					persos.RemoveAt(n);
