@@ -9,7 +9,7 @@ public class WeaponBoxScript : MonoBehaviour {
 	private int nbImgArmes;
 	private float timeLookingWeapon;
 
-	private KartController taker;
+	private KartScript taker;
 
 
 	void OnTriggerEnter(Collider other)
@@ -25,13 +25,13 @@ public class WeaponBoxScript : MonoBehaviour {
 		//find who to give weapon
 		if(Game.characters.IndexOf(other.name) != -1)// si c'est un kart
 		{
-			taker = (KartController)other.GetComponent ("KartController");
+			taker = other.GetComponent <KartScript>();
 		}
 		else if(Game.launchWeapons.IndexOf(other.name) != -1 || Game.shields.IndexOf(other.name) != -1) // si c'est une bombe
 		{
 			ExplosionScript es = other.GetComponent<ExplosionScript>();
 			GameObject owner = es.owner;
-			taker = owner.GetComponent<KartController>();
+			taker = owner.GetComponent<KartScript>();
 		}
 		else return;
 
@@ -71,17 +71,17 @@ public class WeaponBoxScript : MonoBehaviour {
 		int nb = 1;
 		while (nbImgArmes < 25) {
 			nb = Random.Range (1, Game.normalWeapons.Count+1);
-			//nb = 6;
+			//nb = 4;
 			taker.GetKart().lastWeaponTextureNb=nb;
 			taker.GetKart().drawWeaponGui();
 			nbImgArmes++;
 			yield return new WaitForSeconds (0.08f);
 			timeLookingWeapon += 0.08f;
 		}
-		if (!taker.IsSuper())
+		//if (!taker.IsSuper())
 			taker.SetWeapon(Game.normalWeapons[nb]);
-		else
-			taker.SetWeapon(Game.superWeapons[nb]);
+		//else
+		//	taker.SetWeapon(Game.superWeapons[nb]);
 		taker.setWaitingWeapon (false);
 		nbImgArmes = 0;
 	}

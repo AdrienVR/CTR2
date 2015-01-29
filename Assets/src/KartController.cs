@@ -5,42 +5,28 @@ using System.Collections.Generic;
 
 
 public class KartController : MonoBehaviour
-{
+{	
 	public static bool stop = true;
-	private bool stopDie = false;
-	private bool isGoingInAir = false;
-	
-	private float speedCoeff;
-	private float turnCoeff;
+	public float speedCoeff;
+	public float turnCoeff;
 	public float coeffInitSpeed;
 	public Dictionary <string, float> speedDuration = new Dictionary <string,  float>();
 	public Dictionary <string, float> speedToAdd = new Dictionary <string,  float>();
+	private bool isGoingInAir = false;
+	private bool inAirAfterJump=true;
 
 	private Vector3 postForce;
 	private Vector3 lowForce;
 	public Vector3 forwardNormal;
-	
-	private bool inAirAfterJump=true;
-	private bool computeInAirAfterJump=false;
-
-	private List<GameObject> smoke = new List<GameObject>();
-	private WeaponBoxScript takenWeaponBox;
-	public ExplosionScript shield;
-	public ExplosionScript protection;
-	public GameObject tnt;
-
-	public List<string> state = new List<string>();
-	public List<string> weapons;
 
 	private Kart kart;
+	private KartScript kart_script;
+
 	private bool dansLesAirs = true;
 	public Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
+	private List<GameObject> smoke = new List<GameObject>();
 	private float ky;
-	private bool baddie = false;
-	
-	private ExplosionScript arme;
-	public bool explosiveWeapon;
-	private float facteurSens = 1f;
+
 	private float ellapsedTime = 0f;
 	private float currentTime = 0f;
 
@@ -60,15 +46,13 @@ public class KartController : MonoBehaviour
 	private float twTimeWheels = 0f;
 	private float twLerpWheels = 0f;
 
-	private int numberOfJump = 0;
+	public int numberOfJump = 0;
 	private ControllerAPI controller;
 	
 	// Use this for initialization
 	void Start ()
 	{
 		coeffInitSpeed = speedCoeff;
-		explosiveWeapon = false;
-		weapons = new List<string>();
 
 		foreach (Transform child in transform){
 			if (child.name == "kartSmoke"){
@@ -80,7 +64,10 @@ public class KartController : MonoBehaviour
 			foreach (Transform w in child.transform)
 				wheels[w.name] = w;
 		}
-		controller = new ControllerAPI (kart.numeroJoueur);
+		
+		kart_script = GetComponent <KartScript> ();
+
+		controller = ControllerAPI.GetController(kart.numeroJoueur);
 	}
 	
 	void Update()
@@ -90,7 +77,7 @@ public class KartController : MonoBehaviour
 		yTurn = 0;
 		if (Time.timeScale == 0)
 			return;
-		if (!stop && !stopDie){
+		if (!stop && kart_script.AbleToMove()){
 			forwardNormal = wheels ["steering"].transform.forward;
 			forwardNormal.y = 0;
 			forwardNormal = normalizeVector (forwardNormal);
@@ -123,17 +110,19 @@ public class KartController : MonoBehaviour
 			currentTime = Time.time;
 			CheckSpeed();
 
-			if (tnt && numberOfJump > 8) {
-				tnt.transform.position = tnt.transform.position + new Vector3 (0, 5f);
-				ExplosionScript e = tnt.GetComponent <ExplosionScript>();
+			
+			if (kart_script.tnt && numberOfJump > 8) {
+				kart_script.tnt.transform.position = kart_script.tnt.transform.position + new Vector3 (0, 5f);
+				ExplosionScript e = kart_script.tnt.GetComponent <ExplosionScript>();
 				e.animation.Stop();
 				e.disamorced = true;
 				e.SetName("tntDropped");
 				e.transform.parent = null;
 				e.rigidbody.velocity = new Vector3();
-				tnt = null;
-				numberOfJump = 0;
+				kart_script.tnt = null;
+		        numberOfJump = 0;
 			}
+
 
 			if (!forward){
 				if (System.Math.Abs(accelerationTime)<0.01f)
@@ -166,6 +155,11 @@ public class KartController : MonoBehaviour
 
 			controlWheels ();
 		}
+	}
+	
+	public void SetKart (Kart k)
+	{
+		kart = k;
 	}
 
 	float Slerp(float a, float b, float f)
@@ -258,256 +252,7 @@ public class KartController : MonoBehaviour
 		isGoingInAir = false;
 	}
 	
-	public bool IsArmed()
-	{
-		return state.IndexOf("armed")!=-1;
-	}
-	
-	public void SetWeaponBox(WeaponBoxScript wp)
-	{
-		takenWeaponBox = wp;
-	}
-	
-	public bool IsWaitingWeapon()
-	{
-		return state.IndexOf("waiting")!=-1;
-	}
-
-	public bool IsSuper()
-	{
-		return kart.nbApples == 10;
-	}
-	
-	public void addApples()
-	{
-		kart.addApples ();
-	}
-
-	public void animApples()
-	{
-		StartCoroutine (animApplesNb());
-	}
-	
-	IEnumerator animApplesNb()
-	{
-		while(kart.nbApplesFinal != kart.nbApples)
-		{
-			kart.nbApples ++;
-			kart.SetIllumination((kart.nbApples == 10));
-			audio.Play();
-			kart.guitextApples.text = "x "+kart.nbApples.ToString();
-			kart.drawWeaponGui();
-			yield return new WaitForSeconds (0.27f);
-		}
-	}
-	
-	public void setWaitingWeapon(bool t)
-	{
-		if (t){
-			if (state.IndexOf("waiting")==-1)
-				state.Add("waiting");
-		}
-		else
-			if (state.IndexOf("waiting")!=-1)
-				state.Remove("waiting");
-	}
-	
-	public void setEvoluteWeapon(bool t)
-	{
-		if (t){
-			if (state.IndexOf("armedEvolute")==-1)
-				state.Add("armedEvolute");
-		}
-		else
-			if (state.IndexOf("armedEvolute")!=-1)
-				state.Remove("armedEvolute");
-	}
-	
-	public void SetWeapon(string w)
-	{
-		if (w == "Aku-Aku" )
-			if (baddie)
-				w = "Uka-Uka";
-		
-		if (w.IndexOf ("triple") != -1){
-			int j = weapons.Count;
-			if (j == 0) j=3;
-			weapons = new List<string> ();
-			for(int i=0;i<j;i++)
-				weapons.Add (w.Split('_')[w.Split('_').Length - 1]);}
-		else{
-			weapons = new List<string> ();
-			weapons.Add (w);
-		}
-		if (state.IndexOf("armed")==-1)
-			state.Add ("armed");
-		takenWeaponBox = null;
-	}
-	
-	public void UseWeapon()
-	{
-		// stop the random searching of weapon from WeaponBox
-		if (takenWeaponBox != null){
-			if (takenWeaponBox.selectRandomWeapon ())
-				takenWeaponBox = null;
-			return;
-		}
-
-		if (tnt)
-			return;
-
-		if (transform.forward.y>0)
-			forwardNormal.y = 0;
-		forwardNormal = normalizeVector (forwardNormal);
-		Vector3 posToAdd = new Vector3();
-		//launch the shield
-		if (shield != null) {
-			shield.vitesseInitiale =  100f*forwardNormal;
-			shield.name = "bomb";
-			posToAdd = transform.position + 6f * (new Vector3 (forwardNormal.x, forwardNormal.y+0.6f, forwardNormal.z));
-			shield.transform.position = posToAdd;
-			shield.transform.rotation = new Quaternion();
-			shield.EnablePhysics();
-			shield.transform.localScale = new Vector3(0.66f,0.75f,0.66f);
-			shield = null;
-			return;
-		}
-		
-		if (weapons.Count == 0)
-			return;
-		string w = weapons [0];
-		if (IsSuper() && !Game.superWeapons.ContainsValue(w) && w!="missile")
-		{
-			int n = 0;
-			for(int k=1;k<Game.normalWeapons.Count+1;k++)
-				if (Game.normalWeapons[k] == w)
-					n = k;
-			w = Game.superWeapons[n];
-		}
-		float sens = -1f;
-		if (controller.IsPressed("throw"))
-			sens = controller.KeyValue("throw");
-		if (System.Math.Abs(sens)<Game.thresholdAxis)
-			sens = -1f;
-		// computing the distance to instantiate the weapon
-		if (w == "bomb")
-			posToAdd = 6f * (new Vector3 (facteurSens * forwardNormal.x, forwardNormal.y + 0.2f, facteurSens * forwardNormal.z));
-		else if (Game.poseWeapons.IndexOf(w) != -1){
-			if (w == "greenBeaker" || w=="redBeaker")
-				posToAdd = 4f * (new Vector3 (sens*forwardNormal.x, forwardNormal.y + 0.2f, sens*forwardNormal.z));
-			else
-				posToAdd = 4f * (new Vector3 (-forwardNormal.x, forwardNormal.y + 0.2f, -forwardNormal.z));
-		}
-		else
-			posToAdd = 6f * (new Vector3 (forwardNormal.x, forwardNormal.y + 0.2f, forwardNormal.z));
-		Quaternion q = Quaternion.Euler (new Vector3(0,transform.rotation.eulerAngles.y,0));
-		if (Game.poseWeapons.IndexOf(w) != -1)
-			q = transform.rotation;
-		
-		//instantiate the weapon
-		if (Game.instatiableWeapons.IndexOf(w)!=-1){
-			GameObject arme1 = Instantiate(Resources.Load("Weapons/"+w), transform.position + posToAdd, q) as GameObject;
-			arme1.name = arme1.name.Split ('(') [0];
-
-			//compute the velocity
-			arme = (ExplosionScript) arme1.GetComponent ("ExplosionScript");
-		}
-		if (arme!=null && Game.instatiableWeapons.IndexOf(w)!=-1)	{
-			arme.owner = gameObject;
-			
-			if (w == "bomb") {
-				explosiveWeapon = true;
-				arme.vitesseInitiale =  3*speedCoeff*new Vector3(facteurSens * forwardNormal.x, 0, facteurSens * forwardNormal.z);
-				if (kart.nbApples == 10)
-					arme.explosionRadius *= 2.5f;
-			}
-			else if (w == "missile"){
-				if (IsSuper())
-					arme.vitesseInitiale =  4*speedCoeff*forwardNormal;
-				else
-					arme.vitesseInitiale =  2.75f*speedCoeff*forwardNormal;
-			}
-			else if (w == "greenShield"|| w == "blueShield"){
-				shield = arme;
-				shield.lifeTime = 14f;
-			}
-			else if (w == "Aku-Aku" || w == "Uka-Uka") {
-				/*Main.sourceMusic.clip=(AudioClip)Instantiate(Resources.Load("Audio/akuaku"));
-				Main.sourceMusic.Play();*/
-				if (protection!=null)
-					Destroy(arme.gameObject);
-				else{
-					protection = arme;
-				}
-				if (IsSuper())
-					protection.lifeTime = 10f;
-				else
-					protection.lifeTime = 7f;
-				AddSpeed(protection.lifeTime+2, 1.5f, "aku");
-				Main.ManageSound ();
-			}
-			else if (w == "greenBeaker" || w=="redBeaker")
-				if (sens == 1f)
-					arme.rigidbody.AddForce(2000f*new Vector3(sens * forwardNormal.x, 0.2f, sens * forwardNormal.z));
-					//arme.vitesseInstant =  90f*new Vector3(sens * forwardNormal.x, 0, sens * forwardNormal.z);
-		}
-		else if (w=="turbo"){
-			if (IsSuper())
-				AddSpeed(3.0f, 1.5f, w);
-			else
-				AddSpeed(2.0f, 1.5f, w);
-		}
-
-		//use the weapon so remove
-		weapons.RemoveAt (0);
-		if (weapons.Count == 0) {
-			state.Remove ("armed");
-			kart.undrawWeaponGui();
-		}
-		else
-			kart.drawWeaponGui ();
-		if(state.IndexOf("armedEvolute")!=-1)
-		{
-			state.Remove ("armed");
-			state.Remove ("armed");
-			state.Remove ("armedEvolute");
-		}
-	}
-	
-	public void Die(GameObject killer, string weapon)
-	{
-		if(tnt && weapon != "tntExploded")
-			Destroy(tnt);
-		if (shield != null)
-		{
-			StartCoroutine( TempUndead());
-			Destroy (shield.gameObject);
-			return;
-		}
-		if (protection != null)
-			return;
-		// si on est pas invincible : on meurt
-		if (state.IndexOf ("invincible") == -1)
-		{
-			StartCoroutine (Transparence ());
-			StartCoroutine (UnableToMove ());
-			// mise en etat empechant de tirer : 
-			if (state.IndexOf ("UnableToShoot") == -1)
-				StartCoroutine (UnableToShoot ());
-			if (killer==gameObject)
-				kart.AddPoint(-1);
-			else
-				((KartController)killer.GetComponent ("KartController")).kart.AddPoint(1);
-			if (weapon=="greenBeaker" || weapon== "redBeaker") // pour retirer des pommes
-			{
-				kart.rmApples(1);
-			}
-			else kart.rmApples(3);
-		}
-	}
-
-	
-	void AddSpeed(float duration, float addSpeed, string weapon)
+	public void AddSpeed(float duration, float addSpeed, string weapon)
 	{
 		if (speedDuration.ContainsKey(weapon) == false)
 			speedDuration [weapon] = 0f;
@@ -547,97 +292,6 @@ public class KartController : MonoBehaviour
 				w.GetComponent<ParticleRenderer>().material.SetColor ("_TintColor", smokeColor);
 		}
     }
-
-	IEnumerator TempUndead()
-	{
-		//clignotment, invincibilité temporaire
-		if (state.IndexOf("invincible")==-1)
-			state.Add ("invincible");
-		float time = 0f;
-		while (time < 0.75f) {
-			yield return new WaitForSeconds (0.05f);
-			time += 0.05f;
-		}
-		state.Remove ("invincible");
-	}
-
-	IEnumerator UnableToMove()
-	{
-		stopDie = true;
-		float time = 0f;
-		while (time < 1f) {
-			yield return new WaitForSeconds (0.1f);
-			time += 0.1f;
-		}
-		stopDie = false;
-	}
-	
-	IEnumerator UnableToShoot()
-	{
-		if (state.IndexOf("UnableToShoot")==-1)
-			state.Add ("UnableToShoot");
-		float time = 0f;
-		while (time < 2.5f) {
-			yield return new WaitForSeconds (0.1f);
-			time += 0.1f;
-		}
-		state.Remove ("UnableToShoot");
-	}
-	
-	IEnumerator Transparence()
-	{
-		numberOfJump = 0;
-		//clignotment, invincibilité temporaire
-		if (state.IndexOf("invincible")==-1)
-			state.Add ("invincible");
-		foreach(string w in wheels.Keys)
-		{
-			wheels [w].renderer.enabled = false;
-		}
-		float time = 0f;
-		float last_time = 0f;
-		float clignotement = 0.3f;
-		foreach(GameObject w in smoke){
-			w.SetActive(false);
-		}
-		while (time < 4f) {
-			yield return new WaitForSeconds (0.1f);
-			time += 0.1f;
-			if ((time - last_time) > clignotement)
-			{
-				last_time = time;
-				clignotement /= 2;
-				foreach(string w in wheels.Keys)
-				{
-					wheels [w].renderer.enabled = !wheels [w].renderer.enabled;
-				}
-				/*foreach(GameObject w in smoke){
-					w.SetActive(!w.activeSelf);
-				}*/
-			}
-		}
-		foreach(string w in wheels.Keys)
-		{
-			wheels [w].renderer.enabled = true;
-		}
-		foreach(GameObject w in smoke){
-			w.SetActive(true);
-		}
-		state.Remove ("invincible");
-	}
-	
-
-	
-	public void SetKart (Kart k)
-	{
-		kart = k;
-	}
-	
-	
-	public Kart GetKart ()
-	{
-		return kart;
-	}
 	
 	public Vector3 normalizeVector(Vector3 a)
 	{
@@ -647,7 +301,6 @@ public class KartController : MonoBehaviour
 		a.z /= div;
 		return a;
 	}
-
 	
 	public void controle()
 	{	
@@ -681,7 +334,7 @@ public class KartController : MonoBehaviour
 					rigidbody.MovePosition(rigidbody.position + new Vector3(0,high,0));
 				}
 				
-				if (tnt)
+				if (kart_script.tnt)
 					numberOfJump++;
 			}
 		}
@@ -703,23 +356,7 @@ public class KartController : MonoBehaviour
 			else if(controller.IsPressed("turnLeft"))
 				yTurn = 0.5f*controller.KeyValue("turnLeft") * turnCoeff;
 		}
-		
-		if (controller.GetKeyDown("action")) {
-			if (state.IndexOf ("UnableToShoot") != -1)
-				return;
-			facteurSens = 1f;
-			if (controller.IsPressed("moveBack"))
-				facteurSens = -controller.KeyValue("throw");
-			if (System.Math.Abs(facteurSens)<Game.thresholdAxis)
-				facteurSens = 1f;
-			
-			if (!explosiveWeapon)
-				UseWeapon ();
-			else {
-				explosiveWeapon = false;
-				arme.ActionExplosion ();
-			}
-		}
+
 	}
 	
 	public void controlCamera()

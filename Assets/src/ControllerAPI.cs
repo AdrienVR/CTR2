@@ -133,6 +133,10 @@ public class ControllerAPI {
 		}
 	}
 
+	public static ControllerAPI GetController(int i){
+		return allControllers[i];
+	}
+
 	public static void CheckJoysticks() {
 		if (Input.GetJoystickNames ().Length != nControllers)
 			InitJoysticks ();

@@ -160,11 +160,11 @@ public class Menus : MonoBehaviour
 			j.guiText.text = "Joueur "+k.numeroJoueur+" : "+k.nbPoints+" Pts";
 		}
 		KartController.stop = false;
-		winner.kc.gameObject.transform.position = main.listRespawn [0].position;
-		winner.kc.gameObject.transform.rotation =main.listRespawn[0].rotation;
-		AI.kart = winner.kc.gameObject;
+		winner.kart_script.GetTransform().position = main.listRespawn [0].position;
+		winner.kart_script.GetTransform().rotation =main.listRespawn[0].rotation;
+		AI.kart = winner.kart_script.gameObject;
 		//AI.children = winner.kc.wheels ["wheelAL"];
-		AI.wheels = winner.kc.wheels;
+		AI.wheels = winner.kart_script.wheels;
 		//main.executeIA winner.kc.wheels ();
 	}
 	

@@ -6,7 +6,9 @@ public class Kart
 {
 	
 	public CameraController cm1c;
-	public KartController kc;
+	private KartController kc;
+	public KartScript kart_script;
+
 	private GUIText pointText;
 	public GUIText guitextApples; 
 	
@@ -27,7 +29,7 @@ public class Kart
 	public static int nPlayer=0;
 	public static int totalPlayers=1;
 	private static float speedCoeff;
-	private static float turnCoeff;
+	private static float turnCoeff; 
 
 	public Kart(Vector3 pos, Quaternion q, string kart)
 	{
@@ -49,7 +51,11 @@ public class Kart
 		//GameObject kart_angles = GameObject.Instantiate (Resources.Load("GameplayObject"), pos, q) as GameObject;
 		kart.name = kart.name.Split ('(') [0];
 		kc = kart.GetComponent<KartController> ();
+		kart_script= kart.GetComponent<KartScript> ();
+		
 		kc.SetKart(this);
+		kart_script.SetKart(this);
+
 		kc.setCoefficients (speedCoeff, turnCoeff);
 		//kart_angles.GetComponent<Gameplay> ().SetKart (kart.transform);
 	}
@@ -133,7 +139,7 @@ public class Kart
 			textureName = Game.normalWeapons[lastWeaponTextureNb];
 		int count = 0;
 		if (textureName == "triple_bomb"){
-			foreach (string element in kc.weapons)
+			foreach (string element in kart_script.weapons)
 				if (element=="bomb")
 					count++;
 			if (count == 0)
@@ -141,7 +147,7 @@ public class Kart
 			textureName = "bomb"+count;
 		}
 		else if (textureName == "triple_missile"){
-			foreach (string element in kc.weapons)
+			foreach (string element in kart_script.weapons)
 				if (element=="missile")
 					count++;
 			if (count == 0)
@@ -177,7 +183,7 @@ public class Kart
 	{
 		int n = Random.Range (4, 8);
 		nbApplesFinal = System.Math.Min (10, nbApplesFinal+n);
-		kc.animApples();
+		kart_script.animApples();
 	}
 	
 	public void rmApples(int n)

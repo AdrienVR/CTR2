@@ -76,6 +76,7 @@ public class Main : MonoBehaviour
 	{
 		nbPlayer = System.Math.Max (nbPlayer, 1);
 		nbPlayer = System.Math.Min (nbPlayer, 4);
+		ControllerAPI.InitJoysticks ();
 
 		foreach(Transform child in transform)
 		{
@@ -94,7 +95,6 @@ public class Main : MonoBehaviour
 		akuClip=(AudioClip)Instantiate(Resources.Load("Audio/akuaku"));
 		mapClip=(AudioClip)Instantiate(Resources.Load("Audio/skullrock"));
 		Screen.showCursor = false; 
-		ControllerAPI.InitJoysticks ();
 		Debug.Log ("Starting with "+ ControllerAPI.nControllers + " controllers.");
 
 	}
@@ -104,7 +104,7 @@ public class Main : MonoBehaviour
 		bool b=false;
 		foreach(Kart k in main.players)
 		{
-			if(k.kc.protection!=null)
+			if(k.kart_script.protection!=null)
 				b=true;
 		}
 		return b;
@@ -115,7 +115,7 @@ public class Main : MonoBehaviour
 		Kart akuFound = null;
 		foreach(Kart k in main.players)
 		{
-			if(k.kc.protection!=null){
+			if(k.kart_script.protection!=null){
 				akuFound = k;
 				
 				if (akuFound != kartAkuPlaying){
@@ -156,6 +156,7 @@ public class Main : MonoBehaviour
 		players = new List<Kart>();
 		for (int i=0; i<n; i++)
 		{
+			new ControllerAPI (i+1);
 			Kart a = new Kart(listRespawn[i].position, listRespawn[i].rotation, Game.listKarts[i]);
 			players.Add(a);
 		}

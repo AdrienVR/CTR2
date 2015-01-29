@@ -16,7 +16,7 @@ public class TNTScript : MonoBehaviour {
 	private bool exploded=false;
 
 	private bool lockExplosion = false;
-	private KartController kartCollided;
+	private KartScript kartCollided;
 
 	public bool disamorced = false;
 
@@ -66,7 +66,7 @@ public class TNTScript : MonoBehaviour {
 		if((Game.boxes.IndexOf(other.name)!=-1 && Game.launchWeapons.IndexOf(name)!=-1))
 			return;
 		if (Game.shields.IndexOf(name)!=-1){
-			KartController ownerKart = owner.GetComponent <KartController>();
+			KartScript ownerKart = owner.GetComponent <KartScript>();
 			if ((ownerKart.protection != null && other.gameObject == ownerKart.protection.gameObject))
 				return;
 			if (Game.shields.IndexOf(other.name)!=-1){
@@ -76,7 +76,7 @@ public class TNTScript : MonoBehaviour {
 			else if (Game.instatiableWeapons.IndexOf(other.name) != -1)
 				Destroy(gameObject);
 			else if ( Game.characters.IndexOf(other.name) != -1 && other.gameObject != owner.gameObject){
-				KartController toKill = other.GetComponent <KartController>();
+				KartScript toKill = other.GetComponent <KartScript>();
 				toKill.Die(owner, name);
 				Destroy(gameObject);
 			}
@@ -96,12 +96,12 @@ public class TNTScript : MonoBehaviour {
 		if (Game.protectWeapons.IndexOf (name) == -1)
 			StartCoroutine (LockExplosion());
 
-		//find the KartController target
-		KartController touched = other.GetComponent <KartController>();
+		//find the KartScript target
+		KartScript touched = other.GetComponent <KartScript>();
 		kartCollided = touched;
 		
 		if (name == "TNT")
-			if (touched.protection || touched.shield || touched.tnt || touched.state.IndexOf("invincible")!=-1)
+			if (touched.protection || touched.shield || touched.tnt || touched.IsInvincible())
 				name = "nitro";
 		// for bombs, missiles and launched shields
 		if (Game.launchWeapons.IndexOf(name)!=-1) {
@@ -129,7 +129,7 @@ public class TNTScript : MonoBehaviour {
 			return;
 		
 		//find the KartController target
-		KartController touched = other.GetComponent <KartController>();
+		KartScript touched = other.GetComponent <KartScript>();
 		
 		// for Aku-Aku and shields
 		if (Game.protectWeapons.IndexOf (name) != -1) {
@@ -159,38 +159,40 @@ public class TNTScript : MonoBehaviour {
 	{
 		if (exploded)
 			yield return 0;
-		SetAllCollidersStatus (false);
-		exploded = true;
-		owner.GetComponent <KartController>().explosiveWeapon = false;
-		if (explosionClip != null)
-			animation.Play (explosionClip.name);
-		if (name != "TNT" || !kartCollided){
-			audio.Play ();
-			gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
-			foreach (Transform child in gameObject.transform)
-			{
-				Destroy(child.gameObject);
-			}
-			gameObject.light.color = explosionColor;
-			yield return new WaitForSeconds (0.1f);
-			gameObject.light.color = new Color();
-			yield return new WaitForSeconds (3f);
-			Destroy(gameObject);
-		}
-		else
-		{
-			if(kartCollided.tnt){
-				kartCollided.Die (owner,name);
+		else{
+			SetAllCollidersStatus (false);
+			exploded = true;
+			owner.GetComponent <KartScript>().explosiveWeapon = false;
+			if (explosionClip != null)
+				animation.Play (explosionClip.name);
+			if (name != "TNT" || !kartCollided){
+				audio.Play ();
+				gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+				foreach (Transform child in gameObject.transform)
+				{
+					Destroy(child.gameObject);
+				}
+				gameObject.light.color = explosionColor;
+				yield return new WaitForSeconds (0.1f);
+				gameObject.light.color = new Color();
+				yield return new WaitForSeconds (3f);
 				Destroy(gameObject);
 			}
-			gameObject.transform.rotation = Quaternion.Euler(new Vector3());
-			name = "tntExploded";
-			gameObject.transform.rotation = kartCollided.wheels["steering"].transform.rotation;
-			gameObject.transform.parent = kartCollided.wheels["steering"].transform;
-			kartCollided.tnt = gameObject;
-			yield return new WaitForSeconds (3f);
-			if (!disamorced){
-				StartCoroutine(tntExplosion());
+			else
+			{
+				if(kartCollided.tnt){
+					kartCollided.Die (owner,name);
+					Destroy(gameObject);
+				}
+				gameObject.transform.rotation = Quaternion.Euler(new Vector3());
+				name = "tntExploded";
+				gameObject.transform.rotation = kartCollided.wheels["steering"].transform.rotation;
+				gameObject.transform.parent = kartCollided.wheels["steering"].transform;
+				kartCollided.tnt = gameObject;
+				yield return new WaitForSeconds (3f);
+				if (!disamorced){
+					StartCoroutine(tntExplosion());
+				}
 			}
 		}
 	}
@@ -215,7 +217,7 @@ public class TNTScript : MonoBehaviour {
 			lifeTime -= 0.05f;
 		}
 		if (Game.protectWeapons.IndexOf(name)!=-1){
-			KartController ownerKart = owner.GetComponent <KartController>();
+			KartScript ownerKart = owner.GetComponent <KartScript>();
 			ownerKart.protection = null;
 		}
 		//maybe not clean but works...
@@ -244,7 +246,7 @@ public class TNTScript : MonoBehaviour {
 		}
 		else if (name == "tntExploded") {
 			if (!disamorced)
-				transform.position = kartCollided.wheels["steering"].transform.position + new Vector3(0f,+0.2f) - kartCollided.forwardNormal*0.2f;
+				transform.position = kartCollided.wheels["steering"].transform.position + new Vector3(0f,+0.2f) - kartCollided.GetForward()*0.2f;
 		}
 	}
 }
