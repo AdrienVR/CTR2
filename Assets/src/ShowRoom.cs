@@ -21,7 +21,7 @@ public class ShowRoom : MonoBehaviour {
 		sr = this;
 	}
 
-	public static void ShowCharacter(string name)
+	public static void ShowModel(string name)
 	{
 		foreach(Transform child in characters.Values){
 			child.gameObject.SetActive(false);

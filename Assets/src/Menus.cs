@@ -45,6 +45,7 @@ public class Menus : MonoBehaviour
 
 	// variables statiques pour la config d'une battle
 	private static List<string> persos=new List <string>();
+	private static List <string> listMapForMenu=  new List <string>(){"Parking","Skull Rock"};
 	private string map;
 
 	// menus :
@@ -382,7 +383,8 @@ public class Menus : MonoBehaviour
 				nameMap =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,0.25f,0),Quaternion.identity);
 				nameMap.guiText.text=Game.listMapForMenu[positionH];
 				fleches=(GameObject)Instantiate (Resources.Load ("menuFleches"),new Vector3(pos.x,0.25f,0),Quaternion.identity);
-				// AJOUTER ICI : showroom.showMap(listMapForMenu[positionH]);
+				
+				ShowRoom.ShowModel(listMapForMenu[1]);
 			}
 			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
 			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
@@ -621,13 +623,13 @@ public class Menus : MonoBehaviour
 				{
 					if(position==menuPersos.Count-4) position=0;
 					else position++;
-					ShowRoom.ShowCharacter(menuPersos[position+1]);
+					ShowRoom.ShowModel(menuPersos[position+1]);
 				}
 				else if(leftDown)
 				{
 					if(position==0) position=menuPersos.Count-4;
 					else position--;
-					ShowRoom.ShowCharacter(menuPersos[position+1]);
+					ShowRoom.ShowModel(menuPersos[position+1]);
 				}
 				else if(ok)
 				{
@@ -674,7 +676,8 @@ public class Menus : MonoBehaviour
 			{
 				if(rightDown)
 				{
-					// AJOUTER ICI : showroom.showMap(listMapForMenu[positionH]);
+					
+					ShowRoom.ShowModel(listMapForMenu[positionH]);
 
 					if(positionH==Game.listMapForMenu.Count-1) positionH=0;
 					else positionH++;
@@ -682,7 +685,7 @@ public class Menus : MonoBehaviour
 				}
 				if(leftDown)
 				{
-					// AJOUTER ICI : showroom.showMap(listMapForMenu[positionH]);
+					ShowRoom.ShowModel(listMapForMenu[positionH]);
 					if(positionH==0) positionH=Game.listMapForMenu.Count-1;
 					else positionH--;
 					nameMap.guiText.text=Game.listMapForMenu[positionH];
@@ -838,7 +841,7 @@ public class Menus : MonoBehaviour
 				displayMenu(menuPersos);
 				cadre1.guiTexture.enabled=true;
 				cadre5.guiTexture.enabled = true;
-				ShowRoom.ShowCharacter(menuPersos[position+1]);
+				ShowRoom.ShowModel(menuPersos[position+1]);
 				break;
 			default:
 				break;
@@ -860,16 +863,16 @@ public class Menus : MonoBehaviour
 			switch (menu[p+1])
 			{
 			case "RETOUR":
-				// AJOUTER ICI : showroom.leave();
+				ShowRoom.Leave();
 				displayMenu(menuPersos);
 				persos=new List<string>();
 				numSelection=0;
 				falseok=false;
 				cadre5.guiTexture.enabled = true;
-				ShowRoom.ShowCharacter(menuPersos[position+1]);
+				ShowRoom.ShowModel(menuPersos[position+1]);
 				break;
 			case "VALIDER":
-				// AJOUTER ICI : showroom.leave();
+				ShowRoom.Leave();
 				map=Game.listMapForMenu[positionH];
 				Debug.Log(map);
 				break;
