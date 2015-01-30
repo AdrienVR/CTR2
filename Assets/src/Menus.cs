@@ -21,6 +21,7 @@ public class Menus : MonoBehaviour
 	private bool waitingForKey = false;
 	private bool inPause = false;
 	private static GameObject titreAffiche;
+	private static GameObject nameMap;
 	private static GameObject triangleFond;
 	private static GameObject triangleVolume;
 	private static GameObject textPlayer;
@@ -39,9 +40,13 @@ public class Menus : MonoBehaviour
 
 	private bool readyToMove = true;
 	private int j = 5;
-	private List<string> persos=new List <string>();
 	public bool falseok=true;
 	public int numSelection = 1;
+
+	// variables statiques pour la config d'une battle
+	private static List<string> persos=new List <string>();
+	private string map;
+
 	// menus :
 	private static Dictionary <int, string> menuPause =  new Dictionary<int, string>
 	{
@@ -107,6 +112,12 @@ public class Menus : MonoBehaviour
 		{4,"Crash"},
 		{5,"VALIDER"},
 		{6,"RETOUR"}
+	};
+	private static Dictionary <int, string> menuMaps =  new Dictionary<int, string>
+	{
+		{0,"Niveaux"},
+		{1,"VALIDER"},
+		{2,"RETOUR"}
 	};
 	// Use this for initialization
 	void Start ()
@@ -355,6 +366,24 @@ public class Menus : MonoBehaviour
 		{
 			titreAffiche.transform.position = new Vector3(0.5f,0.55f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
 			Vector3 pos =new Vector3(0.5f,0.15f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
+			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+			textbutton.guiText.text=menu[i];
+			textAffiches.Add(textbutton);
+			return true;
+		}
+		else if(menu[0]==menuMaps[0])
+		{
+			titreAffiche.transform.position = new Vector3(0.5f,0.55f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
+			Vector3 pos =new Vector3(0.5f,0.15f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
+			if(i==1)
+			{
+				positionH=0;
+				nameMap =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,0.25f,0),Quaternion.identity);
+				nameMap.guiText.text=Game.listMapForMenu[positionH];
+				fleches=(GameObject)Instantiate (Resources.Load ("menuFleches"),new Vector3(pos.x,0.25f,0),Quaternion.identity);
+				// AJOUTER ICI : showroom.showMap(listMapForMenu[positionH]);
+			}
 			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
 			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
 			textbutton.guiText.text=menu[i];
@@ -641,7 +670,24 @@ public class Menus : MonoBehaviour
 					falseok=false;
 				}
 			}
-			
+			else if (menuCourant[0]==menuMaps[0])
+			{
+				if(rightDown)
+				{
+					// AJOUTER ICI : showroom.showMap(listMapForMenu[positionH]);
+
+					if(positionH==Game.listMapForMenu.Count-1) positionH=0;
+					else positionH++;
+					nameMap.guiText.text=Game.listMapForMenu[positionH];
+				}
+				if(leftDown)
+				{
+					// AJOUTER ICI : showroom.showMap(listMapForMenu[positionH]);
+					if(positionH==0) positionH=Game.listMapForMenu.Count-1;
+					else positionH--;
+					nameMap.guiText.text=Game.listMapForMenu[positionH];
+				}
+			}			
 		}
 	}
 	
@@ -809,6 +855,28 @@ public class Menus : MonoBehaviour
 				break;
 			}
 		}
+		if(menu[0]==menuMaps[0])
+		{
+			switch (menu[p+1])
+			{
+			case "RETOUR":
+				// AJOUTER ICI : showroom.leave();
+				displayMenu(menuPersos);
+				persos=new List<string>();
+				numSelection=0;
+				falseok=false;
+				cadre5.guiTexture.enabled = true;
+				ShowRoom.ShowCharacter(menuPersos[position+1]);
+				break;
+			case "VALIDER":
+				// AJOUTER ICI : showroom.leave();
+				map=Game.listMapForMenu[positionH];
+				Debug.Log(map);
+				break;
+			default:
+				break;
+			}
+		}
 		if(menu[0]==menuPersos[0])
 		{
 			switch (menu[p+1])
@@ -827,10 +895,16 @@ public class Menus : MonoBehaviour
 					child.guiTexture.enabled = false;
 				}
 				falseok=true;
+				persos=new List<string>();
 				break;
 			case "VALIDER":
-				for(int m=0;m<persos.Count;m++)
-					Debug.Log (persos[m]);
+				if(persos.Count>1)
+				{
+					ShowRoom.Leave();
+					cadre5.guiTexture.enabled = false;
+					displayMenu(menuMaps);
+					positionH=0;
+				}
 				break;
 			default:
 				break;
@@ -862,6 +936,7 @@ public class Menus : MonoBehaviour
 		Destroy (triangleVolume);
 		Destroy (fleches);
 		Destroy (textPlayer);
+		Destroy (nameMap);
 		foreach (GameObject g in textureAffichees) Destroy (g);
 		foreach (GameObject g in textAffiches) Destroy (g);
 		foreach (GameObject g in controlAffiches) Destroy (g);

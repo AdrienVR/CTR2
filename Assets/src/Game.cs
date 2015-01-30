@@ -36,6 +36,7 @@ public class Game : MonoBehaviour
 	public static List<string> listKarts = new List<string>{"Crash","Coca","Crash","Crash"};
 	public static List<string> characters = new List<string>() {"kartCrash", "kartCoco", "kartCoca"};
 	public static List<string> listMap = new List<string>() {"parking", "plage"};
+	public static List<string> listMapForMenu = new List<string>() {"Skull Rock","Parking"};
 
 
 }

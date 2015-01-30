@@ -27,7 +27,6 @@ public class ShowRoom : MonoBehaviour {
 			child.gameObject.SetActive(false);
 			child.transform.rotation = new Quaternion();
 		}
-		Debug.Log("name "+name);
 		characters[name].gameObject.SetActive(true);
 		sr.StartCoroutine(Anim());
 	}
