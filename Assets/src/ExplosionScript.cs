@@ -189,12 +189,16 @@ public class ExplosionScript : MonoBehaviour {
 				animation.Play (explosionClip.name);
 			if (name != "TNT" || !kartCollided){
 				audio.Play ();
-				if (name != "bomb")
-					gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+
+				bool hadChildren = false;
 				foreach (Transform child in gameObject.transform)
 				{
 					Destroy(child.gameObject);
+					hadChildren = true;
 				}
+				if (!hadChildren)
+					gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+
 				gameObject.light.color = explosionColor;
 				yield return new WaitForSeconds (0.1f);
 				gameObject.light.color = new Color();
@@ -260,8 +264,8 @@ public class ExplosionScript : MonoBehaviour {
 		// for bombs, missiles and launched shields
 		if (Game.launchWeapons.IndexOf(name) != -1) {
 			rigidbody.velocity = new Vector3(vitesseInitiale.x,-20f,vitesseInitiale.z);
-			//if (exploded && name[0] == 'b')
-				//rigidbody.velocity = new Vector3(0,0.1f,0);
+			if (exploded && name[0] == 'b')
+				rigidbody.velocity = new Vector3(0,0,0);
 		}
 		// for Aku-Aku and shields
 		else if (Game.protectWeapons.IndexOf(name) != -1) {
