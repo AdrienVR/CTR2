@@ -22,7 +22,7 @@ public class KartController : MonoBehaviour
 	private Kart kart;
 	private KartScript kart_script;
 
-	private bool dansLesAirs = true;
+	public bool dansLesAirs = true;
 	public Dictionary <string, Transform> wheels = new Dictionary <string, Transform>();
 	private List<GameObject> smoke = new List<GameObject>();
 	private float ky;
@@ -78,7 +78,8 @@ public class KartController : MonoBehaviour
 		if (Time.timeScale == 0)
 			return;
 		if (!stop && kart_script.AbleToMove()){
-			forwardNormal = wheels ["steering"].transform.forward;
+			forwardNormal = wheels["steering"].forward;
+			//forwardNormal = transform.forward;
 			forwardNormal.y = 0;
 			forwardNormal = normalizeVector (forwardNormal);
 			
@@ -217,15 +218,19 @@ public class KartController : MonoBehaviour
 		twLerpWheels = Lerp (0, 160f, twTimeWheels);
 		twLerp = Lerp (0, 45f, twTime);
 
-		wheels ["steering"].localRotation = Quaternion.Euler (new Vector3 (0, twLerp));
+
+		Vector3 currentRot = new Vector3(wheels ["steering"].localRotation.eulerAngles.x,twLerp, wheels ["steering"].localRotation.eulerAngles.z);
+		wheels ["steering"].localRotation = Quaternion.Euler (currentRot);
 		wheels ["wheelAL"].localRotation = Quaternion.Euler (new Vector3 (0, 90f + twLerpWheels));
 		wheels ["wheelAR"].localRotation = Quaternion.Euler (new Vector3 (0, 90f + twLerpWheels));
 	}
 
 	void OnCollisionStay(Collision collision)
 	{
-		if(collision.gameObject.name=="Ground")
+		if(collision.gameObject.name=="Ground"){
 			dansLesAirs = false;
+			Debug.Log("ground");
+		}
 		
 		/*if(collision.gameObject.name=="accelerateur")
 			rigidbody.velocity = new Vector3(rigidbody.velocity.x*3,rigidbody.velocity.y*3,rigidbody.velocity.z*3);*/
@@ -234,22 +239,16 @@ public class KartController : MonoBehaviour
 	void OnCollisionExit(Collision collision)
 	{
 		if(collision.gameObject.name=="Ground") {
-			if (!isGoingInAir)
-				StartCoroutine(FreeAir());
+			if (!isGoingInAir){
+				dansLesAirs = true;
+				Debug.Log("air");
+			}
 		}
 	}
 
 	public void setCoefficients(float speed, float turn){
 		speedCoeff = speed;
 		turnCoeff = turn;
-	}
-	
-	IEnumerator FreeAir()
-	{
-		isGoingInAir = true;
-		yield return 0;
-		dansLesAirs = true;
-		isGoingInAir = false;
 	}
 	
 	public void AddSpeed(float duration, float addSpeed, string weapon)
