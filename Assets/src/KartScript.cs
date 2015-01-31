@@ -13,14 +13,13 @@ public class KartScript : MonoBehaviour {
 	private Kart kart;
 	private KartState kart_state;
 	
-	private ExplosionScript arme;
+	private ExplosionScript bomb;
 	private WeaponBoxScript takenWeaponBox;
 	public ExplosionScript shield;
 	public ExplosionScript protection;
 	public GameObject tnt;
 	private List<GameObject> smoke = new List<GameObject>();
-	
-	public bool explosiveWeapon = false;
+
 	public List<string> weapons = new List<string>();
 	
 	private bool baddie = false;
@@ -58,11 +57,11 @@ public class KartScript : MonoBehaviour {
 			if (System.Math.Abs(facteurSens)<Game.thresholdAxis)
 				facteurSens = 1f;
 			
-			if (!explosiveWeapon)
+			if (bomb == null)
 				UseWeapon ();
 			else {
-				explosiveWeapon = false;
-        		arme.ActionExplosion ();
+				bomb.BombActionExplosion ();
+				bomb = null;
       		}
     	}
 
@@ -110,6 +109,8 @@ public class KartScript : MonoBehaviour {
 			return;
 		// apply
 		string w = weapons [0];
+
+		// superisation
 		if (IsSuper() && w!="missile")
 		{
 			int n = 0;
@@ -118,11 +119,14 @@ public class KartScript : MonoBehaviour {
 					n = k;
 			w = Game.superWeapons[n];
 		}
+
+		// computing the side
 		float sens = -1f;
 		if (controller.IsPressed("throw"))
 			sens = controller.KeyValue("throw");
 		if (System.Math.Abs(sens)<Game.thresholdAxis)
 			sens = -1f;
+
 		// computing the distance to instantiate the weapon
 		if (w == "bomb")
 			posToAdd = 6f * (new Vector3 (facteurSens * kc.forwardNormal.x, kc.forwardNormal.y + 0.2f, facteurSens * kc.forwardNormal.z));
@@ -134,6 +138,8 @@ public class KartScript : MonoBehaviour {
 		}
 		else
 			posToAdd = 6f * (new Vector3 (kc.forwardNormal.x, kc.forwardNormal.y + 0.2f, kc.forwardNormal.z));
+
+		// computing the angle
 		Quaternion q = Quaternion.Euler (new Vector3(0,transform.rotation.eulerAngles.y,0));
 		if (Game.poseWeapons.IndexOf(w) != -1)
 			q = transform.rotation;
@@ -143,12 +149,12 @@ public class KartScript : MonoBehaviour {
 			GameObject arme1 = Instantiate(Resources.Load("Weapons/"+w), transform.position + posToAdd, q) as GameObject;
 			arme1.name = arme1.name.Split ('(') [0];
 
-			arme = arme1.GetComponent <ExplosionScript>();
+			ExplosionScript arme = arme1.GetComponent <ExplosionScript>();
 			if (arme!=null){
 				arme.owner = gameObject;
 				
 				if (w == "bomb") {
-					explosiveWeapon = true;
+					bomb = arme;
 					arme.vitesseInitiale =  3*kc.speedCoeff*new Vector3(facteurSens * kc.forwardNormal.x, 0, facteurSens * kc.forwardNormal.z);
 					if (kart.nbApples == 10)
 						arme.explosionRadius *= 2.5f;
@@ -298,6 +304,8 @@ public class KartScript : MonoBehaviour {
 		if (shield != null)
 		{
 			StartCoroutine(shield.ShieldExplosion());
+			if (!kart_state.IsInvincible())
+				kart_state.SetInvincibility(1);
 			return;
 		}
 		if (protection != null)
@@ -338,7 +346,7 @@ public class KartScript : MonoBehaviour {
 		kc.numberOfJump = 0;
 		//clignotment, invincibilité temporaire
 		if (!kart_state.IsInvincible())
-			kart_state.SetInvincibility(1);
+			kart_state.SetInvincibility(4);
 		foreach(string w in wheels.Keys)
 		{
 			wheels [w].renderer.enabled = false;

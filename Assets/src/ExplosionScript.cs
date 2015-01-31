@@ -49,6 +49,13 @@ public class ExplosionScript : MonoBehaviour {
 		cc.radius = explosionRadius;
 	}
 	
+	public void BombActionExplosion()
+	{
+		ActionExplosion ();
+		if (!exploded)
+			StartCoroutine (Explode());
+	}
+	
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.name == "Ground" && name != "tntExploded" && name != "tntDropped" && name != "tnt")
@@ -170,17 +177,20 @@ public class ExplosionScript : MonoBehaviour {
 	
 	IEnumerator Explode()
 	{
-		if (exploded)
+		if (exploded){
 			yield return 0;
+		}
 		else{
-			SetAllCollidersStatus (false);
+			Debug.Log(name);
+			if (name != "bomb")
+				SetAllCollidersStatus (false);
 			exploded = true;
-			owner.GetComponent <KartScript>().explosiveWeapon = false;
 			if (explosionClip != null)
 				animation.Play (explosionClip.name);
 			if (name != "TNT" || !kartCollided){
 				audio.Play ();
-				gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+				if (name != "bomb")
+					gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
 				foreach (Transform child in gameObject.transform)
 				{
 					Destroy(child.gameObject);
@@ -250,8 +260,8 @@ public class ExplosionScript : MonoBehaviour {
 		// for bombs, missiles and launched shields
 		if (Game.launchWeapons.IndexOf(name) != -1) {
 			rigidbody.velocity = new Vector3(vitesseInitiale.x,-20f,vitesseInitiale.z);
-			if (exploded && name[0] == 'b')
-				rigidbody.velocity = new Vector3();
+			//if (exploded && name[0] == 'b')
+				//rigidbody.velocity = new Vector3(0,0.1f,0);
 		}
 		// for Aku-Aku and shields
 		else if (Game.protectWeapons.IndexOf(name) != -1) {

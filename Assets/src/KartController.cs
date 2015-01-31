@@ -229,7 +229,8 @@ public class KartController : MonoBehaviour
 	{
 		if(collision.gameObject.name=="Ground"){
 			dansLesAirs = false;
-			Debug.Log("ground");
+			isGoingInAir = false;
+			//Debug.Log("ground");
 		}
 		
 		/*if(collision.gameObject.name=="accelerateur")
@@ -241,7 +242,7 @@ public class KartController : MonoBehaviour
 		if(collision.gameObject.name=="Ground") {
 			if (!isGoingInAir){
 				dansLesAirs = true;
-				Debug.Log("air");
+				//Debug.Log("air");
 			}
 		}
 	}

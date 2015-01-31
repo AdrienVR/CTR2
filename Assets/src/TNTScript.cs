@@ -162,7 +162,6 @@ public class TNTScript : MonoBehaviour {
 		else{
 			SetAllCollidersStatus (false);
 			exploded = true;
-			owner.GetComponent <KartScript>().explosiveWeapon = false;
 			if (explosionClip != null)
 				animation.Play (explosionClip.name);
 			if (name != "TNT" || !kartCollided){
