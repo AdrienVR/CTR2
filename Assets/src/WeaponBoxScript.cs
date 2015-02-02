@@ -68,20 +68,18 @@ public class WeaponBoxScript : MonoBehaviour {
 	{
 		nbImgArmes = 0;
 		timeLookingWeapon = 0;
-		int nb = 1;
+		string weapon = "bomb";
 		while (nbImgArmes < 25) {
-			nb = Random.Range (1, Game.normalWeapons.Count+1);
-			//nb = 4;
-			taker.GetKart().lastWeaponTextureNb=nb;
+			int rand = Random.Range (0, Game.gameWeapons.Count);
+			weapon = Game.gameWeapons[rand];
+			// weapon = "Aku-Aku";
+			taker.GetKart().lastWeaponTextureNb=Game.GetWeaponNumber(weapon);
 			taker.GetKart().drawWeaponGui();
 			nbImgArmes++;
 			yield return new WaitForSeconds (0.08f);
 			timeLookingWeapon += 0.08f;
 		}
-		//if (!taker.IsSuper())
-			taker.SetWeapon(Game.normalWeapons[nb]);
-		//else
-		//	taker.SetWeapon(Game.superWeapons[nb]);
+		taker.SetWeapon(weapon);
 		taker.setWaitingWeapon (false);
 		nbImgArmes = 0;
 	}

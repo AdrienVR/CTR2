@@ -7,11 +7,14 @@ public class Game : MonoBehaviour
 	public static float thresholdAxis = 0.3f;
 	// src : http://crashbandicoot.wikia.com/wiki/Crash_Team_Racing
 	public static Dictionary <int, string> normalWeapons =  new Dictionary<int, string> {
-		{1,"greenBeaker"},{2,"greenShield"},{3,"bomb"},{4,"triple_bomb"},{5,"triple_missile"},
-		{6,"Aku-Aku"},{7,"TNT"},{8,"turbo"}	};
+		{1,"greenBeaker"},{2,"greenShield"},{3,"bomb"},{4,"triple_bomb"},{5,"missile"},{6,"triple_missile"},
+		{7,"Aku-Aku"},{8,"TNT"},{9,"turbo"}	};
 	public static Dictionary <int, string> superWeapons = new Dictionary<int, string> {
-		{1,"redBeaker"},{2,"blueShield"},{3,"bomb"},{4,"triple_bomb"},{5,"triple_missile"},
-		{6,"Aku-Aku"},{7,"nitro"},{8,"turbo"}	};
+		{1,"redBeaker"},{2,"blueShield"},{3,"bomb"},{4,"triple_bomb"},{5,"missile"},{6,"triple_missile"},
+		{7,"Aku-Aku"},{8,"nitro"},{9,"turbo"}	};
+	public static List <string> gameWeapons =  new List <string> {
+		"greenBeaker","greenShield","bomb","triple_bomb","triple_missile","Aku-Aku","TNT","turbo"};
+
 	public static Dictionary <int, List<Rect>> cameraMap = new Dictionary <int, List<Rect>>{
 		{1, new List<Rect>(){new Rect(0, 0, 1, 1)}},
 		{2, new List<Rect>(){new Rect(0, 0.51f, 1, 0.49f), new Rect(0, 0, 1, 0.49f)}},
@@ -33,10 +36,21 @@ public class Game : MonoBehaviour
 	
 	public static Dictionary<int, string> playersMapping;// {1:xbox1, etc}
 
-	public static List<string> listKarts = new List<string>{"Crash","Coca","Crash","Crash"};
-	public static List<string> characters = new List<string>() {"kartCrash", "kartCoco", "kartCoca"};
-	public static List<string> listMap = new List<string>() {"parking", "plage"};
+	public static List<string> listKarts = new List<string>{"Crash","Coco","Crash","Crash"};
+	public static List<string> characters = new List<string>() {"kartCrash", "kartCoco"};
+	public static List<string> listMap = new List<string>() {"plage", "parking"};
 	public static List<string> listMapForMenu = new List<string>() {"Skull Rock","Parking"};
+
+	public static int GetWeaponNumber(string w){
+		for(int k=1;k<Game.normalWeapons.Count+1;k++)
+			if (Game.normalWeapons[k] == w)
+				return k;
+		return -1;
+	}
+	
+	public static string GetWeaponSuper(string w){
+		return superWeapons[GetWeaponNumber(w)];
+	}
 
 
 }

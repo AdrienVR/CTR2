@@ -40,6 +40,8 @@ public class NormalAlign : MonoBehaviour {
 
 
 	void Update () {
+		
+		//Debug.DrawRay(transform.position, upDir, Color.blue, 20, true);
 
 		if(Vector3.Angle(upDir, previous)<10 && System.Math.Abs(upDir.y - previous.y)<0.1f)
 			equals ++;
@@ -50,9 +52,10 @@ public class NormalAlign : MonoBehaviour {
 		if (equals>3){
 			//steering.forward = transform.forward;
 			//steering.up = upDir;
+			//Debug.Log (System.Math.Sqrt(upDir.x*upDir.x+upDir.y*upDir.y+upDir.z*upDir.z));
 			if (upDir.y<0.9f)
 				upDir = new Vector3(upDir.x,0.9f, upDir.z);
-			//Debug.Log (upDir);
+
 			Vector3 hello = steering.up *0.75f + upDir*0.25f;
 			//Vector3 hello = upDir;
 			steering.rotation = Quaternion.FromToRotation(steering.up, hello) * steering.rotation;
