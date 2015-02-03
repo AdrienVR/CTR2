@@ -111,13 +111,9 @@ public class KartScript : MonoBehaviour {
 		string w = weapons [0];
 
 		// superisation
-		if (IsSuper() && w!="missile")
+		if (IsSuper())
 		{
-			int n = 0;
-			for(int k=1;k<Game.normalWeapons.Count+1;k++)
-				if (Game.normalWeapons[k] == w)
-					n = k;
-			w = Game.superWeapons[n];
+			w = Game.GetWeaponSuper(w);
 		}
 
 		// computing the side
