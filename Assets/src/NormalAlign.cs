@@ -28,14 +28,16 @@ public class NormalAlign : MonoBehaviour {
 	{
 		if (collisionInfo.gameObject.name != "Ground")
 			return;
-		upDir = collisionInfo.contacts[0].normal;
+		if (collisionInfo.contacts.Length>0)
+			upDir = collisionInfo.contacts[0].normal;
 	}
 	
 	void OnCollisionStay(Collision collisionInfo)
 	{
 		if (collisionInfo.gameObject.name != "Ground")
 			return;
-		upDir = collisionInfo.contacts[0].normal;
+		if (collisionInfo.contacts.Length>0)
+			upDir = collisionInfo.contacts[0].normal;
 	}
 
 
