@@ -42,11 +42,15 @@ public class Menus : MonoBehaviour
 	private int j = 5;
 	public bool falseok=true;
 	public int numSelection = 1;
+	private static List <GameObject> tempAffiches =  new List <GameObject>();
+	private static List<bool> configWeaponsStates = new List <bool> ();
+	private static List <string> listMapForMenu =  new List <string>(){"Parking","Skull Rock"};
 
 	// variables statiques pour la config d'une battle
 	private static List<string> persos=new List <string>();
-	private static List <string> listMapForMenu=  new List <string>(){"Parking","Skull Rock"};
-	private string map;
+	private static List <string> weapons =  new List <string>();
+	private static string map;
+	private static int nbPts=8;
 
 	// menus :
 	private static Dictionary <int, string> menuPause =  new Dictionary<int, string>
@@ -114,6 +118,22 @@ public class Menus : MonoBehaviour
 		{5,"VALIDER"},
 		{6,"RETOUR"}
 	};
+	private static Dictionary <int, string> menuConfig =  new Dictionary<int, string>
+	{
+		{0,"Choix des Armes"},
+		{1,"Bouclier"},
+		{2,"Bombe"},
+		{3,"Bombe x 3"},
+		{4,"Potion"},
+		{5,"Turbo"},
+		{6,"Missile"},
+		{7,"Missile x 3"},
+		{8,"Aku-Aku"},
+		{9,"TNT"},
+		{10,"8"},
+		{11,"VALIDER"},
+		{12,"RETOUR"}
+	};
 	private static Dictionary <int, string> menuMaps =  new Dictionary<int, string>
 	{
 		{0,"Niveaux"},
@@ -127,7 +147,8 @@ public class Menus : MonoBehaviour
 		cameraMenu = (GameObject)GameObject.Instantiate (Resources.Load("cameraMenu"));
 		//AudioListener.volume = 0.5f;
 		//soundUp =(AudioClip)Instantiate (Resources.Load ("Audio/down_menu"));
-		cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre1"), textureAffichees [position].transform.position, Quaternion.identity);
+		if(textureAffichees [position])
+			cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre1"), textureAffichees [position].transform.position, Quaternion.identity);
 		cadre5=(GameObject)Instantiate (Resources.Load ("cadre5"),new Vector3(0.85f,0.5f,0),Quaternion.identity);
 		if(cadre5)
 			cadre5.guiTexture.enabled = false;
@@ -435,6 +456,86 @@ public class Menus : MonoBehaviour
 			}
 			return true;
 		}
+		else if(menu[0]==menuConfig[0])
+		{	
+			titreAffiche.transform.position = new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
+			if(i==1)
+			{
+				for(int j=0;j<9;j++)
+					configWeaponsStates.Add(true);
+				GameObject textTitre =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.5f,0.4f,2f),Quaternion.identity);
+				textTitre.guiText.text="Nombre de Points";
+				triangleFond = textTitre;
+				position=menuConfig.Count-3;
+			}
+			if(i>0 && i<menuConfig.Count()-3)
+			{
+				Vector3 pos =new Vector3(0.5f-(((float)70)/(float)Screen.width)*2*(((float)(menu.Count-5)/2f-i)+1),0.65f,-1);
+				GameObject p;
+				switch (i)
+				{
+				case 1: 
+					p =(GameObject)Instantiate (Resources.Load ("iconBouclier"),pos,Quaternion.identity);
+					break;
+				case 2:
+					p =(GameObject)Instantiate (Resources.Load ("iconBombe"),pos,Quaternion.identity);
+					break;
+				case 3:
+					p =(GameObject)Instantiate (Resources.Load ("iconBombex3"),pos,Quaternion.identity);
+					break;
+				case 4:
+					p =(GameObject)Instantiate (Resources.Load ("iconPotion"),pos,Quaternion.identity);
+					break;
+				case 5:
+					p =(GameObject)Instantiate (Resources.Load ("iconTurbo"),pos,Quaternion.identity);
+					break;
+				case 6:
+					p =(GameObject)Instantiate (Resources.Load ("iconMissile"),pos,Quaternion.identity);
+					break;
+				case 7:
+					p =(GameObject)Instantiate (Resources.Load ("iconMissilex3"),pos,Quaternion.identity);
+					break;
+				case 8:
+					p =(GameObject)Instantiate (Resources.Load ("iconAkuaku"),pos,Quaternion.identity);
+					break;
+				case 9:
+					p =(GameObject)Instantiate (Resources.Load ("iconTnt"),pos,Quaternion.identity);
+					break;
+				default:
+					p=new GameObject();
+					break;
+				}
+				GameObject q =(GameObject)Instantiate (Resources.Load ("Fv"),pos,Quaternion.identity);
+				textureAffichees.Add(p);
+				tempAffiches.Add(q);
+				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y-(float)80/(float)Screen.width,0),Quaternion.identity);
+				textbutton.guiText.text=menu[i];
+				textAffiches.Add(textbutton);
+			}
+			else if (i==menuConfig.Count()-3)
+			{
+				Vector3 pos =new Vector3(0.5f,0.65f+(((float)heightLabel/2)/(float)Screen.height)*(1-j),-1);
+				j++;
+				GameObject r =(GameObject)Instantiate (Resources.Load ("menuButtonPetit"),pos,Quaternion.identity);
+				r.guiTexture.pixelInset.Set(-25,-25,50,50);
+				fleches=(GameObject)Instantiate (Resources.Load ("menuFleches"),pos,Quaternion.identity);
+				textureAffichees.Add(r);
+				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+				textbutton.guiText.text=menu[i];
+				textAffiches.Add(textbutton);
+			}
+			else
+			{
+				Vector3 pos =new Vector3(0.5f,0.6f+(((float)heightLabel/2)/(float)Screen.height)*(1-j),-1);
+				if(j==7) j--;
+				else j++;
+				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+				textbutton.guiText.text=menu[i];
+				textAffiches.Add(textbutton);
+			}
+			return true;
+		}
 		else return false;
 	}
 	
@@ -444,7 +545,7 @@ public class Menus : MonoBehaviour
 		{
 			if(position < textureAffichees.Count)
 			{
-				if(menuCourant[0]!=menuPersos[0])
+				if(menuCourant[0]!=menuPersos[0] && menuCourant[0]!=menuConfig[0])
 				{
 					for(int i=0; i<textAffiches.Count;i++)
 					{
@@ -467,16 +568,20 @@ public class Menus : MonoBehaviour
 						}
 					}
 				}
-				else
+				else if (menuCourant[0]==menuConfig[0])
 				{
-					textureAffichees [menuPersos.Count-3].guiTexture.texture = normal;
-					textureAffichees [menuPersos.Count-2].guiTexture.texture = normal;
-					textAffiches[menuPersos.Count-3].guiText.color=Color.white;
-					textAffiches[menuPersos.Count-2].guiText.color=Color.white;
-					if(position>=menuPersos.Count-3)
+					textureAffichees [menuConfig.Count-3].guiTexture.texture = normal;
+					textureAffichees [menuConfig.Count-2].guiTexture.texture = normal;
+					textureAffichees [menuConfig.Count-4].guiTexture.texture = normal;
+					textAffiches[menuConfig.Count-3].guiText.color=Color.white;
+					textAffiches[menuConfig.Count-2].guiText.color=Color.white;
+					textAffiches[menuConfig.Count-4].guiText.color=Color.white;
+					textAffiches[menuConfig.Count-4].guiText.text=nbPts.ToString();
+					if(position>=menuConfig.Count-4)
 					{
 						textureAffichees [position].guiTexture.texture = hover;
 						textAffiches[position].guiText.color=Color.black;
+						cadre1.guiTexture.enabled = false;
 					}
 					else if (cadre1)
 					{
@@ -487,8 +592,35 @@ public class Menus : MonoBehaviour
 							child.guiTexture.enabled = true;
 						}
 					}
-
-
+				}
+				else
+				{
+					textureAffichees [menuPersos.Count-3].guiTexture.texture = normal;
+					textureAffichees [menuPersos.Count-2].guiTexture.texture = normal;
+					textAffiches[menuPersos.Count-3].guiText.color=Color.white;
+					textAffiches[menuPersos.Count-2].guiText.color=Color.white;
+					if(position>=menuPersos.Count-3)
+					{
+						textureAffichees [position].guiTexture.texture = hover;
+						textAffiches[position].guiText.color=Color.black;
+						if(cadre1)
+						{
+							cadre1.guiTexture.enabled = false;
+							foreach( Transform child in cadre1.transform)
+							{	
+								child.guiTexture.enabled = false;
+							}
+						}
+					}
+					else if (cadre1)
+					{
+						cadre1.transform.position=textureAffichees[position].transform.position+new Vector3(0,0,2f);
+						cadre1.guiTexture.enabled = true;
+						foreach( Transform child in cadre1.transform)
+						{	
+							child.guiTexture.enabled = true;
+						}
+					}
 				}
 
 			}
@@ -509,6 +641,10 @@ public class Menus : MonoBehaviour
 			{
 				if(down) position=menuPersos.Count-3;
 			}
+			else if(menuCourant[0]==menuConfig[0] && position<menuConfig.Count-4)
+			{
+				if(down) position=menuConfig.Count-4;
+			}
 			else
 			{
 				if (down && position<menuCourant.Count-2) position++;
@@ -528,6 +664,10 @@ public class Menus : MonoBehaviour
 			if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
 			{
 				if(up) position=menuPersos.Count-2;
+			}
+			else if(menuCourant[0]==menuConfig[0] && position<menuConfig.Count-4)
+			{
+				if(up) position=menuConfig.Count-3;
 			}
 			else
 			{
@@ -690,7 +830,56 @@ public class Menus : MonoBehaviour
 					else positionH--;
 					nameMap.guiText.text=Game.listMapForMenu[positionH];
 				}
-			}			
+			}
+			else if (menuCourant[0]==menuConfig[0] )//&& configWeaponsStates.Count==8)
+			{
+				if(position<menuConfig.Count-4)
+				{
+					if(rightDown)
+					{
+						if(position==menuConfig.Count-5) position=0;
+						else position++;
+					}
+					else if(leftDown)
+					{
+						if(position==0) position=menuConfig.Count-5;
+						else position--;
+					}
+				}
+				if(position==menuConfig.Count-4)
+				{
+					if(rightDown)
+					{
+						if(nbPts==99) nbPts=1;
+						else nbPts++;
+					}
+					else if(leftDown)
+					{
+						if(nbPts==1) nbPts=99;
+						else nbPts--;
+					}
+				}
+				if(ok && !falseok && position<menuConfig.Count-4)// && configWeaponsStates.Count==menuConfig.Count-3)
+				{
+					configWeaponsStates[position]=!configWeaponsStates[position];
+				}
+				else if(ok)
+					falseok=false;
+				if(position<menuConfig.Count-4)
+				{
+					for(int rg=0;rg<configWeaponsStates.Count;rg++)
+					{
+						if(configWeaponsStates[position])// && !falseok)
+						{
+							tempAffiches[position].guiTexture.color=new Color(241f/255f,255f/255f,0f/255f);
+						}
+						else
+						{
+							tempAffiches[position].guiTexture.color=new Color(255f/255f,0f/255f,0f/255f);
+						}
+					}
+				}
+			}
 		}
 	}
 	
@@ -872,9 +1061,14 @@ public class Menus : MonoBehaviour
 				ShowRoom.ShowModel(menuPersos[position+1]);
 				break;
 			case "VALIDER":
+				falseok=true;
 				ShowRoom.Leave();
 				map=Game.listMapForMenu[positionH];
-				Debug.Log(map);
+				if(map!=null)
+					displayMenu(menuConfig);
+				cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre6"), textureAffichees [position].transform.position+new Vector3(0,0,2f), Quaternion.identity);
+				cadre1.guiTexture.enabled = true;
+				weapons=new List<string>();
 				break;
 			default:
 				break;
@@ -913,8 +1107,46 @@ public class Menus : MonoBehaviour
 				break;
 			}
 		}
+		if(menu[0]==menuConfig[0])
+		{
+			switch (menu[p+1])
+			{
+			case "RETOUR":
+				cadre1.guiTexture.enabled = false;
+				displayMenu(menuMaps);
+				j = 5;
+				configWeaponsStates=new List<bool>();
+				break;
+			case "VALIDER":
+				transformBoolToString();
+				for(int i=0;i< weapons.Count;i++)
+				{
+					weapons[i]=Game.translateNameWeapons[weapons[i]];
+				}
+				Game.gameWeapons=weapons;
+				/*for(int i =0;i< persos.Count;i++)
+				{
+					Game.listKarts[i]=persos[i];
+				}*/
+				Game.listKarts=persos;
+				Game.nbPoints=nbPts;
+				StartCoroutine(changeLevel(Game.translateNameMaps[map]));
+				break;
+			default:
+				break;
+			}
+		}
 	}
-	
+
+	void transformBoolToString()
+	{
+		for(int i=0;i<configWeaponsStates.Count;i++)
+		{
+			if(configWeaponsStates[i])
+				weapons.Add(menuConfig[i+1]);
+		}
+	}
+
 	void Restart()
 	{
 		viderMenu ();
@@ -941,11 +1173,13 @@ public class Menus : MonoBehaviour
 		Destroy (textPlayer);
 		Destroy (nameMap);
 		foreach (GameObject g in textureAffichees) Destroy (g);
+		foreach (GameObject g in tempAffiches) Destroy (g);
 		foreach (GameObject g in textAffiches) Destroy (g);
 		foreach (GameObject g in controlAffiches) Destroy (g);
 		foreach (GameObject g in flechesD) Destroy (g);
 		textureAffichees =  new List <GameObject>();
 		textAffiches =  new List <GameObject>();
+		tempAffiches =  new List <GameObject>();
 		controlAffiches =  new List <GameObject>();
 		flechesD =  new List <GameObject>();
 		if(cameraMenu)

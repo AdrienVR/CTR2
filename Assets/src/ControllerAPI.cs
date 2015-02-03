@@ -119,7 +119,7 @@ public class ControllerAPI {
 	private Dictionary <string, KeyCode> buttons;
 
 	// -------------------------------------- CONSTRUCTOR ------------------------------
-	// Use this for initialization
+	// Create a controller API and is available with ControllerAPI.GetController(i)
 	public ControllerAPI  (int i) {
 		controllerNumber = i;
 		if (nControllers != Input.GetJoystickNames ().Length)
@@ -142,6 +142,7 @@ public class ControllerAPI {
 			InitJoysticks ();
 	}
 
+	// Check for joystick connected
 	public static void InitJoysticks()
 	{
 		nControllers = Input.GetJoystickNames ().Length;
