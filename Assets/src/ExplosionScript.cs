@@ -181,7 +181,6 @@ public class ExplosionScript : MonoBehaviour {
 			yield return 0;
 		}
 		else{
-			Debug.Log(name);
 			if (name != "bomb")
 				SetAllCollidersStatus (false);
 			exploded = true;

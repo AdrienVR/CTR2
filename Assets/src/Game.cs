@@ -15,6 +15,12 @@ public class Game : MonoBehaviour
 	public static List <string> gameWeapons =  new List <string> {
 		"greenBeaker","greenShield","bomb","triple_bomb","triple_missile","Aku-Aku","TNT","turbo"};
 
+	public static Dictionary <string, string> translateNameWeapons =  new Dictionary<string, string> {
+		{"Potion","greenBeaker"},{"Bouclier","greenShield"},{"Bombe","bomb"},{"Bombe x 3","triple_bomb"},{"Missile","missile"},{"Missile x 3","triple_missile"},
+		{"Aku-Aku","Aku-Aku"},{"TNT","TNT"},{"Turbo","turbo"}	};
+	public static Dictionary <string, string> translateNameMaps =  new Dictionary<string, string> {
+		{"Skull Rock","plage"},{"Parking","parking"}	};
+
 	public static Dictionary <int, List<Rect>> cameraMap = new Dictionary <int, List<Rect>>{
 		{1, new List<Rect>(){new Rect(0, 0, 1, 1)}},
 		{2, new List<Rect>(){new Rect(0, 0.51f, 1, 0.49f), new Rect(0, 0, 1, 0.49f)}},
@@ -33,7 +39,7 @@ public class Game : MonoBehaviour
 	public static List<string> protectWeapons = new List<string>() {"Aku-Aku", "greenShield", "blueShield", "Uka-Uka"};
 	public static List<string> protectors = new List<string>() {"Aku-Aku", "Uka-Uka"};
 	public static List<string> shields = new List<string>() {"greenShield", "blueShield"};
-	
+	public static int nbPoints =8;
 	public static Dictionary<int, string> playersMapping;// {1:xbox1, etc}
 
 	public static List<string> listKarts = new List<string>{"Crash","Coco","Crash","Crash"};

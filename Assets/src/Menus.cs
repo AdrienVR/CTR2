@@ -147,7 +147,8 @@ public class Menus : MonoBehaviour
 		cameraMenu = (GameObject)GameObject.Instantiate (Resources.Load("cameraMenu"));
 		//AudioListener.volume = 0.5f;
 		//soundUp =(AudioClip)Instantiate (Resources.Load ("Audio/down_menu"));
-		cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre1"), textureAffichees [position].transform.position, Quaternion.identity);
+		if(textureAffichees [position])
+			cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre1"), textureAffichees [position].transform.position, Quaternion.identity);
 		cadre5=(GameObject)Instantiate (Resources.Load ("cadre5"),new Vector3(0.85f,0.5f,0),Quaternion.identity);
 		if(cadre5)
 			cadre5.guiTexture.enabled = false;
@@ -1118,13 +1119,18 @@ public class Menus : MonoBehaviour
 				break;
 			case "VALIDER":
 				transformBoolToString();
+				for(int i=0;i< weapons.Count;i++)
+				{
+					weapons[i]=Game.translateNameWeapons[weapons[i]];
+				}
 				Game.gameWeapons=weapons;
-				for(int i =0;i< persos.Count;i++)
+				/*for(int i =0;i< persos.Count;i++)
 				{
 					Game.listKarts[i]=persos[i];
-				}
-				// ajouter le nb de pts
-				// changer de niveau vers map
+				}*/
+				Game.listKarts=persos;
+				Game.nbPoints=nbPts;
+				StartCoroutine(changeLevel(Game.translateNameMaps[map]));
 				break;
 			default:
 				break;
@@ -1138,10 +1144,6 @@ public class Menus : MonoBehaviour
 		{
 			if(configWeaponsStates[i])
 				weapons.Add(menuConfig[i+1]);
-		}
-		foreach(string s in weapons)
-		{
-			Debug.Log(s);
 		}
 	}
 

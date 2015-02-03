@@ -74,6 +74,8 @@ public class Main : MonoBehaviour
 
 	void Start()
 	{
+		nbPtsPartie = Game.nbPoints;
+		nbPlayer = Game.listKarts.Count;
 		nbPlayer = System.Math.Max (nbPlayer, 1);
 		nbPlayer = System.Math.Min (nbPlayer, 4);
 		ControllerAPI.InitJoysticks ();
