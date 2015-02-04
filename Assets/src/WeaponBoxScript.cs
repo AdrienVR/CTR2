@@ -69,6 +69,11 @@ public class WeaponBoxScript : MonoBehaviour {
 		nbImgArmes = 0;
 		timeLookingWeapon = 0;
 		string weapon = "bomb";
+		/*
+		for(int i=0;i<Game.gameWeapons.Count;i++)
+		{
+			Debug.Log(Game.gameWeapons[i]);
+		}*/
 		while (nbImgArmes < 25) {
 			int rand = Random.Range (0, Game.gameWeapons.Count);
 			weapon = Game.gameWeapons[rand];

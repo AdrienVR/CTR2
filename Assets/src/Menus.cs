@@ -43,9 +43,9 @@ public class Menus : MonoBehaviour
 	public bool falseok=true;
 	public int numSelection = 1;
 	private static List <GameObject> tempAffiches =  new List <GameObject>();
-	private static List<bool> configWeaponsStates = new List <bool> ();
+	private static List<bool> configWeaponsStates; // /!\
 	private static List <string> listMapForMenu =  new List <string>(){"Parking","Skull Rock"};
-
+	
 	// variables statiques pour la config d'une battle
 	private static List<string> persos=new List <string>();
 	private static List <string> weapons =  new List <string>();
@@ -96,7 +96,7 @@ public class Menus : MonoBehaviour
 		{5,"CHANGER CONFIG"},
 		{6,"QUITTER"}
 	};
-	private static Dictionary <int, string> mainMenu =  new Dictionary<int, string>
+	public static Dictionary <int, string> mainMenu =  new Dictionary<int, string>
 	{
 		{0,"Crash Team Racing II"},
 		{1,"BATAILLE"},
@@ -140,14 +140,19 @@ public class Menus : MonoBehaviour
 		{1,"VALIDER"},
 		{2,"RETOUR"}
 	};
+
+	public static Dictionary <int, string> menuToGo=mainMenu;
+
 	// Use this for initialization
 	void Start ()
 	{
+
+		if (Application.loadedLevelName == "mainmenu") configWeaponsStates= new List <bool> ();
 		normalTime = Time.timeScale;
 		cameraMenu = (GameObject)GameObject.Instantiate (Resources.Load("cameraMenu"));
 		//AudioListener.volume = 0.5f;
 		//soundUp =(AudioClip)Instantiate (Resources.Load ("Audio/down_menu"));
-		if(textureAffichees [position])
+		if(textureAffichees.Count>position && textureAffichees[position])
 			cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre1"), textureAffichees [position].transform.position, Quaternion.identity);
 		cadre5=(GameObject)Instantiate (Resources.Load ("cadre5"),new Vector3(0.85f,0.5f,0),Quaternion.identity);
 		if(cadre5)
@@ -160,12 +165,40 @@ public class Menus : MonoBehaviour
 				child.guiTexture.enabled = false;
 			}
 		}
+		if(menuToGo==menuPersos)
+		{
+			persos=new List<string>();
+			numSelection=1;
+			falseok=false;
+			ShowRoom.ShowModel(menuPersos[position+1]);
+			if(cadre1) cadre1.guiTexture.enabled=true;
+			if(cadre5) cadre5.guiTexture.enabled = true;
+			configWeaponsStates=new List<bool>();
+			weapons = new List<string>();
+		}
+		if(menuToGo==menuMaps)
+		{
+			if(cadre1) cadre1.guiTexture.enabled = false;
+			j = 5;
+			configWeaponsStates=new List<bool>();
+			weapons = new List<string>();
+			ShowRoom.ShowModel(listMapForMenu[1]);
+		}
+		if(menuToGo==menuConfig)
+		{
+			falseok=true;
+			if(textureAffichees [position]) cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre6"), textureAffichees [position].transform.position+new Vector3(0,0,2f), Quaternion.identity);
+			if(cadre1) cadre1.guiTexture.enabled = true;
+			weapons=new List<string>();	
+			configWeaponsStates=new List<bool>();
+		}
 	}
 	
 	
 	// Update is called once per frame
 	void Update ()
 	{
+		Debug.Log (configWeaponsStates.Count);
 		if (!waitingForKey)
 			navigateMenu ();
 		else
@@ -291,7 +324,7 @@ public class Menus : MonoBehaviour
 		}
 		
 	}
-	void displayMenu(Dictionary <int, string> menu)
+	public void displayMenu(Dictionary <int, string> menu)
 	{
 		viderMenu ();
 		if(cameraMenu) cameraMenu.SetActive (true);
@@ -462,7 +495,10 @@ public class Menus : MonoBehaviour
 			if(i==1)
 			{
 				for(int j=0;j<9;j++)
+				{
 					configWeaponsStates.Add(true);
+					Debug.Log("AJOUT D'UN BOOLEEN");
+				}
 				GameObject textTitre =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.5f,0.4f,2f),Quaternion.identity);
 				textTitre.guiText.text="Nombre de Points";
 				triangleFond = textTitre;
@@ -911,12 +947,7 @@ public class Menus : MonoBehaviour
 		if (ControllerAPI.CheckForAxis() || ControllerAPI.CheckForKey())
 			StartCoroutine(getKey());
 	}
-
-	public void startMainMenu()
-	{
-			displayMenu(mainMenu);
-	}
-
+	
 	IEnumerator RestrictMovement()
 	{
 		readyToMove = false;
@@ -978,11 +1009,19 @@ public class Menus : MonoBehaviour
 				Restart();
 				break;
 			case "CHANGER NIVEAU":
-				if (Application.loadedLevelName == "plage")
-					StartCoroutine(changeLevel("parking"));
-				else
-					StartCoroutine(changeLevel("plage"));
 				Restart();
+				Menus.menuToGo=menuMaps;
+				StartCoroutine(changeLevel("mainmenu"));
+				break;
+			case "CHANGER PERSONNAGE":
+				Restart();
+				Menus.menuToGo=menuPersos;
+				StartCoroutine(changeLevel("mainmenu"));
+				break;
+			case "CHANGER CONFIG":
+				Restart();
+				Menus.menuToGo=menuConfig;
+				StartCoroutine(changeLevel("mainmenu"));
 				break;
 			case "QUITTER":
 				Application.Quit();
@@ -1140,10 +1179,15 @@ public class Menus : MonoBehaviour
 
 	void transformBoolToString()
 	{
-		for(int i=0;i<configWeaponsStates.Count;i++)
+		Debug.Log (configWeaponsStates.Count);
+		for(int i=0;i<configWeaponsStates.Count;i++) // /!\ aucun booléan dans la liste après un "changer config"
 		{
+			Debug.Log("ajout1");
 			if(configWeaponsStates[i])
+			{
+				Debug.Log("ajout2");
 				weapons.Add(menuConfig[i+1]);
+			}
 		}
 	}
 

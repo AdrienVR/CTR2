@@ -24,11 +24,17 @@ public class ShowRoom : MonoBehaviour {
 	public static void ShowModel(string name)
 	{
 		foreach(Transform child in characters.Values){
-			child.gameObject.SetActive(false);
-			child.transform.rotation = new Quaternion();
+			if(child)
+			{
+				if (child.gameObject)
+				{
+					child.gameObject.SetActive(false);
+					child.transform.rotation = new Quaternion();
+				}
+			}
 		}
-		characters[name].gameObject.SetActive(true);
-		sr.StartCoroutine(Anim());
+		if(characters[name] && characters[name].gameObject) characters[name].gameObject.SetActive(true);
+		if(sr) sr.StartCoroutine(Anim());
 	}
 	
 	

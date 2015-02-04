@@ -24,7 +24,7 @@ public class MainMenu : MonoBehaviour
 	void InitMenus()
 	{
 		Menus m =(Menus)gameObject.AddComponent ("Menus");
-		m.startMainMenu ();
+		m.displayMenu(Menus.menuToGo);
 		m.normal = normal;
 		m.hover = hover;
 
