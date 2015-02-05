@@ -52,6 +52,15 @@ public class ControllerAPI {
 		{"viewChange",KeyCode.F7}, {"viewInverse",KeyCode.F8},
 		{"bip",KeyCode.F9}, {"bip2",KeyCode.F10}
 	};
+	public static Dictionary <string, KeyCode> pc3 = new Dictionary<string, KeyCode> {
+		{"throw",KeyCode.None}, {"moveBack",KeyCode.DownArrow},
+		{"moveForward",KeyCode.UpArrow}, {"stop",KeyCode.None},
+		{"turnRight",KeyCode.RightArrow}, {"turnLeft",KeyCode.LeftArrow},
+		{"jump",KeyCode.RightControl}, {"jump2",KeyCode.None}, 
+		{"action",KeyCode.Return}, {"start",KeyCode.None}, 
+		{"viewChange",KeyCode.None}, {"viewInverse",KeyCode.None},
+		{"bip",KeyCode.None}, {"bip2",KeyCode.None}
+	};
 	public static Dictionary <string, KeyCode> ps1 = new Dictionary<string, KeyCode> {
 		{"moveForward",KeyCode.Joystick1Button2}, {"stop",KeyCode.Joystick1Button3},
 		{"jump",KeyCode.Joystick1Button7}, {"jump2",KeyCode.Joystick1Button6},
@@ -98,11 +107,14 @@ public class ControllerAPI {
 	public static int nControllers;	
 
 	public static Dictionary <string, Dictionary <string, KeyCode>> buttonProfiles = 
-	new Dictionary <string, Dictionary <string, KeyCode>>{{"keyboard1",pc1}, {"keyboard2",pc2},
+	new Dictionary <string, Dictionary <string, KeyCode>>{{"keyboard1",pc1}, {"keyboard2",pc2}, {"keyboard3",pc3},
 		{"xbox1",ps1}, {"xbox2",ps2}, {"xbox3",ps3}, {"xbox4",ps4}};
+
 	private static Dictionary <string, Dictionary <string, string>> axisProfiles = 
-	new Dictionary <string, Dictionary <string, string>>{{"keyboard1",pc_axis}, {"keyboard2",pc_axis},
+	new Dictionary <string, Dictionary <string, string>>{{"keyboard1",pc_axis}, {"keyboard2",pc_axis}, {"keyboard3",pc_axis},
 		{"xbox1",ps1_axis}, {"xbox2",ps2_axis}, {"xbox3",ps3_axis}, {"xbox4",ps4_axis}};
+
+	private static Dictionary<int, string> playersMapping;// {1:xbox1, etc}
 	
 	private static Dictionary <string, float> last_axis_up = new Dictionary <string, float>();
 	private static Dictionary <string, float> last_axis_down = new Dictionary <string, float>();
@@ -121,13 +133,16 @@ public class ControllerAPI {
 	// -------------------------------------- CONSTRUCTOR ------------------------------
 	// Create a controller API and is available with ControllerAPI.GetController(i)
 	public ControllerAPI  (int i) {
+		Debug.Log("Initializing controller "+i);
 		controllerNumber = i;
+		// check if a controller has connect/disconnect
 		if (nControllers != Input.GetJoystickNames ().Length)
 			InitJoysticks ();
-		AffectControl (Game.playersMapping[i]);
+		AffectControl (playersMapping[i]);
 		allControllers [i] = this;
 
 		if (i == 1){
+			// saving controller config - testing for now...
 			//Debug.Log ("Test saving + loading binary dictionary");
 			//ControllerAPI.Test (1);//player 1 = keyboard 1 or xbox1
 		}
@@ -152,9 +167,10 @@ public class ControllerAPI {
 			n = 4;
 
 		// BUTTONS -------------------------------------------------------
-		Game.playersMapping = new Dictionary<int, string> {{1,"xbox1"},{2,"xbox2"},{3,"xbox3"},{4,"xbox4"}};
-		Game.playersMapping[n + 1] = "keyboard1";
-		Game.playersMapping[n + 2] = "keyboard2";
+		playersMapping = new Dictionary<int, string> {{1,"xbox1"},{2,"xbox2"},{3,"xbox3"},{4,"xbox4"}};
+		playersMapping[n + 1] = "keyboard1";
+		playersMapping[n + 2] = "keyboard2";
+		playersMapping[n + 3] = "keyboard3";
 
 		if (!initialized) {
 			InitAxisSides();
@@ -163,7 +179,11 @@ public class ControllerAPI {
 		else{
 			Debug.Log ("Now "+nControllers+" controllers detected");
 			foreach(ControllerAPI a in allControllers.Values)
-				a.SetDefaultFor(0);
+				a.SetDefault();
+		}
+
+		for (int i = 0; i < nControllers + 3 ; ++i){
+			new ControllerAPI (i+1);
 		}
 	}
 	
@@ -181,10 +201,8 @@ public class ControllerAPI {
 		}
 	}
 
-	public void SetDefaultFor(int n){
-		if (n == 0)
-			n = controllerNumber;
-		controllerName = Game.playersMapping [n];
+	public void SetDefault(){
+		controllerName = playersMapping [controllerNumber];
 		Update ();
 	}
 
@@ -461,6 +479,24 @@ public class ControllerAPI {
 		      floatValue > newAxisValues[name]-Game.thresholdAxis))
 		{
 			return true;
+		}
+		return false;
+	}
+
+	public static bool CheckForAny(string action){
+		foreach(ControllerAPI controller in allControllers.Values){
+			if (controller.IsPressed(action)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static bool CheckForAnyDown(string action){
+		foreach(ControllerAPI controller in allControllers.Values){
+			if (controller.GetKeyDown(action)){
+				return true;
+			}
 		}
 		return false;
 	}

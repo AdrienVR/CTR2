@@ -201,6 +201,7 @@ public class ExplosionScript : MonoBehaviour {
 
 				gameObject.light.color = explosionColor;
 				yield return new WaitForSeconds (0.1f);
+				SetAllCollidersStatus (false);
 				gameObject.light.color = new Color();
 				yield return new WaitForSeconds (3f);
 				Destroy(gameObject);

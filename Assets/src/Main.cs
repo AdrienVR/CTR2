@@ -158,7 +158,6 @@ public class Main : MonoBehaviour
 		players = new List<Kart>();
 		for (int i=0; i<n; i++)
 		{
-			new ControllerAPI (i+1);
 			Kart a = new Kart(listRespawn[i].position, listRespawn[i].rotation, Game.listKarts[i]);
 			players.Add(a);
 		}

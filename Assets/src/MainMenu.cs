@@ -15,14 +15,13 @@ public class MainMenu : MonoBehaviour
 
 	void InitController()
 	{
-		Instantiate (Resources.Load ("videoFond"));
 		ControllerAPI.InitJoysticks ();
-		ControllerAPI controller = new ControllerAPI (1);
 		KartController.stop = true;
 	}
 
 	void InitMenus()
 	{
+		Instantiate (Resources.Load ("videoFond"));
 		Menus m =(Menus)gameObject.AddComponent ("Menus");
 		m.displayMenu(Menus.menuToGo);
 		m.normal = normal;
@@ -30,7 +29,7 @@ public class MainMenu : MonoBehaviour
 
 	}
 	// Update is called once per frame
-	void Update ()
+	void FixedUpdate ()
 	{
 		ControllerAPI.CheckJoysticks ();	
 	}

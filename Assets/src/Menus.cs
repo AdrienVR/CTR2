@@ -32,6 +32,11 @@ public class Menus : MonoBehaviour
 	private static List <GameObject> textAffiches =  new List <GameObject>();
 	private static List <GameObject> controlAffiches =  new List <GameObject>();
 	private static Dictionary <int, string> menuCourant = new Dictionary<int, string>();
+	private static Dictionary <string, bool> booleans = new Dictionary<string, bool>{
+		{"up", false},{"down", false},{"left", false},{"right", false},
+		{"ok",false}, {"back", false},{"start", false},
+		{"up_down", false},{"down_down", false},{"left_down", false},{"right_down", false}
+	};
 	public Main main;
 	public Kart winner;
 	public List <Kart> loosers=  new List <Kart>();
@@ -193,20 +198,29 @@ public class Menus : MonoBehaviour
 			configWeaponsStates=new List<bool>();
 		}
 	}
-	
-	
+
 	// Update is called once per frame
 	void Update ()
 	{
-		Debug.Log (configWeaponsStates.Count);
-		if (!waitingForKey)
+		//Debug.Log (configWeaponsStates.Count);
+		if (!waitingForKey){
+			CheckKeys();
 			navigateMenu ();
+			ResetBooleans();
+		}
 		else
 			CheckNewKey();
 		if(main!=null)
 		{
 			testPause ();
 			testEnd ();
+		}
+	}
+
+	void ResetBooleans(){
+		var buffer = new List<string>(booleans.Keys);
+		foreach (string key in buffer){
+			booleans[key] = false;
 		}
 	}
 	
@@ -660,14 +674,7 @@ public class Menus : MonoBehaviour
 				}
 
 			}
-			bool down = false;
-			for (int i = 1; i<Kart.totalPlayers+1; i++)
-			{
-				down |=  ControllerAPI.StaticIsPressed(i, "moveBack");
-			}
-			if (!readyToMove)
-				down = false;
-			else if (down && readyToMove)
+			if (booleans["down"])
 			{
 				if(main)
 					main.gameObject.audio.PlayOneShot (main.soundUp);
@@ -675,23 +682,19 @@ public class Menus : MonoBehaviour
 			}
 			if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
 			{
-				if(down) position=menuPersos.Count-3;
+				if (booleans["down"]) position=menuPersos.Count-3;
 			}
 			else if(menuCourant[0]==menuConfig[0] && position<menuConfig.Count-4)
 			{
-				if(down) position=menuConfig.Count-4;
+				if (booleans["down"]) position=menuConfig.Count-4;
 			}
 			else
 			{
-				if (down && position<menuCourant.Count-2) position++;
-				else if(down && !(position<menuCourant.Count-2)) position = 0;
+				if (booleans["down"] && position<menuCourant.Count-2) position++;
+				else if (booleans["down"] && !(position<menuCourant.Count-2)) position = 0;
 			}
-			bool up = false;
-			for (int i = 1; i<Kart.totalPlayers+1; i++)
-				up |=  ControllerAPI.StaticIsPressed(i, "throw");
-			if (!readyToMove)
-				up = false;
-			else if (up && readyToMove)
+
+			if (booleans["up"] && readyToMove)
 			{
 				if(main)
 					main.gameObject.audio.PlayOneShot (main.soundUp);
@@ -699,23 +702,18 @@ public class Menus : MonoBehaviour
 			}
 			if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
 			{
-				if(up) position=menuPersos.Count-2;
+				if(booleans["up"]) position=menuPersos.Count-2;
 			}
 			else if(menuCourant[0]==menuConfig[0] && position<menuConfig.Count-4)
 			{
-				if(up) position=menuConfig.Count-3;
+				if(booleans["up"]) position=menuConfig.Count-3;
 			}
 			else
 			{
-				if (up && position>0) position--;
-				else if(up && !(position>0)) position = menuCourant.Count-2;
+				if (booleans["up"] && position>0) position--;
+				else if(booleans["up"] && !(position>0)) position = menuCourant.Count-2;
 			}
-			bool ok = false;
-			for (int i = 1; i<Kart.totalPlayers+1; i++)
-			{
-				ok |=  ControllerAPI.StaticGetKeyDown(i, "moveForward");
-			}
-			if(ok)
+			if(booleans["ok"])
 			{
 				if(menuCourant[position+1]=="RETOUR" && main)
 					main.gameObject.audio.PlayOneShot (main.soundCancel);
@@ -723,23 +721,8 @@ public class Menus : MonoBehaviour
 					main.gameObject.audio.PlayOneShot (main.soundOk);
 				action(menuCourant,position);
 			}
-			
-			bool right = false;
-			bool left = false;
-			for (int i = 1; i<Kart.totalPlayers+1; i++)
-			{
-				right |=  ControllerAPI.StaticIsPressed(i, "turnRight");
-				left |=  ControllerAPI.StaticIsPressed(i, "turnLeft");
-			}
-			bool rightDown = false;
-			bool leftDown = false;
-			for (int i = 1; i<Kart.totalPlayers+1; i++)
-			{
-				rightDown |=  ControllerAPI.StaticGetKeyDown(i, "turnRight");
-				leftDown |=  ControllerAPI.StaticGetKeyDown(i, "turnLeft");
-			}
-			if(right && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
-			if(left && menuCourant[position+1]=="VOLUME :" && AudioListener.volume>=0.008f) AudioListener.volume-=0.008f;;
+			if(booleans["right"] && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
+			if(booleans["left"] && menuCourant[position+1]=="VOLUME :" && AudioListener.volume>=0.008f) AudioListener.volume-=0.008f;;
 			if(menuCourant[position+1]=="VOLUME :")
 			{
 				Destroy(triangleVolume);
@@ -760,12 +743,12 @@ public class Menus : MonoBehaviour
 					string name  = ControllerAPI.KeyIs(positionH, action);
 					controlAffiches[i].guiText.text=name;
 				}
-				if(rightDown)
+				if(booleans["right_down"])
 				{
 					if(positionH<main.players.Count) positionH++;
 					else positionH=1;
 				}
-				else if(leftDown)
+				else if(booleans["left_down"])
 				{
 					if(positionH>1) positionH--;
 					else positionH=main.players.Count;
@@ -775,11 +758,12 @@ public class Menus : MonoBehaviour
 			else if((menuCourant[0]=="Reglages Controles") && (menuCourant[position+1]!="Reglages Controles") && (menuCourant[position+1]!="JOUEUR :") && (menuCourant[position+1]!="RETOUR"))
 			{
 				listKeys=  new List <KeyCode>();
+				/*
 				foreach(string a in ControllerAPI.buttonProfiles[Game.playersMapping[positionH]].Keys)
 				{
 					listKeys.Add(ControllerAPI.buttonProfiles[Game.playersMapping[positionH]][a]);
-				}
-				if(rightDown)
+				}*/
+				if(booleans["right_down"])
 				{
 					authorizeNavigate=false;
 					//Destroy(flechesD[position-1]);
@@ -795,19 +779,19 @@ public class Menus : MonoBehaviour
 			}
 			else if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
 			{
-				if(rightDown)
+				if(booleans["right_down"])
 				{
 					if(position==menuPersos.Count-4) position=0;
 					else position++;
 					ShowRoom.ShowModel(menuPersos[position+1]);
 				}
-				else if(leftDown)
+				else if(booleans["left_down"])
 				{
 					if(position==0) position=menuPersos.Count-4;
 					else position--;
 					ShowRoom.ShowModel(menuPersos[position+1]);
 				}
-				else if(ok)
+				else if(booleans["ok"])
 				{
 					if(falseok==false)
 					{
@@ -850,7 +834,7 @@ public class Menus : MonoBehaviour
 			}
 			else if (menuCourant[0]==menuMaps[0])
 			{
-				if(rightDown)
+				if(booleans["right_down"])
 				{
 					
 					ShowRoom.ShowModel(listMapForMenu[positionH]);
@@ -859,7 +843,7 @@ public class Menus : MonoBehaviour
 					else positionH++;
 					nameMap.guiText.text=Game.listMapForMenu[positionH];
 				}
-				if(leftDown)
+				if(booleans["left_down"])
 				{
 					ShowRoom.ShowModel(listMapForMenu[positionH]);
 					if(positionH==0) positionH=Game.listMapForMenu.Count-1;
@@ -871,12 +855,12 @@ public class Menus : MonoBehaviour
 			{
 				if(position<menuConfig.Count-4)
 				{
-					if(rightDown)
+					if(booleans["right_down"])
 					{
 						if(position==menuConfig.Count-5) position=0;
 						else position++;
 					}
-					else if(leftDown)
+					else if(booleans["left_down"])
 					{
 						if(position==0) position=menuConfig.Count-5;
 						else position--;
@@ -884,22 +868,22 @@ public class Menus : MonoBehaviour
 				}
 				if(position==menuConfig.Count-4)
 				{
-					if(rightDown)
+					if(booleans["right_down"])
 					{
 						if(nbPts==99) nbPts=1;
 						else nbPts++;
 					}
-					else if(leftDown)
+					else if(booleans["left_down"])
 					{
 						if(nbPts==1) nbPts=99;
 						else nbPts--;
 					}
 				}
-				if(ok && !falseok && position<menuConfig.Count-4)// && configWeaponsStates.Count==menuConfig.Count-3)
+				if(booleans["ok"] && !falseok && position<menuConfig.Count-4)// && configWeaponsStates.Count==menuConfig.Count-3)
 				{
 					configWeaponsStates[position]=!configWeaponsStates[position];
 				}
-				else if(ok)
+				else if(booleans["ok"])
 					falseok=false;
 				if(position<menuConfig.Count-4)
 				{
@@ -921,7 +905,9 @@ public class Menus : MonoBehaviour
 	
 	IEnumerator setKey(string action, string name)
 	{
-		for(int i=0;i<10;++i)
+		// 10 frames at 50fps
+		int frameToWait = (int)(10*0.02f/Time.deltaTime);
+		for(int i=0; i<frameToWait;++i)
 		{
 			yield return new WaitForEndOfFrame ();
 		}
@@ -930,7 +916,9 @@ public class Menus : MonoBehaviour
 	
 	IEnumerator getKey()
 	{
-		for(int i=0;i<10;++i)
+		// 10 frames at 50fps
+		int frameToWait = (int)(10*0.02f/Time.deltaTime);
+		for(int i=0; i<frameToWait;++i)
 		{
 			yield return new WaitForEndOfFrame ();
 		}
@@ -947,18 +935,44 @@ public class Menus : MonoBehaviour
 		if (ControllerAPI.CheckForAxis() || ControllerAPI.CheckForKey())
 			StartCoroutine(getKey());
 	}
+
+	void CheckKeys()
+	{
+
+		if (readyToMove){
+			booleans["up"] = ControllerAPI.CheckForAny("moveForward");
+			booleans["down"] = ControllerAPI.CheckForAny("moveBack");
+			booleans["right"] = ControllerAPI.CheckForAny("turnRight");
+			booleans["left"] = ControllerAPI.CheckForAny("turnLeft");
+
+		}
+		//Debug.Log(readyToMove +","+ booleans["up"]);
+		
+		booleans["ok"] = ControllerAPI.CheckForAnyDown("action");
+		booleans["back"] = ControllerAPI.CheckForAnyDown("action");
+		booleans["start"] = ControllerAPI.CheckForAnyDown("start");
+		
+		booleans["up_down"] = ControllerAPI.CheckForAnyDown("moveForward");
+		booleans["down_down"] = ControllerAPI.CheckForAnyDown("moveBack");
+		booleans["right_down"] = ControllerAPI.CheckForAnyDown("turnRight");
+		booleans["left_down"] = ControllerAPI.CheckForAnyDown("turnLeft");
+	}
 	
 	IEnumerator RestrictMovement()
 	{
 		readyToMove = false;
-		for(int i=0;i<10;i++)
+		// 10 frame at 50fps
+		int frameToWait = (int)(10*0.02f/Time.deltaTime);
+		for(int i=0;i<frameToWait;i++)
 			yield return new WaitForEndOfFrame ();
 		readyToMove = true;
 	}
 	
 	IEnumerator changeLevel(string level)
 	{
-		for(int i=0; i<20;i++)
+		// 20 frame at 50fps
+		int frameToWait = (int)(20*0.02f/Time.deltaTime);
+		for(int i=0; i<frameToWait;i++)
 			yield return new WaitForEndOfFrame ();
 		if(level=="loaded")
 			Application.LoadLevel (Application.loadedLevel);

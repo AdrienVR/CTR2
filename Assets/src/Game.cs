@@ -40,7 +40,6 @@ public class Game : MonoBehaviour
 	public static List<string> protectors = new List<string>() {"Aku-Aku", "Uka-Uka"};
 	public static List<string> shields = new List<string>() {"greenShield", "blueShield"};
 	public static int nbPoints =8;
-	public static Dictionary<int, string> playersMapping;// {1:xbox1, etc}
 
 	public static List<string> listKarts = new List<string>{"Crash","Coco","Crash","Crash"};
 	public static List<string> characters = new List<string>() {"kartCrash", "kartCoco"};
