@@ -10,26 +10,31 @@ public class ControllerAPI {
 	// AXIS
 	private static Dictionary <string, float> defaultAxisValues = new Dictionary<string, float> {
 		{"throw",-2f}, {"moveBack",2f},
-		{"turnRight",2f}, {"turnLeft",-2f}
+		{"turnRight",2f}, {"turnLeft",-2f},
+		{"jump2",2f}, {"jump",-2f}
 	};
 	private static Dictionary <string, float> axisValues = new Dictionary<string, float> ();
 	private static Dictionary <string, float> newAxisValues = new Dictionary<string, float> ();
 
 	private static Dictionary <string, string> ps1_axis = new Dictionary<string, string> {
 		{"throw","J1_StopAxis"}, {"moveBack","J1_StopAxis"},
-		{"turnRight","J1_TurnAxis"}, {"turnLeft","J1_TurnAxis"}
+		{"turnRight","J1_TurnAxis"}, {"turnLeft","J1_TurnAxis"},
+		{"jump","J1_JumpAxis"}, {"jump2","J1_JumpAxis"}
 	};
 	private static Dictionary <string, string> ps2_axis = new Dictionary<string, string> {
 		{"throw","J2_StopAxis"}, {"moveBack","J2_StopAxis"},
-		{"turnRight","J2_TurnAxis"}, {"turnLeft","J2_TurnAxis"}
+		{"turnRight","J2_TurnAxis"}, {"turnLeft","J2_TurnAxis"},
+		{"jump","J2_JumpAxis"}, {"jump2","J2_JumpAxis"}
 	};
 	private static Dictionary <string, string> ps3_axis = new Dictionary<string, string> {
 		{"throw","J3_StopAxis"}, {"moveBack","J3_StopAxis"},
-		{"turnRight","J3_TurnAxis"}, {"turnLeft","J3_TurnAxis"}
+		{"turnRight","J3_TurnAxis"}, {"turnLeft","J3_TurnAxis"},
+		{"jump","J3_JumpAxis"}, {"jump2","J3_JumpAxis"}
 	};
 	private static Dictionary <string, string> ps4_axis = new Dictionary<string, string> {
 		{"throw","J4_StopAxis"}, {"moveBack","J4_StopAxis"},
-		{"turnRight","J4_TurnAxis"}, {"turnLeft","J4_TurnAxis"}
+		{"turnRight","J4_TurnAxis"}, {"turnLeft","J4_TurnAxis"},
+		{"jump","J4_JumpAxis"}, {"jump2","J4_JumpAxis"}
 	};
 	private static Dictionary <string, string> pc_axis = new Dictionary<string, string>();
 	
@@ -61,33 +66,29 @@ public class ControllerAPI {
 		{"viewChange",KeyCode.None}, {"viewInverse",KeyCode.None},
 		{"bip",KeyCode.None}, {"bip2",KeyCode.None}
 	};
-	public static Dictionary <string, KeyCode> ps1 = new Dictionary<string, KeyCode> {
-		{"moveForward",KeyCode.Joystick1Button2}, {"stop",KeyCode.Joystick1Button3},
-		{"jump",KeyCode.Joystick1Button7}, {"jump2",KeyCode.Joystick1Button6},
-		{"action",KeyCode.Joystick1Button1},{"start",KeyCode.Joystick1Button9},
+	public static Dictionary <string, KeyCode> xbox1 = new Dictionary<string, KeyCode> {
+		{"moveForward",KeyCode.Joystick1Button0}, {"stop",KeyCode.Joystick1Button2},
+		{"action",KeyCode.Joystick1Button1},{"start",KeyCode.Joystick1Button7},
 		{"viewChange",KeyCode.Joystick1Button4}, {"viewInverse",KeyCode.Joystick1Button5},
-		{"bip",KeyCode.Joystick1Button10}, {"bip2",KeyCode.Joystick1Button11}
+		{"bip",KeyCode.Joystick1Button8}, {"bip2",KeyCode.Joystick1Button9}
 	};
-	public static Dictionary <string, KeyCode> ps2 = new Dictionary<string, KeyCode> {
-		{"moveForward",KeyCode.Joystick2Button2}, {"stop",KeyCode.Joystick2Button3},
-		{"jump",KeyCode.Joystick2Button7}, {"jump2",KeyCode.Joystick2Button6},
-		{"action",KeyCode.Joystick2Button1},{"start",KeyCode.Joystick2Button9},
+	public static Dictionary <string, KeyCode> xbox2 = new Dictionary<string, KeyCode> {
+		{"moveForward",KeyCode.Joystick2Button0}, {"stop",KeyCode.Joystick2Button2},
+		{"action",KeyCode.Joystick2Button1},{"start",KeyCode.Joystick2Button7},
 		{"viewChange",KeyCode.Joystick2Button4}, {"viewInverse",KeyCode.Joystick2Button5},
-		{"bip",KeyCode.Joystick2Button10}, {"bip2",KeyCode.Joystick2Button11}
+		{"bip",KeyCode.Joystick2Button8}, {"bip2",KeyCode.Joystick2Button9}
 	};
-	public static Dictionary <string, KeyCode> ps3 = new Dictionary<string, KeyCode> {
-		{"moveForward",KeyCode.Joystick3Button2}, {"stop",KeyCode.Joystick3Button3},
-		{"jump",KeyCode.Joystick3Button7}, {"jump2",KeyCode.Joystick3Button6},
-		{"action",KeyCode.Joystick3Button1},{"start",KeyCode.Joystick3Button9},
+	public static Dictionary <string, KeyCode> xbox3 = new Dictionary<string, KeyCode> {
+		{"moveForward",KeyCode.Joystick3Button0}, {"stop",KeyCode.Joystick3Button2},
+		{"action",KeyCode.Joystick3Button1},{"start",KeyCode.Joystick3Button7},
 		{"viewChange",KeyCode.Joystick3Button4}, {"viewInverse",KeyCode.Joystick3Button5},
-		{"bip",KeyCode.Joystick3Button10}, {"bip2",KeyCode.Joystick3Button11}
+		{"bip",KeyCode.Joystick3Button8}, {"bip2",KeyCode.Joystick3Button9}
 	};
-	public static Dictionary <string, KeyCode> ps4 = new Dictionary<string, KeyCode> {
-		{"moveForward",KeyCode.Joystick4Button2}, {"stop",KeyCode.Joystick4Button3},
-		{"jump",KeyCode.Joystick4Button7}, {"jump2",KeyCode.Joystick4Button6},
-		{"action",KeyCode.Joystick4Button1},{"start",KeyCode.Joystick4Button9},
+	public static Dictionary <string, KeyCode> xbox4 = new Dictionary<string, KeyCode> {
+		{"moveForward",KeyCode.Joystick4Button0}, {"stop",KeyCode.Joystick4Button2},
+		{"action",KeyCode.Joystick4Button1},{"start",KeyCode.Joystick4Button7},
 		{"viewChange",KeyCode.Joystick4Button4}, {"viewInverse",KeyCode.Joystick4Button5},
-		{"bip",KeyCode.Joystick4Button10}, {"bip2",KeyCode.Joystick4Button11}
+		{"bip",KeyCode.Joystick4Button8}, {"bip2",KeyCode.Joystick4Button9}
 	};
 	public static Dictionary <string, string> actions = new Dictionary<string, string>
 	{
@@ -108,7 +109,7 @@ public class ControllerAPI {
 
 	public static Dictionary <string, Dictionary <string, KeyCode>> buttonProfiles = 
 	new Dictionary <string, Dictionary <string, KeyCode>>{{"keyboard1",pc1}, {"keyboard2",pc2}, {"keyboard3",pc3},
-		{"xbox1",ps1}, {"xbox2",ps2}, {"xbox3",ps3}, {"xbox4",ps4}};
+		{"xbox1",xbox1}, {"xbox2",xbox2}, {"xbox3",xbox3}, {"xbox4",xbox4}};
 
 	private static Dictionary <string, Dictionary <string, string>> axisProfiles = 
 	new Dictionary <string, Dictionary <string, string>>{{"keyboard1",pc_axis}, {"keyboard2",pc_axis}, {"keyboard3",pc_axis},
@@ -236,6 +237,7 @@ public class ControllerAPI {
 		//buttons management
 		if (buttonList.IndexOf (action) != -1)
 			return Input.GetKeyDown (buttons [action]);
+		//Debug.Log(action);
 		string name = axis [action];
 		//axis management
 		if (!(Input.GetAxis (name) < last_axis_down[action+name]+Game.thresholdAxis && 

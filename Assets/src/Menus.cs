@@ -20,6 +20,7 @@ public class Menus : MonoBehaviour
 	private bool authorizeNavigate = false;
 	private bool waitingForKey = false;
 	private bool inPause = false;
+	private static float baseFrameWait = 1;
 	private static GameObject titreAffiche;
 	private static GameObject nameMap;
 	private static GameObject triangleFond;
@@ -202,10 +203,13 @@ public class Menus : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (Time.timeScale != 0)
+			baseFrameWait = 0.02f/Time.deltaTime;
 		//Debug.Log (configWeaponsStates.Count);
 		if (!waitingForKey){
 			CheckKeys();
-			navigateMenu ();
+			if (readyToMove)
+				navigateMenu ();
 			ResetBooleans();
 		}
 		else
@@ -906,7 +910,7 @@ public class Menus : MonoBehaviour
 	IEnumerator setKey(string action, string name)
 	{
 		// 10 frames at 50fps
-		int frameToWait = (int)(10*0.02f/Time.deltaTime);
+		int frameToWait = (int)(10 * baseFrameWait);
 		for(int i=0; i<frameToWait;++i)
 		{
 			yield return new WaitForEndOfFrame ();
@@ -917,7 +921,7 @@ public class Menus : MonoBehaviour
 	IEnumerator getKey()
 	{
 		// 10 frames at 50fps
-		int frameToWait = (int)(10*0.02f/Time.deltaTime);
+		int frameToWait =(int)(10 * baseFrameWait);
 		for(int i=0; i<frameToWait;++i)
 		{
 			yield return new WaitForEndOfFrame ();
@@ -962,7 +966,7 @@ public class Menus : MonoBehaviour
 	{
 		readyToMove = false;
 		// 10 frame at 50fps
-		int frameToWait = (int)(10*0.02f/Time.deltaTime);
+		int frameToWait = (int)(5 * baseFrameWait);
 		for(int i=0;i<frameToWait;i++)
 			yield return new WaitForEndOfFrame ();
 		readyToMove = true;
@@ -971,7 +975,7 @@ public class Menus : MonoBehaviour
 	IEnumerator changeLevel(string level)
 	{
 		// 20 frame at 50fps
-		int frameToWait = (int)(20*0.02f/Time.deltaTime);
+		int frameToWait = (int)(20 * baseFrameWait);
 		for(int i=0; i<frameToWait;i++)
 			yield return new WaitForEndOfFrame ();
 		if(level=="loaded")

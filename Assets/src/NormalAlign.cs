@@ -43,6 +43,8 @@ public class NormalAlign : MonoBehaviour {
 
 	void Update () {
 		
+		if (Time.timeScale == 0)
+			return;
 		//Debug.DrawRay(transform.position, upDir, Color.blue, 20, true);
 
 		if(Vector3.Angle(upDir, previous)<10 && System.Math.Abs(upDir.y - previous.y)<0.1f)
