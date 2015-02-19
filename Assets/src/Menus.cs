@@ -966,7 +966,7 @@ public class Menus : MonoBehaviour
 	{
 		readyToMove = false;
 		// 10 frame at 50fps
-		int frameToWait = (int)(5 * baseFrameWait);
+		int frameToWait = (int)(10 * baseFrameWait);
 		for(int i=0;i<frameToWait;i++)
 			yield return new WaitForEndOfFrame ();
 		readyToMove = true;

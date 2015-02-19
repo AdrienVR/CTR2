@@ -41,7 +41,7 @@ public class Game : MonoBehaviour
 	public static List<string> shields = new List<string>() {"greenShield", "blueShield"};
 	public static int nbPoints =8;
 
-	public static List<string> listKarts = new List<string>{"Crash","Coco","Crash","Crash"};
+	public static List<string> listKarts = new List<string>{"Crash","Coco"};
 	public static List<string> characters = new List<string>() {"kartCrash", "kartCoco"};
 	public static List<string> listMap = new List<string>() {"plage", "parking"};
 	public static List<string> listMapForMenu = new List<string>() {"Skull Rock","Parking"};
