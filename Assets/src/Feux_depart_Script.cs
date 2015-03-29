@@ -6,6 +6,7 @@ public class Feux_depart_Script : MonoBehaviour {
 	
 	public List<Texture> textureList;
 	public AudioClip bip_end;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -15,10 +16,10 @@ public class Feux_depart_Script : MonoBehaviour {
 	IEnumerator Anim()
 	{
 		GUITexture gt = (GUITexture)GetComponent ("GUITexture");
-		gt.transform.position=new Vector3(gt.transform.position.x,gt.transform.position.y+0.2f,gt.transform.position.z);
-		while(gt.transform.position.y>0.7)
+		gt.transform.position += new Vector3(0, 0.2f, 0);
+		while(gt.transform.position.y > 0.7f)
 		{
-			gt.transform.position=new Vector3(gt.transform.position.x,gt.transform.position.y-0.01f,gt.transform.position.z);
+			gt.transform.position += new Vector3(0, -0.01f, 0);
 			yield return new WaitForSeconds (0.015f);
 		}
 		gt.texture = textureList [0];
@@ -38,16 +39,11 @@ public class Feux_depart_Script : MonoBehaviour {
 		yield return new WaitForSeconds (0.8f);
 		for(int i=0;i<1000;i++)
 		{
-			gt.transform.position=new Vector3(gt.transform.position.x,gt.transform.position.y+0.01f,gt.transform.position.z);
+			gt.transform.position += new Vector3(0, 0.01f, 0);
 			yield return new WaitForSeconds (0.01f);
 		}
 		Destroy (gt);
 		Destroy (this);
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
 		
 	}
 }

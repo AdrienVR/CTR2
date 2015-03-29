@@ -149,7 +149,7 @@ public class ExplosionScript : MonoBehaviour {
 	
 	void OnCollisionEnter(Collision collision)
 	{
-		rigidbody.velocity = new Vector3();
+		rigidbody.velocity = Vector3.zero;
 		if (name == "tntDropped"){
 			StartCoroutine(tntExplosion());
 		}
@@ -168,7 +168,7 @@ public class ExplosionScript : MonoBehaviour {
 			yield return 0;
 		else{
 			exploded = true;
-			gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+			gameObject.transform.localScale = 0.01f * Vector3.one;
 			yield return new WaitForSeconds (1f);
 			if (gameObject)
 				Destroy(gameObject);
@@ -197,7 +197,7 @@ public class ExplosionScript : MonoBehaviour {
 					hadChildren = true;
 				}
 				if (!hadChildren)
-					gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+					gameObject.transform.localScale = 0.01f * Vector3.one;
 
 				gameObject.light.color = explosionColor;
 				yield return new WaitForSeconds (0.1f);
@@ -212,7 +212,7 @@ public class ExplosionScript : MonoBehaviour {
 					kartCollided.Die (owner,name);
 					Destroy(gameObject);
 				}
-				gameObject.transform.rotation = Quaternion.Euler(new Vector3());
+				gameObject.transform.rotation = Quaternion.Euler(Vector3.zero);
 				name = "tntExploded";
 				gameObject.transform.rotation = kartCollided.GetRotation();
 				gameObject.transform.parent = kartCollided.GetTransform();
@@ -232,7 +232,7 @@ public class ExplosionScript : MonoBehaviour {
 		gameObject.light.color = new Color();
 		if (!disamorced)
 			kartCollided.Die (owner,name);
-		gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
+		gameObject.transform.localScale = 0.01f * Vector3.one;
 		yield return new WaitForSeconds (3f);
 		Destroy(gameObject);
 	}
@@ -266,7 +266,7 @@ public class ExplosionScript : MonoBehaviour {
 		if (Game.launchWeapons.IndexOf(name) != -1) {
 			rigidbody.velocity = new Vector3(vitesseInitiale.x,-20f,vitesseInitiale.z);
 			if (exploded && name[0] == 'b')
-				rigidbody.velocity = new Vector3(0,0,0);
+				rigidbody.velocity = Vector3.zero;
 		}
 		// for Aku-Aku and shields
 		else if (Game.protectWeapons.IndexOf(name) != -1) {

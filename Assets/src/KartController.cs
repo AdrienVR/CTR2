@@ -106,49 +106,53 @@ public class KartController : MonoBehaviour
 			if (dansLesAirs)
 				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
 		}
-		else{
+		else
+		{
 			ellapsedTime = Time.time - currentTime;
 			currentTime = Time.time;
 			CheckSpeed();
 
 			
-			if (kart_script.tnt && numberOfJump > 8) {
+			if (kart_script.tnt && numberOfJump > 8) 
+			{
 				kart_script.tnt.transform.position = kart_script.tnt.transform.position + new Vector3 (0, 5f);
 				ExplosionScript e = kart_script.tnt.GetComponent <ExplosionScript>();
 				e.animation.Stop();
 				e.disamorced = true;
 				e.SetName("tntDropped");
 				e.transform.parent = null;
-				e.rigidbody.velocity = new Vector3();
+				e.rigidbody.velocity = Vector3.zero;
 				kart_script.tnt = null;
 		        numberOfJump = 0;
 			}
 
 
-			if (!forward){
-				if (System.Math.Abs(accelerationTime)<0.01f)
+			if (!forward)
+			{
+				if (System.Math.Abs(accelerationTime) < 0.01f)
 					accelerationTime = 0f;
-				if (accelerationTime>0)
+				if (accelerationTime > 0)
 					accelerationTime -= ellapsedTime;
-				else if (backward && accelerationTime>-1){
+				else if (backward && accelerationTime > -1)
+				{
 					backward = false;
 					accelerationTime -= ellapsedTime;
 				}
-				else if (accelerationTime<0)
+				else if (accelerationTime < 0)
 					accelerationTime += ellapsedTime;
 			}
 			else{
 				forward = false;
-				if (accelerationTime<1)
+				if (accelerationTime < 1)
 					accelerationTime += ellapsedTime;
 				//rigidbody.velocity = new Vector3(postForce.x, 
 				//                                 rigidbody.velocity.y, postForce.z);
 
 			}
-			if (accelerationTime>0)
-				rigidbody.velocity = Vector3.Slerp(new Vector3(),postForce,accelerationTime);
+			if (accelerationTime > 0)
+				rigidbody.velocity = Vector3.Slerp(Vector3.zero,postForce,accelerationTime);
 			else
-				rigidbody.velocity = Vector3.Slerp(new Vector3(),lowForce,-accelerationTime);
+				rigidbody.velocity = Vector3.Slerp(Vector3.zero,lowForce,-accelerationTime);
 
 			if (dansLesAirs)
 				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);

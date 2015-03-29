@@ -142,7 +142,7 @@ public class TNTScript : MonoBehaviour {
 	
 	void OnCollisionEnter(Collision collision)
 	{
-		rigidbody.velocity = new Vector3();
+		rigidbody.velocity = Vector3.zero;
 		if (name == "tntDropped"){
 			StartCoroutine(tntExplosion());
 		}
@@ -237,7 +237,7 @@ public class TNTScript : MonoBehaviour {
 		if (Game.launchWeapons.IndexOf(name) != -1) {
 			rigidbody.velocity = new Vector3(vitesseInitiale.x,-20f,vitesseInitiale.z);
 			if (exploded && name[0] == 'b')
-				rigidbody.velocity = new Vector3();
+				rigidbody.velocity = Vector3.zero;
 		}
 		// for Aku-Aku and shields
 		else if (Game.protectWeapons.IndexOf(name) != -1) {

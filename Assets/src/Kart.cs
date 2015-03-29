@@ -69,7 +69,7 @@ public class Kart
 		cm1c.SetKartController(kc);
 		
 		c2d = GameObject.Instantiate (Resources.Load("cameraGui")) as GameObject;
-		c2d.transform.position = new Vector3 (c2d.transform.position.x, c2d.transform.position.y - numeroJoueur * 500, c2d.transform.position.z);
+		c2d.transform.position += new Vector3 (0, - numeroJoueur * 500);
 		c2d.camera.rect = Game.cameraMap[totalPlayers][numeroJoueur-1];
 		c2d.camera.cullingMask |= (1 << LayerMask.NameToLayer("layer2d_j"+numeroJoueur));
 	}
@@ -87,7 +87,7 @@ public class Kart
 		GameObject guiApple = GameObject.Instantiate (Resources.Load("guiApple")) as GameObject;
 		Resizer rs = (Resizer)guiApple.GetComponent ("Resizer");
 		rs.rectCam = Game.cameraMap [totalPlayers] [numeroJoueur - 1];
-		guiApple.transform.position = new Vector3 (guiApple.transform.position.x, guiApple.transform.position.y - numeroJoueur * 500, guiApple.transform.position.z);
+		guiApple.transform.position += new Vector3 (0, - numeroJoueur * 500);
 		guiApple.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
 		foreach (Transform child in guiApple.transform)
 		{

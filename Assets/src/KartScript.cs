@@ -91,7 +91,7 @@ public class KartScript : MonoBehaviour {
 		if (tnt)
 			return;
 
-		Vector3 posToAdd = new Vector3();
+		Vector3 posToAdd = Vector3.zero;
 		//launch the shield
 		if (shield != null) {
 			shield.vitesseInitiale =  100f*kc.forwardNormal;

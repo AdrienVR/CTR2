@@ -909,9 +909,8 @@ public class Menus : MonoBehaviour
 	
 	IEnumerator setKey(string action, string name)
 	{
-		// 10 frames at 50fps
-		int frameToWait = (int)(10 * baseFrameWait);
-		for(int i=0; i<frameToWait;++i)
+		float timeStart = Time.realtimeSinceStartup;
+		while(Time.realtimeSinceStartup - timeStart < 0.1f)
 		{
 			yield return new WaitForEndOfFrame ();
 		}
@@ -920,9 +919,8 @@ public class Menus : MonoBehaviour
 	
 	IEnumerator getKey()
 	{
-		// 10 frames at 50fps
-		int frameToWait =(int)(10 * baseFrameWait);
-		for(int i=0; i<frameToWait;++i)
+		float timeStart = Time.realtimeSinceStartup;
+		while(Time.realtimeSinceStartup - timeStart < 0.1f)
 		{
 			yield return new WaitForEndOfFrame ();
 		}
@@ -965,19 +963,21 @@ public class Menus : MonoBehaviour
 	IEnumerator RestrictMovement()
 	{
 		readyToMove = false;
-		// 10 frame at 50fps
-		int frameToWait = (int)(10 * baseFrameWait);
-		for(int i=0;i<frameToWait;i++)
+		float timeStart = Time.realtimeSinceStartup;
+		while(Time.realtimeSinceStartup - timeStart < 0.1f)
+		{
 			yield return new WaitForEndOfFrame ();
+		}
 		readyToMove = true;
 	}
 	
 	IEnumerator changeLevel(string level)
 	{
-		// 20 frame at 50fps
-		int frameToWait = (int)(20 * baseFrameWait);
-		for(int i=0; i<frameToWait;i++)
+		float timeStart = Time.realtimeSinceStartup;
+		while(Time.realtimeSinceStartup - timeStart < 0.2f)
+		{
 			yield return new WaitForEndOfFrame ();
+		}
 		if(level=="loaded")
 			Application.LoadLevel (Application.loadedLevel);
 		else
