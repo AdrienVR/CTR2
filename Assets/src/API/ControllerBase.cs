@@ -3,35 +3,54 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-public class ControllerBase {
+public class ControllerBase 
+{
 
-	public static int nControllers;	
-	
-	private static Dictionary <string, float> last_axis_up = new Dictionary <string, float>();
-	private static Dictionary <string, float> last_axis_down = new Dictionary <string, float>();
+	private Dictionary <string, VirtualKey> buttons;
 
-	private static bool initialized = false;
-	public static bool waitingKey = false;
-	public static string keyToChange;
-	public static string actionToChange;
-	
-	private string controllerName;
-	private int controllerNumber;
-	private List<string> buttonList;
-	private Dictionary <string, string> axis;
-	private Dictionary <string, KeyCode> buttons;
-
-	public ControllerBase  (int i) 
+	public ControllerBase  (string type) 
 	{
-		Debug.Log("Initializing controller "+i);
-		controllerNumber = i;
+		Debug.Log("Initializing controller "+type);
+		this.buttons = new Dictionary<string, VirtualKey>();
+
+		Dictionary <string, KeyCode> buttons = ControllerResources.GetButtons(type);
+		Dictionary <string, string> axis = ControllerResources.GetAxis(type);
+		Dictionary <string, float> defaultAxisValues = ControllerResources.GetAxisValues(type);
+		foreach(string actionName in buttons.Keys)
+		{
+			this.buttons[actionName] = new Key(buttons[actionName], actionName);
+		}
+		foreach(string actionName in buttons.Keys)
+		{
+			if (defaultAxisValues[actionName] > 0)
+				this.buttons[actionName] = new Axis(axis[actionName], actionName, 0, defaultAxisValues[actionName]);
+			else
+				this.buttons[actionName] = new Axis(axis[actionName], actionName, defaultAxisValues[actionName], 0);
+    	}
+	}
+
+	public void UpdateInternal()
+	{
+		foreach(VirtualKey button in buttons.Values)
+		{
+			button.UpdateInternal();
+		}
 	}
 	
-	public static void ListenForKey(string action, string key)
+	
+	public virtual bool GetKey(string actionName)
 	{
-		waitingKey = true;
-		keyToChange = key;
-		actionToChange = action;
+		return buttons[actionName].GetKey();
 	}
+	
+	public virtual bool GetKeyDown(string actionName)
+	{
+		return buttons[actionName].GetKeyDown();
+	}
+	
+	public virtual bool GetKeyUp(string actionName)
+	{
+		return buttons[actionName].GetKeyUp();
+  	}
 
 }

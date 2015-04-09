@@ -80,9 +80,9 @@ public class Main : MonoBehaviour
 		nbPlayer = System.Math.Min (nbPlayer, 4);
 		ControllerAPI.InitJoysticks ();
 
-		foreach(Transform child in transform)
+		foreach(Transform respawnPoint in transform)
 		{
-			listRespawn.Add(child);
+			listRespawn.Add(respawnPoint);
 		}
 
 		gameObject.AddComponent ("Game");

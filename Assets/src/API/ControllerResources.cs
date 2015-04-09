@@ -6,8 +6,11 @@ using System.IO;
 public class ControllerResources
 {
 
-	private static Dictionary <string, float> axisValues = new Dictionary<string, float> ();
-	private static Dictionary <string, float> newAxisValues = new Dictionary<string, float> ();
+	private static Dictionary <string, float> defaultAxisValues = new Dictionary<string, float> {
+		{"throw",-2f}, {"moveBack",2f},
+		{"turnRight",2f}, {"turnLeft",-2f},
+		{"jump2",2f}, {"jump",-2f}
+  	};
 
 	private static Dictionary <string, string> ps1_axis = new Dictionary<string, string> {
 		{"throw","J1_StopAxis"}, {"moveBack","J1_StopAxis"},
@@ -98,7 +101,6 @@ public class ControllerResources
 		{"rien2","bip"},
 		{"rien3","bip2"}
 	};
-	public static int nControllers;	
 
 	public static Dictionary <string, Dictionary <string, KeyCode>> buttonProfiles = 
 	new Dictionary <string, Dictionary <string, KeyCode>>{{"keyboard1",pc1}, {"keyboard2",pc2}, {"keyboard3",pc3},
@@ -108,19 +110,30 @@ public class ControllerResources
 	new Dictionary <string, Dictionary <string, string>>{{"keyboard1",pc_axis}, {"keyboard2",pc_axis}, {"keyboard3",pc_axis},
 		{"xbox1",ps1_axis}, {"xbox2",ps2_axis}, {"xbox3",ps3_axis}, {"xbox4",ps4_axis}};
 
-	private static Dictionary<int, string> playersMapping;// {1:xbox1, etc}
-	
-	private static Dictionary <string, float> last_axis_up = new Dictionary <string, float>();
-	private static Dictionary <string, float> last_axis_down = new Dictionary <string, float>();
 
-	private static bool initialized = false;
-	public static bool waitingKey = false;
-	public static string keyToChange;
-	public static string actionToChange;
+	public static int keyboards = 1;
+	public static int xbox = 1;
+
+	public static Dictionary <string, KeyCode> GetButtons(string type)
+	{
+		if (type == "keyboard")
+			return buttonProfiles[type + keyboards++];
+		else if (type == "xbox")
+			return buttonProfiles[type + xbox++];
+		return null;
+	}
+
+	public static Dictionary <string, string> GetAxis(string type)
+	{
+		if (type == "keyboard")
+			return axisProfiles[type + keyboards++];
+		else if (type == "xbox")
+			return axisProfiles[type + xbox++];
+		return null;
+  	}
 	
-	private string controllerName;
-	private int controllerNumber;
-	private List<string> buttonList;
-	private Dictionary <string, string> axis;
-	private Dictionary <string, KeyCode> buttons;
+	public static Dictionary <string, float> GetAxisValues(string type)
+	{
+		return defaultAxisValues;
+	}
 }
