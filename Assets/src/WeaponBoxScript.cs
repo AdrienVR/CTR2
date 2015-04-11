@@ -21,7 +21,7 @@ public class WeaponBoxScript : MonoBehaviour {
 		collider.enabled = false;
 		audio.Play ();
 		StartCoroutine (Take());
-
+		Main.statistics.nbWeaponBox++;
 		//find who to give weapon
 		if(Game.characters.IndexOf(other.name) != -1)// si c'est un kart
 		{
@@ -41,6 +41,7 @@ public class WeaponBoxScript : MonoBehaviour {
 			return;
 		taker.setWaitingWeapon (true);
 		taker.SetWeaponBox(this);
+
 		//animation of giving weapon
 		StartCoroutine(AnimArmes());
 		StartCoroutine(PlaySound());
@@ -85,6 +86,7 @@ public class WeaponBoxScript : MonoBehaviour {
 			timeLookingWeapon += 0.08f;
 		}
 		taker.SetWeapon(weapon);
+		Main.statistics.getStatPerso (taker.GetKart ().numeroJoueur).addWeapon(weapon);
 		taker.setWaitingWeapon (false);
 		nbImgArmes = 0;
 	}

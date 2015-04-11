@@ -250,12 +250,14 @@ public class Menus : MonoBehaviour
 				greyT = (GameObject)GameObject.Instantiate(Resources.Load("guiBlack"));
 				inPause=true;
 				StartCoroutine(waitAndPause());
+				Main.statistics.getStatPerso(k.numeroJoueur).score=k.nbPoints;
 			}
 			if(winner!=null)
 			{
 				k.c2d.camera.enabled=false;
 				if(k != winner)
 				{
+					Main.statistics.getStatPerso(k.numeroJoueur).score=k.nbPoints;
 					k.camera.camera.rect=new Rect ();
 					if(loosers.IndexOf(k)==-1)
 						loosers.Add(k);
@@ -276,6 +278,7 @@ public class Menus : MonoBehaviour
 		Destroy (greyT);
 		GameObject j1 =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.27f,0.35f,0),Quaternion.identity);
 		j1.guiText.text = "Joueur "+winner.numeroJoueur+" : "+winner.nbPoints+" Pts";
+		Main.statistics.score.Add ("Joueur " + winner.numeroJoueur, winner.nbPoints);
 		j1.guiText.color = Color.yellow;
 		loosers = loosers.OrderBy(x => x.nbPoints).ToList();
 		loosers.Reverse ();
@@ -283,6 +286,7 @@ public class Menus : MonoBehaviour
 		{
 			GameObject j =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.27f,0.35f-0.08f*(loosers.IndexOf(k)+1),0),Quaternion.identity);
 			j.guiText.text = "Joueur "+k.numeroJoueur+" : "+k.nbPoints+" Pts";
+			Main.statistics.score.Add("Joueur "+k.numeroJoueur,k.nbPoints);
 		}
 		KartController.stop = false;
 		winner.kart_script.GetTransform().position = main.listRespawn [0].position;
@@ -290,6 +294,7 @@ public class Menus : MonoBehaviour
 		AI.kart = winner.kart_script.gameObject;
 		//AI.children = winner.kc.wheels ["wheelAL"];
 		AI.wheels = winner.kart_script.wheels;
+		Main.statistics.getReport (true);
 		//main.executeIA winner.kc.wheels ();
 	}
 	
@@ -328,10 +333,12 @@ public class Menus : MonoBehaviour
 			Time.timeScale=0f;
 			if(Main.sourceMusic)
 				Main.sourceMusic.enabled=false;
+			Main.statistics.pauseGame(true);
 			//AudioListener.pause = true;
 		}
 		else if (inPause)
 		{
+			Main.statistics.pauseGame(false);
 			inPause=false;
 			viderMenu ();
 			Destroy(greyT);

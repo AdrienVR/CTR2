@@ -35,6 +35,7 @@ public class Feux_depart_Script : MonoBehaviour {
 		gt.texture = textureList [4];
 		audio.PlayOneShot (bip_end);
 		KartController.stop = false;
+
 		yield return new WaitForSeconds (0.8f);
 		for(int i=0;i<1000;i++)
 		{

@@ -176,6 +176,7 @@ public class Kart
 			isWinner=true;
 			kc.gameObject.AddComponent<Party>();
 			KartController.IA_enabled = true;
+			Main.statistics.endGame();
 		}
 	}
 

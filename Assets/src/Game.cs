@@ -18,6 +18,8 @@ public class Game : MonoBehaviour
 	public static Dictionary <string, string> translateNameWeapons =  new Dictionary<string, string> {
 		{"Potion","greenBeaker"},{"Bouclier","greenShield"},{"Bombe","bomb"},{"Bombe x 3","triple_bomb"},{"Missile","missile"},{"Missile x 3","triple_missile"},
 		{"Aku-Aku","Aku-Aku"},{"TNT","TNT"},{"Turbo","turbo"}	};
+	public static Dictionary <string, string> translateNameMapsRevert =  new Dictionary<string, string> {
+		{"plage","Skull Rock"},{"parking","Parking"}	};
 	public static Dictionary <string, string> translateNameMaps =  new Dictionary<string, string> {
 		{"Skull Rock","plage"},{"Parking","parking"}	};
 

@@ -29,6 +29,7 @@ public class AppleBoxScript : MonoBehaviour
 		if (taker.name == null)
 			return;
 		taker.addApples ();
+		Main.statistics.nbAppleBox += 1;
 		StartCoroutine (Take());
 	}
 	

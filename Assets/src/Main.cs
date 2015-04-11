@@ -35,6 +35,8 @@ public class Main : MonoBehaviour
 	private static AudioClip akuClip;
 	private static AudioClip mapClip;
 
+	public static StatGame statistics;
+
 	private static Kart kartAkuPlaying;
 
 	/*public void executeIA()
@@ -74,10 +76,12 @@ public class Main : MonoBehaviour
 
 	void Start()
 	{
+
 		nbPtsPartie = Game.nbPoints;
 		nbPlayer = Game.listKarts.Count;
 		nbPlayer = System.Math.Max (nbPlayer, 1);
 		nbPlayer = System.Math.Min (nbPlayer, 4);
+		statistics = new StatGame (nbPlayer);
 		ControllerAPI.InitJoysticks ();
 
 		foreach(Transform child in transform)
@@ -140,6 +144,7 @@ public class Main : MonoBehaviour
 		main.CreateNPersos(main.nbPlayer);
 		main.InitMenus ();
 		Instantiate (Resources.Load ("guiStartFire"));
+		statistics.startGame ();
 	}
 
 	void InitMenus()

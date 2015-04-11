@@ -314,9 +314,16 @@ public class KartScript : MonoBehaviour {
 			// mise en etat empechant de tirer : 
 			kart_state.SetUnabilityToShoot(2.5f);
 			if (killer==gameObject)
+			{
 				kart.AddPoint(-1);
+				Main.statistics.getStatPerso(kart.numeroJoueur).nbSuicides++;
+			}
 			else
+			{
 				killer.GetComponent<KartScript>().kart.AddPoint(1);
+				Main.statistics.getStatPerso(killer.GetComponent<KartScript>().kart.numeroJoueur).PtsMarques.Add(kart.numeroJoueur);
+				Main.statistics.getStatPerso(kart.numeroJoueur).PtsDonnes.Add(killer.GetComponent<KartScript>().kart.numeroJoueur);
+			}
 			if (weapon=="greenBeaker" || weapon== "redBeaker") // pour retirer des pommes
 			{
 				kart.rmApples(1);
