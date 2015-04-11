@@ -84,9 +84,9 @@ public class Main : MonoBehaviour
 		statistics = new StatGame (nbPlayer);
 		ControllerAPI.InitJoysticks ();
 
-		foreach(Transform child in transform)
+		foreach(Transform respawnPoint in transform)
 		{
-			listRespawn.Add(child);
+			listRespawn.Add(respawnPoint);
 		}
 
 		gameObject.AddComponent ("Game");

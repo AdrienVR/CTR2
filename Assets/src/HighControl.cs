@@ -30,7 +30,7 @@ public class HighControl : MonoBehaviour {
 		if ( moyPente[i] < moy-0.1f){
 			//Debug.DrawRay(transform.position+new Vector3(0,1), new Vector3(0,1), Color.yellow, 20, true);
 			float mix = previousHigh * 1f + moy;
-			transform.position = transform.position + new Vector3(0,mix - transform.position.y);
+			transform.position += new Vector3(0, mix - transform.position.y);
 		}
 		//Debug.DrawRay(transform.position, new Vector3(0,1), Color.red, 20, true);
 		previousHigh = transform.position.y;

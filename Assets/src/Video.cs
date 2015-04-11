@@ -14,7 +14,7 @@ public class Video : MonoBehaviour {
 	IEnumerator Anim()
 	{
 		GUITexture gt = (GUITexture)GetComponent ("GUITexture");
-		gt.transform.localScale = new Vector3 (1, 1, 1);
+		gt.transform.localScale = Vector3.one;
 		for(int i=0;i<textureList.Count;i++)
 		{
 			gt.texture = textureList [i];

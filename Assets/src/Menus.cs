@@ -20,7 +20,6 @@ public class Menus : MonoBehaviour
 	private bool authorizeNavigate = false;
 	private bool waitingForKey = false;
 	private bool inPause = false;
-	private static float baseFrameWait = 1;
 	private static GameObject titreAffiche;
 	private static GameObject nameMap;
 	private static GameObject triangleFond;
@@ -45,6 +44,7 @@ public class Menus : MonoBehaviour
 	public GameObject cadre5;
 
 	private bool readyToMove = true;
+	private bool lockMove = false;
 	private int j = 5;
 	public bool falseok=true;
 	public int numSelection = 1;
@@ -203,8 +203,6 @@ public class Menus : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (Time.timeScale != 0)
-			baseFrameWait = 0.02f/Time.deltaTime;
 		//Debug.Log (configWeaponsStates.Count);
 		if (!waitingForKey){
 			CheckKeys();
@@ -911,14 +909,18 @@ public class Menus : MonoBehaviour
 					}
 				}
 			}
+			if (lockMove == true)
+			{
+				readyToMove = false;
+				lockMove = false;
+			}
 		}
 	}
 	
 	IEnumerator setKey(string action, string name)
 	{
-		// 10 frames at 50fps
-		int frameToWait = (int)(10 * baseFrameWait);
-		for(int i=0; i<frameToWait;++i)
+		float timeStart = Time.realtimeSinceStartup;
+		while(Time.realtimeSinceStartup - timeStart < 0.1f)
 		{
 			yield return new WaitForEndOfFrame ();
 		}
@@ -927,9 +929,8 @@ public class Menus : MonoBehaviour
 	
 	IEnumerator getKey()
 	{
-		// 10 frames at 50fps
-		int frameToWait =(int)(10 * baseFrameWait);
-		for(int i=0; i<frameToWait;++i)
+		float timeStart = Time.realtimeSinceStartup;
+		while(Time.realtimeSinceStartup - timeStart < 0.1f)
 		{
 			yield return new WaitForEndOfFrame ();
 		}
@@ -971,24 +972,32 @@ public class Menus : MonoBehaviour
 	
 	IEnumerator RestrictMovement()
 	{
-		readyToMove = false;
-		// 10 frame at 50fps
-		int frameToWait = (int)(10 * baseFrameWait);
-		for(int i=0;i<frameToWait;i++)
+		lockMove = true;
+		float timeStart = Time.realtimeSinceStartup;
+		while(Time.realtimeSinceStartup - timeStart < 0.2f)
+		{
 			yield return new WaitForEndOfFrame ();
+		}
 		readyToMove = true;
 	}
 	
 	IEnumerator changeLevel(string level)
 	{
-		// 20 frame at 50fps
-		int frameToWait = (int)(20 * baseFrameWait);
-		for(int i=0; i<frameToWait;i++)
+		float timeStart = Time.realtimeSinceStartup;
+		while(Time.realtimeSinceStartup - timeStart < 0.2f)
+		{
 			yield return new WaitForEndOfFrame ();
+		}
 		if(level=="loaded")
+		{
 			Application.LoadLevel (Application.loadedLevel);
+			Application.LoadLevelAdditive("commonScene");
+		}
 		else
+		{
 			Application.LoadLevel (level);
+			Application.LoadLevelAdditive("commonScene");
+		}
 	}
 	
 	void action(Dictionary <int, string> menu,int p)
