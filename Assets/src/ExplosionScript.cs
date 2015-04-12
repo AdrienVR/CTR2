@@ -2,8 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[System.Serializable]
+public enum WeaponType
+{
+	AkuAku,
+	GreenShield,
+	BlueShield,
+	TNT,
+	Nitro,
+	GreenBeaker,
+	RedBeaker,
+	Bomb,
+	Misille,
+	Turbo
+}
+
 public class ExplosionScript : MonoBehaviour {
-	
+
+	public WeaponType weaponType;
 	public AnimationClip explosionClip;
 	public Color explosionColor;
 	public Vector3 vitesseInitiale;
@@ -20,8 +36,13 @@ public class ExplosionScript : MonoBehaviour {
 
 	public bool disamorced = false;
 
+
 	// Use this for initialization
 	void Start () {
+		if (name == "Aku-Aku")
+		{
+			AudioManager.Play("akuaku", true);
+		}
 		if (Game.protectWeapons.IndexOf(name) != -1 && name != "blueShield")
 			StartCoroutine (TimeToLive());
 	}
@@ -248,6 +269,12 @@ public class ExplosionScript : MonoBehaviour {
 			KartScript ownerKart = owner.GetComponent <KartScript>();
 			ownerKart.protection = null;
 		}
+
+		if (name == "Aku-Aku")
+		{
+			AudioManager.PlayDefaultMapMusic();
+		}
+
 		//maybe not clean but works...
 		//do not delete the shield if it's launched
 		if (Game.launchWeapons.IndexOf(name)==-1)
@@ -257,7 +284,6 @@ public class ExplosionScript : MonoBehaviour {
 			Main.sourceMusic.clip=(AudioClip)Instantiate(Resources.Load("Audio/skullrock"));
 			Main.sourceMusic.Play();
 		}*/
-		Main.ManageSound ();
 	}
 
 	// Update is called once per frame

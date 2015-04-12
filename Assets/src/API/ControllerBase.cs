@@ -20,7 +20,7 @@ public class ControllerBase
 		{
 			this.buttons[actionName] = new Key(buttons[actionName], actionName);
 		}
-		foreach(string actionName in buttons.Keys)
+		foreach(string actionName in axis.Keys)
 		{
 			if (defaultAxisValues[actionName] > 0)
 				this.buttons[actionName] = new Axis(axis[actionName], actionName, 0, defaultAxisValues[actionName]);

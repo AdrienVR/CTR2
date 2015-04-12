@@ -228,7 +228,6 @@ public class TNTScript : MonoBehaviour {
 			Main.sourceMusic.clip=(AudioClip)Instantiate(Resources.Load("Audio/skullrock"));
 			Main.sourceMusic.Play();
 		}*/
-		Main.ManageSound ();
 	}
 
 	// Update is called once per frame

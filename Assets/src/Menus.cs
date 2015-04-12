@@ -232,7 +232,7 @@ public class Menus : MonoBehaviour
 		for (int i = 1; i<Kart.totalPlayers+1; i++) pressStart |=  ControllerAPI.StaticGetKeyDown(i, "start");
 		if (pressStart)
 		{
-			main.gameObject.audio.PlayOneShot (main.soundOk);
+			AudioManager.Play("validateMenu");
 			Pause();
 		}
 	}
@@ -329,8 +329,7 @@ public class Menus : MonoBehaviour
 			inPause=true;
 			displayMenu(menuPause);
 			Time.timeScale=0f;
-			if(Main.sourceMusic)
-				Main.sourceMusic.enabled=false;
+			AudioManager.SetCategoryVolume("musics", 1);
 			Main.statistics.pauseGame(true);
 			//AudioListener.pause = true;
 		}
@@ -341,8 +340,7 @@ public class Menus : MonoBehaviour
 			viderMenu ();
 			Destroy(greyT);
 			Time.timeScale=normalTime;
-			if(Main.sourceMusic)
-				Main.sourceMusic.enabled=true;
+			AudioManager.SetCategoryVolume("musics", 0.1f);
 			//AudioListener.pause = false;
 		}
 		
@@ -685,8 +683,7 @@ public class Menus : MonoBehaviour
 			}
 			if (booleans["down"])
 			{
-				if(main)
-					main.gameObject.audio.PlayOneShot (main.soundUp);
+				AudioManager.Play("downMenu");
 				StartCoroutine(RestrictMovement());
 			}
 			if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
@@ -705,8 +702,7 @@ public class Menus : MonoBehaviour
 
 			if (booleans["up"] && readyToMove)
 			{
-				if(main)
-					main.gameObject.audio.PlayOneShot (main.soundUp);
+				AudioManager.Play("downMenu");
 				StartCoroutine(RestrictMovement());
 			}
 			if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
@@ -724,10 +720,10 @@ public class Menus : MonoBehaviour
 			}
 			if(booleans["ok"])
 			{
-				if(menuCourant[position+1]=="RETOUR" && main)
-					main.gameObject.audio.PlayOneShot (main.soundCancel);
-				else if(main)
-					main.gameObject.audio.PlayOneShot (main.soundOk);
+				if(menuCourant[position+1]=="RETOUR")
+					AudioManager.Play("cancelMenu");
+				else
+					AudioManager.Play("validateMenu");
 				action(menuCourant,position);
 			}
 			if(booleans["right"] && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
@@ -754,11 +750,13 @@ public class Menus : MonoBehaviour
 				}
 				if(booleans["right_down"])
 				{
+					AudioManager.Play("downMenu");
 					if(positionH<main.players.Count) positionH++;
 					else positionH=1;
 				}
 				else if(booleans["left_down"])
 				{
+					AudioManager.Play("downMenu");
 					if(positionH>1) positionH--;
 					else positionH=main.players.Count;
 				}
@@ -774,6 +772,7 @@ public class Menus : MonoBehaviour
 				}*/
 				if(booleans["right_down"])
 				{
+					AudioManager.Play("downMenu");
 					authorizeNavigate=false;
 					//Destroy(flechesD[position-1]);
 					flechesD[position-1].SetActive(false);
@@ -790,12 +789,14 @@ public class Menus : MonoBehaviour
 			{
 				if(booleans["right_down"])
 				{
+					AudioManager.Play("downMenu");
 					if(position==menuPersos.Count-4) position=0;
 					else position++;
 					ShowRoom.ShowModel(menuPersos[position+1]);
 				}
 				else if(booleans["left_down"])
 				{
+					AudioManager.Play("downMenu");
 					if(position==0) position=menuPersos.Count-4;
 					else position--;
 					ShowRoom.ShowModel(menuPersos[position+1]);
@@ -845,7 +846,7 @@ public class Menus : MonoBehaviour
 			{
 				if(booleans["right_down"])
 				{
-					
+					AudioManager.Play("downMenu");
 					ShowRoom.ShowModel(listMapForMenu[positionH]);
 
 					if(positionH==Game.listMapForMenu.Count-1) positionH=0;
@@ -854,6 +855,7 @@ public class Menus : MonoBehaviour
 				}
 				if(booleans["left_down"])
 				{
+					AudioManager.Play("downMenu");
 					ShowRoom.ShowModel(listMapForMenu[positionH]);
 					if(positionH==0) positionH=Game.listMapForMenu.Count-1;
 					else positionH--;
@@ -866,11 +868,13 @@ public class Menus : MonoBehaviour
 				{
 					if(booleans["right_down"])
 					{
+						AudioManager.Play("downMenu");
 						if(position==menuConfig.Count-5) position=0;
 						else position++;
 					}
 					else if(booleans["left_down"])
 					{
+						AudioManager.Play("downMenu");
 						if(position==0) position=menuConfig.Count-5;
 						else position--;
 					}
@@ -879,11 +883,13 @@ public class Menus : MonoBehaviour
 				{
 					if(booleans["right_down"])
 					{
+						AudioManager.Play("downMenu");
 						if(nbPts==99) nbPts=1;
 						else nbPts++;
 					}
 					else if(booleans["left_down"])
 					{
+						AudioManager.Play("downMenu");
 						if(nbPts==1) nbPts=99;
 						else nbPts--;
 					}

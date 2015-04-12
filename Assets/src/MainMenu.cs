@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour
 	void Start ()
 	{
 		InitController ();
+		Application.LoadLevelAdditive("commonScene");
 		InitMenus ();
 	}
 

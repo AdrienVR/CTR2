@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class Feux_depart_Script : MonoBehaviour {
 	
 	public List<Texture> textureList;
-	public AudioClip bip_end;
 
 	// Use this for initialization
 	void Start ()
@@ -25,16 +24,17 @@ public class Feux_depart_Script : MonoBehaviour {
 		gt.texture = textureList [0];
 		yield return new WaitForSeconds (0.8f);
 		gt.texture = textureList [1];
-		audio.Play ();
+		AudioManager.Play("bip1");
 		yield return new WaitForSeconds (0.8f);
 		gt.texture = textureList [2];
-		audio.Play ();
+		AudioManager.Play("bip1");
 		yield return new WaitForSeconds (0.8f);
 		gt.texture = textureList [3];
-		audio.Play ();
+		AudioManager.Play("bip1");
 		yield return new WaitForSeconds (0.8f);
 		gt.texture = textureList [4];
-		audio.PlayOneShot (bip_end);
+		AudioManager.Play("bip2");
+		AudioManager.PlayDefaultMapMusic();
 		KartController.stop = false;
 
 		yield return new WaitForSeconds (0.8f);
@@ -43,6 +43,8 @@ public class Feux_depart_Script : MonoBehaviour {
 			gt.transform.position += new Vector3(0, 0.01f, 0);
 			yield return new WaitForSeconds (0.01f);
 		}
+
+
 		Destroy (gt);
 		Destroy (this);
 		

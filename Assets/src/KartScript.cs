@@ -178,7 +178,6 @@ public class KartScript : MonoBehaviour {
 					else
 						protection.lifeTime = 7f;
 					kc.AddSpeed(protection.lifeTime+2, 1.5f, "aku");
-					Main.ManageSound ();
 				}
 				else if (w == "greenBeaker" || w=="redBeaker")
 					if (sens == 1f)

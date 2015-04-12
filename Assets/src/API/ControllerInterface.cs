@@ -21,7 +21,6 @@ public class ControllerInterface
 		allControllers.Add(new ControllerBase("keyboard"));
 		allControllers.Add(new ControllerBase("keyboard"));
 		allControllers.Add(new ControllerBase("keyboard"));
-		allControllers.Add(new ControllerBase("none"));
 	}
 	
 	public void UpdateInternal() 
@@ -36,6 +35,8 @@ public class ControllerInterface
 	
 	public ControllerBase GetController(int i)
 	{
+		if (i > allControllers.Count - 1)
+			return allControllers[allControllers.Count - 1];
 		return allControllers[i];
 	}
 

@@ -4,10 +4,6 @@ using System.Collections.Generic;
 
 public class Main : MonoBehaviour
 {
-	public AudioClip soundUp;
-	public AudioClip soundOk;
-	public AudioClip soundCancel;
-	public AudioClip mainMusic;
 	public int nbPlayer;
 	public Texture normal;
 	public Texture hover;
@@ -16,7 +12,6 @@ public class Main : MonoBehaviour
 	public Texture triVolume1;
 
 	public List<Transform> listRespawn;
-	public static AudioSource sourceMusic;
 	public List<Kart> players;
 
 	public static int nbPtsPartie = 8;
@@ -30,10 +25,6 @@ public class Main : MonoBehaviour
 	public static bool forward;
 	public static bool right=false;
 	private bool musicStarted = false;
-
-
-	private static AudioClip akuClip;
-	private static AudioClip mapClip;
 
 	public static StatGame statistics;
 
@@ -65,17 +56,22 @@ public class Main : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		if(KartController.stop==false && musicStarted==false)
-		{
-			musicStarted=true;
-			if(sourceMusic)
-				sourceMusic.enabled=true;
-		}
 		ControllerAPI.CheckJoysticks ();
+	}
+
+	IEnumerator SetCommon()
+	{
+		if (AudioManager.Instance == null && ControllerInterface.Instance == null)
+		{
+			yield return new WaitForSeconds(0.1f);
+			Application.LoadLevelAdditive("commonScene");
+		}
 	}
 
 	void Start()
 	{
+
+		StartCoroutine(SetCommon());
 
 		nbPtsPartie = Game.nbPoints;
 		nbPlayer = Game.listKarts.Count;
@@ -93,13 +89,7 @@ public class Main : MonoBehaviour
 		main = this;
 		Kart.setCoefficients (speedCoeff, turnCoeff);
 		Init ();
-		AudioSource[] sources = gameObject.GetComponents<AudioSource> ();
-		for (int i =0; i<sources.Length; i++)
-			if (sources [i].loop == true)
-				sourceMusic = sources [i];
-		
-		akuClip=(AudioClip)Instantiate(Resources.Load("Audio/akuaku"));
-		mapClip=(AudioClip)Instantiate(Resources.Load("Audio/skullrock"));
+
 		Screen.showCursor = false; 
 		Debug.Log ("Starting with "+ ControllerAPI.nControllers + " controllers.");
 
@@ -114,27 +104,6 @@ public class Main : MonoBehaviour
 				b=true;
 		}
 		return b;
-	}
-	
-	public static void ManageSound()
-	{
-		Kart akuFound = null;
-		foreach(Kart k in main.players)
-		{
-			if(k.kart_script.protection!=null){
-				akuFound = k;
-				
-				if (akuFound != kartAkuPlaying){
-					sourceMusic.clip = akuClip;
-					sourceMusic.Play();
-				}
-			}
-		}
-		if(akuFound == null) {
-			sourceMusic.clip = mapClip;
-			sourceMusic.Play();
-		}
-		kartAkuPlaying = akuFound;
 	}
 
 	public static void Init()

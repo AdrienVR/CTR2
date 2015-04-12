@@ -107,7 +107,7 @@ public class ControllerResources
 		{"xbox1",xbox1}, {"xbox2",xbox2}, {"xbox3",xbox3}, {"xbox4",xbox4}};
 
 	private static Dictionary <string, Dictionary <string, string>> axisProfiles = 
-	new Dictionary <string, Dictionary <string, string>>{{"keyboard1",pc_axis}, {"keyboard2",pc_axis}, {"keyboard3",pc_axis},
+	new Dictionary <string, Dictionary <string, string>>{{"keyboard",pc_axis},
 		{"xbox1",ps1_axis}, {"xbox2",ps2_axis}, {"xbox3",ps3_axis}, {"xbox4",ps4_axis}};
 
 
@@ -126,7 +126,7 @@ public class ControllerResources
 	public static Dictionary <string, string> GetAxis(string type)
 	{
 		if (type == "keyboard")
-			return axisProfiles[type + keyboards++];
+			return axisProfiles["keyboard"];
 		else if (type == "xbox")
 			return axisProfiles[type + xbox++];
 		return null;
