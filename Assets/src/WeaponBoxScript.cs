@@ -78,8 +78,8 @@ public class WeaponBoxScript : MonoBehaviour {
 		while (nbImgArmes < 25) {
 			int rand = Random.Range (0, Game.gameWeapons.Count);
 			weapon = Game.gameWeapons[rand];
-			// weapon = "Aku-Aku";
-			taker.GetKart().lastWeaponTextureNb=Game.GetWeaponNumber(weapon);
+			weapon = "greenShield";
+			taker.GetKart().lastWeaponTextureNb = Game.GetWeaponNumber(weapon);
 			taker.GetKart().drawWeaponGui();
 			nbImgArmes++;
 			yield return new WaitForSeconds (0.08f);

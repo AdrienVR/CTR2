@@ -43,12 +43,18 @@ public class ExplosionScript : MonoBehaviour {
 		{
 			AudioManager.Play("akuaku", true);
 		}
+		else if (name == "blueShield" || name == "greenShield")
+		{
+			AudioManager.Play("shieldOn");
+		}
 		if (Game.protectWeapons.IndexOf(name) != -1 && name != "blueShield")
 			StartCoroutine (TimeToLive());
 	}
 
-	public void SetAllCollidersStatus (bool active) {
-		foreach(Collider c in GetComponents<Collider> ()) {
+	public void SetAllCollidersStatus (bool active) 
+	{
+		foreach(Collider c in GetComponents<Collider> ()) 
+		{
 			c.enabled = active;
 		}
 	}
@@ -186,22 +192,33 @@ public class ExplosionScript : MonoBehaviour {
 	public IEnumerator ShieldExplosion()
 	{
 		if (exploded)
-			yield return 0;
-		else{
+			yield break;
+		else
+		{
 			exploded = true;
-			gameObject.transform.localScale = 0.01f * Vector3.one;
-			yield return new WaitForSeconds (1f);
-			if (gameObject)
-				Destroy(gameObject);
+			gameObject.renderer.enabled = false;
+			
+			if (name == "blueShield" || name == "greenShield")
+			{
+				AudioManager.Play("shieldOff");
+			}
+			Destroy(gameObject, 1f);
 		}
 	}
 	
 	IEnumerator Explode()
 	{
-		if (exploded){
-			yield return 0;
+		if (exploded)
+		{
+			yield break;
 		}
-		else{
+		else
+		{
+			
+			if (weaponType == WeaponType.BlueShield || weaponType == WeaponType.GreenShield)
+			{
+				AudioManager.Play("shieldOff");
+			}
 			//Debug.Log(name);
 			if (name != "bomb")
 				SetAllCollidersStatus (false);
@@ -218,14 +235,13 @@ public class ExplosionScript : MonoBehaviour {
 					hadChildren = true;
 				}
 				if (!hadChildren)
-					gameObject.transform.localScale = 0.01f * Vector3.one;
+					gameObject.renderer.enabled = false;
 
 				gameObject.light.color = explosionColor;
 				yield return new WaitForSeconds (0.1f);
 				SetAllCollidersStatus (false);
 				gameObject.light.color = new Color();
-				yield return new WaitForSeconds (3f);
-				Destroy(gameObject);
+				Destroy(gameObject, 3f);
 			}
 			else
 			{
@@ -253,9 +269,8 @@ public class ExplosionScript : MonoBehaviour {
 		gameObject.light.color = new Color();
 		if (!disamorced)
 			kartCollided.Die (owner,name);
-		gameObject.transform.localScale = 0.01f * Vector3.one;
-		yield return new WaitForSeconds (3f);
-		Destroy(gameObject);
+		gameObject.renderer.enabled = false;
+		Destroy(gameObject, 3f);
 	}
 
 	public IEnumerator TimeToLive()

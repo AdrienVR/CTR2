@@ -329,7 +329,7 @@ public class Menus : MonoBehaviour
 			inPause=true;
 			displayMenu(menuPause);
 			Time.timeScale=0f;
-			AudioManager.SetCategoryVolume("musics", 1);
+			AudioManager.SetCategoryVolume("musics", 0.25f);
 			Main.statistics.pauseGame(true);
 			//AudioListener.pause = true;
 		}
@@ -340,7 +340,7 @@ public class Menus : MonoBehaviour
 			viderMenu ();
 			Destroy(greyT);
 			Time.timeScale=normalTime;
-			AudioManager.SetCategoryVolume("musics", 0.1f);
+			AudioManager.SetCategoryVolume("musics", 1f);
 			//AudioListener.pause = false;
 		}
 		

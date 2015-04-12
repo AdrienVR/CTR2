@@ -90,7 +90,12 @@ public class Main : MonoBehaviour
 		Kart.setCoefficients (speedCoeff, turnCoeff);
 		Init ();
 
-		Screen.showCursor = false; 
+#if !UNITY_EDITOR
+		Screen.showCursor = false;
+#else
+		Application.runInBackground = true;
+#endif
+
 		Debug.Log ("Starting with "+ ControllerAPI.nControllers + " controllers.");
 
 	}

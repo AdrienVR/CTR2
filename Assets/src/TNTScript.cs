@@ -174,8 +174,7 @@ public class TNTScript : MonoBehaviour {
 				gameObject.light.color = explosionColor;
 				yield return new WaitForSeconds (0.1f);
 				gameObject.light.color = new Color();
-				yield return new WaitForSeconds (3f);
-				Destroy(gameObject);
+				Destroy(gameObject, 3f);
 			}
 			else
 			{
@@ -204,8 +203,7 @@ public class TNTScript : MonoBehaviour {
 		if (!disamorced)
 			kartCollided.Die (owner,name);
 		gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
-		yield return new WaitForSeconds (3f);
-		Destroy(gameObject);
+		Destroy(gameObject, 3f);
 	}
 
 	public IEnumerator TimeToLive()
