@@ -9,6 +9,6 @@ using System;
 public class AudioCategory 
 {
 
-	public string clipCategoryName;
+	public string name;
 	public List<AudioClip> clips;
 }

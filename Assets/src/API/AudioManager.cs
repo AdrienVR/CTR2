@@ -2,14 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System;
 
-[Serializable]
+// Public properties of the class are set in 'AudioManager.prefab' prefab
 public class AudioManager : MonoBehaviour
 {
 
 	public List<AudioCategory> audioCategories;
 	public AudioSource loopSource;
+
+	private Dictionary<string, float> categoryVolumes;
 
 	// Singleton
 	public static AudioManager Instance;
@@ -17,6 +18,11 @@ public class AudioManager : MonoBehaviour
 	void Start() 
 	{
 		Instance = this;
+		categoryVolumes = new Dictionary<string, float>();
+		foreach(AudioCategory category in audioCategories)
+		{
+			categoryVolumes[category.name] = 1;
+		}
 	}
 
 	public static void PlayDefaultMapMusic()
@@ -39,6 +45,7 @@ public class AudioManager : MonoBehaviour
 
 	private void _SetCategoryVolume(string category, float volume)
 	{
+		categoryVolumes[category] = volume;
 		foreach(AudioSource source in gameObject.GetComponents<AudioSource>())
 		{
 			foreach(AudioCategory audioCategory in audioCategories)
@@ -62,6 +69,7 @@ public class AudioManager : MonoBehaviour
 					if (loop == false)
 					{
 						AudioSource source = gameObject.AddComponent<AudioSource>();
+						source.volume = categoryVolumes[audioCategory.name];
 						source.PlayOneShot(clip);
 						Destroy(source, clip.length);
 						return;
