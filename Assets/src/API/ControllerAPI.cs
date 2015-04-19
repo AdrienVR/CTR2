@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -197,7 +197,7 @@ public class ControllerAPI {
 				last_axis_down[action+axisNameDict[action]] = 0;
 			}
 		}
-		foreach (string axisName in KeyCodes.axisNames) {
+		foreach (string axisName in KeyCodes.axis) {
 			newAxisValues[axisName] = Input.GetAxis(axisName);
 		}
 	}
@@ -288,7 +288,7 @@ public class ControllerAPI {
 				}
 			}
 			// sinon on regarde l'axe par rapport à 0
-			foreach(string axisName in KeyCodes.axisNames){
+			foreach(string axisName in KeyCodes.axis){
 				if (joyNames.IndexOf(axisName)!=-1)
 					continue;
 				if (CheckDownNewAxis(axisName)){

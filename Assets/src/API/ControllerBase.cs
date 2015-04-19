@@ -37,22 +37,22 @@ public class ControllerBase
 		}
 	}
 	
-	public virtual float GetAxis(string actionName)
+	public float GetAxis(string actionName)
 	{
 		return buttons[actionName].GetAxis();
 	}
 	
-	public virtual bool GetKey(string actionName)
+	public bool GetKey(string actionName)
 	{
 		return buttons[actionName].GetKey();
 	}
 	
-	public virtual bool GetKeyDown(string actionName)
+	public bool GetKeyDown(string actionName)
 	{
 		return buttons[actionName].GetKeyDown();
 	}
 	
-	public virtual bool GetKeyUp(string actionName)
+	public bool GetKeyUp(string actionName)
 	{
 		return buttons[actionName].GetKeyUp();
   	}

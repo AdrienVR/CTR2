@@ -9,6 +9,8 @@ public class Axis : VirtualKey
 	public new string actionName;
 	public new string keyName;
 
+	public int historyCount = 5;
+
 	private List<float> m_valueStates;
 	private float m_currentValue;
 	private int m_index;
@@ -16,20 +18,18 @@ public class Axis : VirtualKey
 	private float m_minValue;
 	private float m_maxValue;
 
-	private float thresholdAxis;
+	private float thresholdAxis = 0.9f;
 	
 	public Axis(string actionName, string axisName, float minValue, float maxValue) 
 	{
 		this.actionName = actionName;
 		this.keyName = axisName;
 
-		thresholdAxis = 0;//Game.thresholdAxis;
-
 		m_minValue = minValue;
 		m_maxValue = maxValue;
 
 		m_valueStates = new List<float>();
-		for (int i = 0 ; i < 5 ; i++)
+		for (int i = 0 ; i < historyCount ; i++)
 		{
 			m_valueStates.Add(0);
 		}
@@ -56,14 +56,10 @@ public class Axis : VirtualKey
 	{
 		if (GetState(m_currentValue) == State.On)
 		{
-			for(int i = 3 ; i>= 0 ; i--)
-			{
-				if (GetState(m_valueStates[i]) == State.On)
-					break;
-				
-				if (GetState(m_valueStates[i]) == State.Off)
-					return true;
-			}
+			if (GetState(m_valueStates[historyCount - 2]) == State.On)
+				return false;
+			else
+				return true;
 		}
 		return false;
 	}
@@ -72,14 +68,10 @@ public class Axis : VirtualKey
 	{
 		if (GetState(m_currentValue) == State.Off)
 		{
-			for(int i = 3 ; i>= 0 ; i--)
-			{
-				if (GetState(m_valueStates[i]) == State.Off)
-					break;
-				
-				if (GetState(m_valueStates[i]) == State.On)
-					return true;
-			}
+			if (GetState(m_valueStates[historyCount - 2]) == State.Off)
+				return false;
+			else
+				return true;
 		}
 		return false;
 	}
@@ -88,34 +80,30 @@ public class Axis : VirtualKey
 	public override float GetAxis()
 	{
 		float raw = Input.GetAxis(keyName);
-		if (m_minValue != 0)
-		{
-			return raw / m_minValue;
-		}
-		else
-		{
-			return raw / m_maxValue;
-		}
+		return raw / m_maxValue;
 	}
 
 	private State GetState(float axisValue)
 	{
-		if (axisValue < m_maxValue && axisValue > m_minValue)
+		float maxValue = m_maxValue;
+		if (m_maxValue < 0)
 		{
-			if (axisValue > m_minValue + (m_maxValue - m_minValue) * 0.2f + thresholdAxis)
-			{
-				return State.On;
-			}
-			else if (axisValue > m_minValue + (m_maxValue - m_minValue) * 0.2f - thresholdAxis)
-			{
-				return State.Between;
-			}
-			else
-			{
-				return State.Off;
-			}
+			maxValue *= -1;
+			axisValue *= -1;
 		}
-		return State.NaN;
+
+		if (axisValue > maxValue * thresholdAxis)
+		{
+			return State.On;
+		}
+		else if (axisValue > maxValue * (1f - thresholdAxis))
+		{
+			return State.Between;
+		}
+		else
+		{
+			return State.Off;
+		}
 	}
 
 	enum State

@@ -9,22 +9,17 @@ public class ControllerTesting : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		StartCoroutine(UpdateCaca());
-
-		for(int i = 1 ; i < 7 ; i++)
-		{
-			caca.Add("J0_Axis_1".Replace("1", i.ToString()));
-		}
 	}
+
+	private List<string> controllerNames = new List<string>();
 
 	private IEnumerator UpdateCaca()
 	{
-		string text;
 		List<string> cacaTexts = new List<string>{"","","",""};
 		string axisName;
 		while(true)
 		{
-			text = "";
-			for(int i = 1 ; i < 2 ; i++)
+			for(int i = 1 ; i < 5 ; i++)
 			{
 				cacaTexts[i - 1] = "";
 				foreach(string rawAxisName in caca)
@@ -32,22 +27,41 @@ public class ControllerTesting : MonoBehaviour {
 					axisName = rawAxisName.Replace("0",i.ToString());
 					cacaTexts[i - 1] += axisName + " : " + Input.GetAxis(axisName) + "\n";
 				}
-				text += cacaTexts[i - 1];
 			}
-			guiText.text = text;
 
 			for(int i = 0 ; i < Input.GetJoystickNames ().Length ; i++)
 			{
-				labels[i].text = Input.GetJoystickNames ()[i] + 
+				if (controllerNames.IndexOf(Input.GetJoystickNames ()[i]) == -1)
+					controllerNames.Add(Input.GetJoystickNames ()[i]);
+				labels[i].text = controllerNames[i] + 
 					"\n\n" +
 					cacaTexts[i];
 			}
-			yield return new WaitForSeconds(0.33f);
+			
+			for(int i = Input.GetJoystickNames ().Length ; i < 4 ; i++)
+			{
+				string name = "none";
+				if (i < controllerNames.Count)
+					name = controllerNames[i];
+				labels[i].text = name + 
+					"\n\n" +
+						cacaTexts[i];
+			}
+			yield return new WaitForSeconds(0.1f);
 		}
 	}
 
-	static List<string> caca = new List<string>{
-		"J0_X_Axis",
-		"J0_Y_Axis"
+	static List<string> caca = new List<string>
+	{
+		{"J0_X_Axis"},
+		{"J0_Y_Axis"},
+		{"J0_Axis_1"},
+		{"J0_Axis_2"},
+		{"J0_Axis_3"},
+		{"J0_Axis_4"},
+		{"J0_Axis_5"},
+		{"J0_Axis_6"},
+		
 	};
+
 }
