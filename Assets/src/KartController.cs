@@ -47,7 +47,7 @@ public class KartController : MonoBehaviour
 	private float twLerpWheels = 0f;
 
 	public int numberOfJump = 0;
-	private ControllerAPI controller;
+	private ControllerBase controller;
 	
 	// Use this for initialization
 	void Start ()
@@ -67,7 +67,7 @@ public class KartController : MonoBehaviour
 		
 		kart_script = GetComponent <KartScript> ();
 
-		controller = ControllerAPI.GetController(kart.numeroJoueur);
+		controller = ControllerInterface.GetController(kart.numeroJoueur - 1);
 	}
 	
 	void Update()
@@ -179,10 +179,10 @@ public class KartController : MonoBehaviour
 
 	void controlWheels(){
 		float yTurnWheel = 0f;
-		if(controller.IsPressed("turnLeft"))
-			yTurnWheel = -controller.KeyValue("turnLeft");
-		else if(controller.IsPressed("turnRight"))
-			yTurnWheel = controller.KeyValue("turnRight");
+		if(controller.GetKey("turnLeft"))
+			yTurnWheel = -controller.GetAxis("turnLeft");
+		else if(controller.GetKey("turnRight"))
+			yTurnWheel = controller.GetAxis("turnRight");
 		if (System.Math.Abs (yTurnWheel) < Game.thresholdAxis)
 			yTurnWheel = 0;
 
@@ -289,7 +289,7 @@ public class KartController : MonoBehaviour
 			float rgb = 0.1f;
 			if (rigidbody.velocity.magnitude>1)
 				rgb = 0.05f;
-			else if (controller.IsPressed("moveForward"))
+			else if (controller.GetKey("moveForward"))
 				rgb = 0.5f;
 			Color smokeColor = new Color(rgb,rgb,rgb);
 			foreach(GameObject w in smoke)
@@ -308,12 +308,12 @@ public class KartController : MonoBehaviour
 	
 	public void controle()
 	{	
-		if(controller.IsPressed("moveBack") && !controller.IsPressed("moveForward")){
-			lowForce = -controller.KeyValue("moveBack") * forwardNormal * speedCoeff;
+		if(controller.GetKey("moveBack") && !controller.GetKey("moveForward")){
+			lowForce = -controller.GetAxis("moveBack") * forwardNormal * speedCoeff;
 			backward = true;
 		}
 		
-		if(controller.IsPressed("moveForward") && !controller.IsPressed("moveBack"))
+		if(controller.GetKey("moveForward") && !controller.GetKey("moveBack"))
 		{
 			postForce = forwardNormal*speedCoeff;
 			forward = true;
@@ -342,23 +342,23 @@ public class KartController : MonoBehaviour
 					numberOfJump++;
 			}
 		}
-		if(controller.IsPressed("jump") )//&& System.Math.Abs(Vector3.Angle(rigidbody.velocity,forwardNormal))>45)
+		if(controller.GetKey("jump") )//&& System.Math.Abs(Vector3.Angle(rigidbody.velocity,forwardNormal))>45)
 		{
 			//Debug.Log("Angle : "+transform.localRotation.eulerAngles.x+","+transform.localRotation.eulerAngles.z);
 			//rigidbody.velocity = new Vector3(0,-26f,0);
 		}
 
-		if (!controller.IsPressed("moveBack") && (controller.IsPressed("stop") || controller.IsPressed("moveForward"))){
-			if(controller.IsPressed("turnRight"))
-				yTurn = 0.5f*controller.KeyValue("turnRight") * turnCoeff;
-			else if(controller.IsPressed("turnLeft"))
-				yTurn = -0.5f*controller.KeyValue("turnLeft") * turnCoeff;
+		if (!controller.GetKey("moveBack") && (controller.GetKey("stop") || controller.GetKey("moveForward"))){
+			if(controller.GetKey("turnRight"))
+				yTurn = 0.5f*controller.GetAxis("turnRight") * turnCoeff;
+			else if(controller.GetKey("turnLeft"))
+				yTurn = -0.5f*controller.GetAxis("turnLeft") * turnCoeff;
 		}
-		else if (controller.IsPressed("moveBack")){
-			if(controller.IsPressed("turnRight"))
-				yTurn = -0.5f*controller.KeyValue("turnRight") * turnCoeff;
-			else if(controller.IsPressed("turnLeft"))
-				yTurn = 0.5f*controller.KeyValue("turnLeft") * turnCoeff;
+		else if (controller.GetKey("moveBack")){
+			if(controller.GetKey("turnRight"))
+				yTurn = -0.5f*controller.GetAxis("turnRight") * turnCoeff;
+			else if(controller.GetKey("turnLeft"))
+				yTurn = 0.5f*controller.GetAxis("turnLeft") * turnCoeff;
 		}
 
 	}

@@ -5,7 +5,7 @@ using System.IO;
 
 public class ControllerManager : MonoBehaviour 
 {
-	/*
+
 	void Start()
 	{
 		if (ControllerInterface.Instance == null)
@@ -18,5 +18,5 @@ public class ControllerManager : MonoBehaviour
 	{
 		ControllerInterface.Instance.UpdateInternal();
 	}
-	*/
+
 }

@@ -23,7 +23,7 @@ public class Axis : VirtualKey
 		this.actionName = actionName;
 		this.keyName = axisName;
 
-		thresholdAxis = Game.thresholdAxis;
+		thresholdAxis = 0;//Game.thresholdAxis;
 
 		m_minValue = minValue;
 		m_maxValue = maxValue;
@@ -43,8 +43,8 @@ public class Axis : VirtualKey
 	private void UpdateValues()
 	{
 		m_currentValue = Input.GetAxis (keyName);
-		m_valueStates[4] = m_currentValue;
 		m_valueStates.RemoveAt(0);
+		m_valueStates.Insert(m_valueStates.Count, m_currentValue);
 	}
 
 	public override bool GetKey()
@@ -102,11 +102,11 @@ public class Axis : VirtualKey
 	{
 		if (axisValue < m_maxValue && axisValue > m_minValue)
 		{
-			if (axisValue > m_minValue + (m_maxValue - m_minValue) * 0.5f + thresholdAxis)
+			if (axisValue > m_minValue + (m_maxValue - m_minValue) * 0.2f + thresholdAxis)
 			{
 				return State.On;
 			}
-			else if (axisValue > m_minValue + (m_maxValue - m_minValue) * 0.5f - thresholdAxis)
+			else if (axisValue > m_minValue + (m_maxValue - m_minValue) * 0.2f - thresholdAxis)
 			{
 				return State.Between;
 			}

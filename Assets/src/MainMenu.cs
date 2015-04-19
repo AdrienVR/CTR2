@@ -16,7 +16,6 @@ public class MainMenu : MonoBehaviour
 
 	void InitController()
 	{
-		ControllerAPI.InitJoysticks ();
 		KartController.stop = true;
 	}
 
@@ -28,10 +27,5 @@ public class MainMenu : MonoBehaviour
 		m.normal = normal;
 		m.hover = hover;
 
-	}
-	// Update is called once per frame
-	void FixedUpdate ()
-	{
-		ControllerAPI.CheckJoysticks ();	
 	}
 }

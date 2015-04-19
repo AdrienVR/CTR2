@@ -7,7 +7,7 @@ public class ControllerResources
 {
 
 	private static Dictionary <string, float> defaultAxisValues = new Dictionary<string, float> {
-		{"throw",-2f}, {"moveBack",2f},
+		{"throw",-2f}, {"moveBack",-2f},
 		{"turnRight",2f}, {"turnLeft",-2f},
 		{"jump2",2f}, {"jump",-2f}
   	};
@@ -119,7 +119,7 @@ public class ControllerResources
 		if (type == "keyboard")
 			return buttonProfiles[type + keyboards++];
 		else if (type == "xbox")
-			return buttonProfiles[type + xbox++];
+			return buttonProfiles[type + xbox];
 		return null;
 	}
 

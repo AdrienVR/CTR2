@@ -23,14 +23,14 @@ public class KartScript : MonoBehaviour {
 	public List<string> weapons = new List<string>();
 	
 	private bool baddie = false;
-	private ControllerAPI controller;
+	private ControllerBase controller;
 	private float facteurSens = 1f;
 
 	// Use this for initialization
 	void Start () {
 		kc = GetComponent<KartController>();
 		kart_state = GetComponent<KartState>();
-		controller = ControllerAPI.GetController(kart.numeroJoueur);
+		controller = ControllerInterface.GetController(kart.numeroJoueur - 1);
 
 		
 		foreach (Transform child in transform){
@@ -52,8 +52,8 @@ public class KartScript : MonoBehaviour {
 			if (!kart_state.AbleToShoot())
 				return;
 			facteurSens = 1f;
-			if (controller.IsPressed("moveBack"))
-				facteurSens = -controller.KeyValue("throw");
+			if (controller.GetKey("moveBack"))
+				facteurSens = -controller.GetAxis("throw");
 			if (System.Math.Abs(facteurSens)<Game.thresholdAxis)
 				facteurSens = 1f;
 			
@@ -118,8 +118,8 @@ public class KartScript : MonoBehaviour {
 
 		// computing the side
 		float sens = -1f;
-		if (controller.IsPressed("throw"))
-			sens = controller.KeyValue("throw");
+		if (controller.GetKey("throw"))
+			sens = controller.GetAxis("throw");
 		if (System.Math.Abs(sens)<Game.thresholdAxis)
 			sens = -1f;
 

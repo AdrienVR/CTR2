@@ -54,11 +54,6 @@ public class Main : MonoBehaviour
 		forward = false;
 	}*/
 
-	void FixedUpdate()
-	{
-		ControllerAPI.CheckJoysticks ();
-	}
-
 	IEnumerator SetCommon()
 	{
 		if (AudioManager.Instance == null && ControllerInterface.Instance == null)
@@ -78,7 +73,6 @@ public class Main : MonoBehaviour
 		nbPlayer = System.Math.Max (nbPlayer, 1);
 		nbPlayer = System.Math.Min (nbPlayer, 4);
 		statistics = new StatGame (nbPlayer);
-		ControllerAPI.InitJoysticks ();
 
 		foreach(Transform respawnPoint in transform)
 		{
@@ -96,7 +90,7 @@ public class Main : MonoBehaviour
 		Application.runInBackground = true;
 #endif
 
-		Debug.Log ("Starting with "+ ControllerAPI.nControllers + " controllers.");
+		Debug.Log ("Starting with "+ ControllerInterface.NumberOfController + " controllers.");
 
 	}
 

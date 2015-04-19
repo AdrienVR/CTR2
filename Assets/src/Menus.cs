@@ -26,7 +26,6 @@ public class Menus : MonoBehaviour
 	private static GameObject triangleVolume;
 	private static GameObject textPlayer;
 	private static GameObject fleches;
-	private static List <KeyCode> listKeys=  new List <KeyCode>();
 	private static List <GameObject> flechesD =  new List <GameObject>();
 	private static List <GameObject> textureAffichees =  new List <GameObject>();
 	private static List <GameObject> textAffiches =  new List <GameObject>();
@@ -228,9 +227,7 @@ public class Menus : MonoBehaviour
 	
 	void testPause()
 	{
-		bool pressStart = false;
-		for (int i = 1; i<Kart.totalPlayers+1; i++) pressStart |=  ControllerAPI.StaticGetKeyDown(i, "start");
-		if (pressStart)
+		if (ControllerInterface.GetKeyDown("start"))
 		{
 			AudioManager.Play("validateMenu");
 			Pause();
@@ -764,7 +761,6 @@ public class Menus : MonoBehaviour
 			}
 			else if((menuCourant[0]=="Reglages Controles") && (menuCourant[position+1]!="Reglages Controles") && (menuCourant[position+1]!="JOUEUR :") && (menuCourant[position+1]!="RETOUR"))
 			{
-				listKeys=  new List <KeyCode>();
 				/*
 				foreach(string a in ControllerAPI.buttonProfiles[Game.playersMapping[positionH]].Keys)
 				{
@@ -772,7 +768,7 @@ public class Menus : MonoBehaviour
 				}*/
 				if(booleans["right_down"])
 				{
-					AudioManager.Play("downMenu");
+					AudioManager.Play("validateMenu");
 					authorizeNavigate=false;
 					//Destroy(flechesD[position-1]);
 					flechesD[position-1].SetActive(false);
@@ -785,7 +781,7 @@ public class Menus : MonoBehaviour
 					StartCoroutine(setKey(action, name));
 				}
 			}
-			else if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
+			else if(menuCourant[0] == menuPersos[0] && position<menuPersos.Count - 3)
 			{
 				if(booleans["right_down"])
 				{
@@ -958,22 +954,22 @@ public class Menus : MonoBehaviour
 	{
 
 		if (readyToMove){
-			booleans["up"] = ControllerAPI.CheckForAny("moveForward");
-			booleans["down"] = ControllerAPI.CheckForAny("moveBack");
-			booleans["right"] = ControllerAPI.CheckForAny("turnRight");
-			booleans["left"] = ControllerAPI.CheckForAny("turnLeft");
+			booleans["up"] = ControllerInterface.GetKey("moveForward");
+			booleans["down"] = ControllerInterface.GetKey("moveBack");
+			booleans["right"] = ControllerInterface.GetKey("turnRight");
+			booleans["left"] = ControllerInterface.GetKey("turnLeft");
 
 		}
 		//Debug.Log(readyToMove +","+ booleans["up"]);
 		
-		booleans["ok"] = ControllerAPI.CheckForAnyDown("action");
-		booleans["back"] = ControllerAPI.CheckForAnyDown("action");
-		booleans["start"] = ControllerAPI.CheckForAnyDown("start");
+		booleans["ok"] = ControllerInterface.GetKeyDown("action");
+		booleans["back"] = ControllerInterface.GetKeyDown("action");
+		booleans["start"] = ControllerInterface.GetKeyDown("start");
 		
-		booleans["up_down"] = ControllerAPI.CheckForAnyDown("moveForward");
-		booleans["down_down"] = ControllerAPI.CheckForAnyDown("moveBack");
-		booleans["right_down"] = ControllerAPI.CheckForAnyDown("turnRight");
-		booleans["left_down"] = ControllerAPI.CheckForAnyDown("turnLeft");
+		booleans["up_down"] = ControllerInterface.GetKeyDown("moveForward");
+		booleans["down_down"] = ControllerInterface.GetKeyDown("moveBack");
+		booleans["right_down"] = ControllerInterface.GetKeyDown("turnRight");
+		booleans["left_down"] = ControllerInterface.GetKeyDown("turnLeft");
 	}
 	
 	IEnumerator RestrictMovement()

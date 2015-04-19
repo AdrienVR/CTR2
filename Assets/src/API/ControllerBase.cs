@@ -23,9 +23,9 @@ public class ControllerBase
 		foreach(string actionName in axis.Keys)
 		{
 			if (defaultAxisValues[actionName] > 0)
-				this.buttons[actionName] = new Axis(axis[actionName], actionName, 0, defaultAxisValues[actionName]);
+				this.buttons[actionName] = new Axis(actionName, axis[actionName], 0, defaultAxisValues[actionName]);
 			else
-				this.buttons[actionName] = new Axis(axis[actionName], actionName, defaultAxisValues[actionName], 0);
+				this.buttons[actionName] = new Axis(actionName, axis[actionName], defaultAxisValues[actionName], 0);
     	}
 	}
 
@@ -37,6 +37,10 @@ public class ControllerBase
 		}
 	}
 	
+	public virtual float GetAxis(string actionName)
+	{
+		return buttons[actionName].GetAxis();
+	}
 	
 	public virtual bool GetKey(string actionName)
 	{
