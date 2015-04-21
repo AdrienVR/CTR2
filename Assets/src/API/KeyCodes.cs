@@ -251,7 +251,6 @@ public class KeyCodes
 
 	public static List<string> codeNames = new List<string>
 	{
-		"",
 		"Backspace",
 		"Delete",
 		"Tab",
@@ -495,6 +494,38 @@ public class KeyCodes
 		"None"
 	};
 
+	public static List<string> nControllerDependant = new List<string>
+	{
+		"B0",
+		"B1",
+		"B2",
+		"B3",
+		"B4",
+		"B5",
+		"B6",
+		"B7",
+		"B8",
+		"B9",
+		"B10",
+		"B11",
+		"B12",
+		"B13",
+		"B14",
+		"B15",
+		"B16",
+		"B17",
+		"B18",
+		"B19",
+		"X",
+		"Y",
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6"
+	};
+
 	public static List<string> axis = new List<string>
 	{
 		"J1_X_Axis",
@@ -534,30 +565,6 @@ public class KeyCodes
 	
 	public static List<string> axisNames = new List<string>
 	{
-		"X",
-		"Y",
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6",
-		"X",
-		"Y",
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6",
-		"X",
-		"Y",
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6",
 		"X",
 		"Y",
 		"1",

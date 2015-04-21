@@ -1,0 +1,1 @@
+xcopy "Assets\src\API\*.JSON" "Build\CTR2_Data\config\*.JSON" /e /i /y

@@ -6,55 +6,63 @@ using System.IO;
 public class ControllerBase 
 {
 
-	private Dictionary <string, VirtualKey> buttons;
+	private Dictionary <string, List<VirtualKey>> buttons;
 
 	public ControllerBase  (string type) 
 	{
 		Debug.Log("Initializing controller "+type);
-		this.buttons = new Dictionary<string, VirtualKey>();
-
-		Dictionary <string, KeyCode> buttons = ControllerResources.GetButtons(type);
-		Dictionary <string, string> axis = ControllerResources.GetAxis(type);
-		Dictionary <string, float> defaultAxisValues = ControllerResources.GetAxisValues(type);
-		foreach(string actionName in buttons.Keys)
-		{
-			this.buttons[actionName] = new Key(buttons[actionName], actionName);
-		}
-		foreach(string actionName in axis.Keys)
-		{
-			if (defaultAxisValues[actionName] > 0)
-				this.buttons[actionName] = new Axis(actionName, axis[actionName], 0, defaultAxisValues[actionName]);
-			else
-				this.buttons[actionName] = new Axis(actionName, axis[actionName], defaultAxisValues[actionName], 0);
-    	}
+		this.buttons = ControllerResources.GetButtons(type);
 	}
 
 	public void UpdateInternal()
 	{
-		foreach(VirtualKey button in buttons.Values)
+		foreach(List<VirtualKey> buttonList in buttons.Values)
 		{
-			button.UpdateInternal();
+			foreach(VirtualKey button in buttonList)
+			{
+				button.UpdateInternal();
+			}
 		}
 	}
 	
 	public float GetAxis(string actionName)
 	{
-		return buttons[actionName].GetAxis();
+		foreach(VirtualKey button in buttons[actionName])
+		{
+			if (button.GetAxis() != 0)
+				return button.GetAxis();
+		}
+		return 0;
 	}
 	
 	public bool GetKey(string actionName)
 	{
-		return buttons[actionName].GetKey();
+		foreach(VirtualKey button in buttons[actionName])
+		{
+			if (button.GetKey() != false)
+				return button.GetKey();
+		}
+		return false;
 	}
 	
 	public bool GetKeyDown(string actionName)
 	{
-		return buttons[actionName].GetKeyDown();
+		foreach(VirtualKey button in buttons[actionName])
+		{
+			if (button.GetKeyDown() != false)
+				return button.GetKeyDown();
+		}
+		return false;
 	}
 	
 	public bool GetKeyUp(string actionName)
 	{
-		return buttons[actionName].GetKeyUp();
+		foreach(VirtualKey button in buttons[actionName])
+		{
+			if (button.GetKeyUp() != false)
+				return button.GetKeyUp();
+		}
+		return false;
   	}
 
 }

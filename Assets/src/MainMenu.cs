@@ -12,6 +12,12 @@ public class MainMenu : MonoBehaviour
 		InitController ();
 		Application.LoadLevelAdditive("commonScene");
 		InitMenus ();
+		
+		#if UNITY_EDITOR
+		Application.runInBackground = true;
+		#else
+		Screen.showCursor = false;
+		#endif
 	}
 
 	void InitController()

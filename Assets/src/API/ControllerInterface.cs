@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -25,9 +25,9 @@ public class ControllerInterface
 	{
 		Instance = this;
 		allControllers = new List<ControllerBase>();
-		allControllers.Add(new ControllerBase("keyboard"));
-		allControllers.Add(new ControllerBase("keyboard"));
-		allControllers.Add(new ControllerBase("keyboard"));
+		allControllers.Add(new ControllerBase("Keyboard1"));
+		allControllers.Add(new ControllerBase("Keyboard2"));
+		allControllers.Add(new ControllerBase("Keyboard3"));
 	}
 	
 	public void UpdateInternal() 
@@ -54,11 +54,13 @@ public class ControllerInterface
 		if (instantiatedControllers > nControllers)
 		{
 			allControllers.RemoveAt(instantiatedControllers--);
-			ControllerResources.xbox --;
+			ControllerResources.controllers = instantiatedControllers;
 		}
 		else if (instantiatedControllers < nControllers)
 		{
-			allControllers.Insert(instantiatedControllers++, new ControllerBase("xbox"));
+			allControllers.Insert(instantiatedControllers, new ControllerBase(Input.GetJoystickNames ()[instantiatedControllers]));
+			instantiatedControllers++;
+			ControllerResources.controllers = instantiatedControllers;
 		}
 		
 		Debug.Log ("Now "+nControllers+" controllers detected");

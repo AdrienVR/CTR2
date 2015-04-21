@@ -4,7 +4,7 @@
  * Based on the JSON parser by Patrick van Bergen
  * http://techblog.procurios.nl/k/618/news/view/14605/14863/How-do-I-write-my-own-parser-for-JSON.html
  *
- * Simplified it so that it doesn't throw exceptions
+ * Simplified it so that it doesn't up exceptions
  * and can be used in Unity iPhone with maximum code stripping.
  *
  * Permission is hereby granted, free of charge, to any person obtaining

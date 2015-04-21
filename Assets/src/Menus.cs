@@ -403,8 +403,8 @@ public class Menus : MonoBehaviour
 				textbutton.guiText.anchor=TextAnchor.MiddleLeft;
 				textAffiches.Add(textbutton);
 				GameObject textcontrol =(GameObject)Instantiate (Resources.Load ("textControl"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,0),Quaternion.identity);
-				string action = ControllerAPI.GetActionName(menu[i]);
-				string name  = ControllerAPI.KeyIs(positionH, action);
+				//string action = ControllerAPI.GetActionName(menu[i]);
+				//string name  = ControllerAPI.KeyIs(positionH, action);
 				textcontrol.guiText.text=name;
 				
 				controlAffiches.Add(textcontrol);
@@ -741,8 +741,8 @@ public class Menus : MonoBehaviour
 				textPlayer.guiText.text="Joueur "+positionH;
 				for(int i=0;i<controlAffiches.Count;i++)
 				{
-					string action =ControllerAPI.GetActionName(menuCourant[i+2]);
-					string name  = ControllerAPI.KeyIs(positionH, action);
+					//string action =ControllerAPI.GetActionName(menuCourant[i+2]);
+					//string name  = ControllerAPI.KeyIs(positionH, action);
 					controlAffiches[i].guiText.text=name;
 				}
 				if(booleans["right_down"])
@@ -775,10 +775,10 @@ public class Menus : MonoBehaviour
 					controlAffiches[position-1].guiText.text="?";
 					controlAffiches[position-1].guiText.color=Color.blue;
 					waitingForKey = true;
-					string action =ControllerAPI.GetActionName(menuCourant[position+1]);
-					string name  = ControllerAPI.KeyIs(positionH, action);
+					//string action =ControllerAPI.GetActionName(menuCourant[position+1]);
+					//string name  = ControllerAPI.KeyIs(positionH, action);
 
-					StartCoroutine(setKey(action, name));
+					StartCoroutine(setKey("", ""));
 				}
 			}
 			else if(menuCourant[0] == menuPersos[0] && position<menuPersos.Count - 3)
@@ -926,7 +926,7 @@ public class Menus : MonoBehaviour
 		{
 			yield return new WaitForEndOfFrame ();
 		}
-		ControllerAPI.ListenForKey(action, name);
+		//ControllerAPI.ListenForKey(action, name);
 	}
 	
 	IEnumerator getKey()
@@ -939,37 +939,37 @@ public class Menus : MonoBehaviour
 		waitingForKey = false;
 		flechesD[position-1].SetActive(true);
 		authorizeNavigate=true;
-		string action = ControllerAPI.GetActionName(menuCourant[position+1]);
-		string name  = ControllerAPI.KeyIs(positionH, action);
+		//string action = ControllerAPI.GetActionName(menuCourant[position+1]);
+		//string name  = ControllerAPI.KeyIs(positionH, action);
 		controlAffiches[position-1].guiText.text=name;
 	}
 	
 	void CheckNewKey()
 	{
-		if (ControllerAPI.CheckForAxis() || ControllerAPI.CheckForKey())
-			StartCoroutine(getKey());
+		//if (ControllerAPI.CheckForAxis() || ControllerAPI.CheckForKey())
+			//StartCoroutine(getKey());
 	}
 
 	void CheckKeys()
 	{
 
 		if (readyToMove){
-			booleans["up"] = ControllerInterface.GetKey("moveForward");
-			booleans["down"] = ControllerInterface.GetKey("moveBack");
-			booleans["right"] = ControllerInterface.GetKey("turnRight");
-			booleans["left"] = ControllerInterface.GetKey("turnLeft");
+			booleans["up"] = ControllerInterface.GetKey("up");
+			booleans["down"] = ControllerInterface.GetKey("down");
+			booleans["right"] = ControllerInterface.GetKey("right");
+			booleans["left"] = ControllerInterface.GetKey("left");
 
 		}
 		//Debug.Log(readyToMove +","+ booleans["up"]);
 		
-		booleans["ok"] = ControllerInterface.GetKeyDown("action");
+		booleans["ok"] = ControllerInterface.GetKeyDown("validate");
 		booleans["back"] = ControllerInterface.GetKeyDown("action");
 		booleans["start"] = ControllerInterface.GetKeyDown("start");
 		
-		booleans["up_down"] = ControllerInterface.GetKeyDown("moveForward");
-		booleans["down_down"] = ControllerInterface.GetKeyDown("moveBack");
-		booleans["right_down"] = ControllerInterface.GetKeyDown("turnRight");
-		booleans["left_down"] = ControllerInterface.GetKeyDown("turnLeft");
+		booleans["up_down"] = ControllerInterface.GetKeyDown("up");
+		booleans["down_down"] = ControllerInterface.GetKeyDown("down");
+		booleans["right_down"] = ControllerInterface.GetKeyDown("right");
+		booleans["left_down"] = ControllerInterface.GetKeyDown("left");
 	}
 	
 	IEnumerator RestrictMovement()

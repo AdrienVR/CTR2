@@ -179,10 +179,10 @@ public class KartController : MonoBehaviour
 
 	void controlWheels(){
 		float yTurnWheel = 0f;
-		if(controller.GetKey("turnLeft"))
-			yTurnWheel = -controller.GetAxis("turnLeft");
-		else if(controller.GetKey("turnRight"))
-			yTurnWheel = controller.GetAxis("turnRight");
+		if(controller.GetKey("left"))
+			yTurnWheel = -controller.GetAxis("left");
+		else if(controller.GetKey("right"))
+			yTurnWheel = controller.GetAxis("right");
 		if (System.Math.Abs (yTurnWheel) < Game.thresholdAxis)
 			yTurnWheel = 0;
 
@@ -289,7 +289,7 @@ public class KartController : MonoBehaviour
 			float rgb = 0.1f;
 			if (rigidbody.velocity.magnitude>1)
 				rgb = 0.05f;
-			else if (controller.GetKey("moveForward"))
+			else if (controller.GetKey("validate"))
 				rgb = 0.5f;
 			Color smokeColor = new Color(rgb,rgb,rgb);
 			foreach(GameObject w in smoke)
@@ -308,12 +308,12 @@ public class KartController : MonoBehaviour
 	
 	public void controle()
 	{	
-		if(controller.GetKey("moveBack") && !controller.GetKey("moveForward")){
-			lowForce = -controller.GetAxis("moveBack") * forwardNormal * speedCoeff;
+		if(controller.GetKey("down") && !controller.GetKey("validate")){
+			lowForce = -controller.GetAxis("down") * forwardNormal * speedCoeff;
 			backward = true;
 		}
 		
-		if(controller.GetKey("moveForward") && !controller.GetKey("moveBack"))
+		if(controller.GetKey("validate") && !controller.GetKey("down"))
 		{
 			postForce = forwardNormal*speedCoeff;
 			forward = true;
@@ -348,30 +348,30 @@ public class KartController : MonoBehaviour
 			//rigidbody.velocity = new Vector3(0,-26f,0);
 		}
 
-		if (!controller.GetKey("moveBack") && (controller.GetKey("stop") || controller.GetKey("moveForward"))){
-			if(controller.GetKey("turnRight"))
-				yTurn = 0.5f*controller.GetAxis("turnRight") * turnCoeff;
-			else if(controller.GetKey("turnLeft"))
-				yTurn = -0.5f*controller.GetAxis("turnLeft") * turnCoeff;
+		if (!controller.GetKey("down") && (controller.GetKey("stop") || controller.GetKey("validate"))){
+			if(controller.GetKey("right"))
+				yTurn = 0.5f*controller.GetAxis("right") * turnCoeff;
+			else if(controller.GetKey("left"))
+				yTurn = -0.5f*controller.GetAxis("left") * turnCoeff;
 		}
-		else if (controller.GetKey("moveBack")){
-			if(controller.GetKey("turnRight"))
-				yTurn = -0.5f*controller.GetAxis("turnRight") * turnCoeff;
-			else if(controller.GetKey("turnLeft"))
-				yTurn = 0.5f*controller.GetAxis("turnLeft") * turnCoeff;
+		else if (controller.GetKey("down")){
+			if(controller.GetKey("right"))
+				yTurn = -0.5f*controller.GetAxis("right") * turnCoeff;
+			else if(controller.GetKey("left"))
+				yTurn = 0.5f*controller.GetAxis("left") * turnCoeff;
 		}
 
 	}
 	
 	public void controlCamera()
 	{
-		if (controller.GetKeyDown ("viewInverse")) {
+		if (controller.GetKeyDown ("inverseCamera")) {
 			kart.cm1c.reversed = -1f ;
 		}
-		if (controller.GetKeyUp ("viewInverse")) {
+		if (controller.GetKeyUp ("inverseCamera")) {
 			kart.cm1c.reversed = 1f ;
 		}
-		if (controller.GetKeyDown ("viewChange")) {
+		if (controller.GetKeyDown ("switchCamera")) {
 			if (kart.cm1c.positionForward == 1f)
 				kart.cm1c.positionForward = 0.85f ;
 			else

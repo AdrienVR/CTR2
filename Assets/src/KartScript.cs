@@ -52,8 +52,8 @@ public class KartScript : MonoBehaviour {
 			if (!kart_state.AbleToShoot())
 				return;
 			facteurSens = 1f;
-			if (controller.GetKey("moveBack"))
-				facteurSens = -controller.GetAxis("throw");
+			if (controller.GetKey("down"))
+				facteurSens = -controller.GetAxis("up");
 			if (System.Math.Abs(facteurSens)<Game.thresholdAxis)
 				facteurSens = 1f;
 			
@@ -118,8 +118,8 @@ public class KartScript : MonoBehaviour {
 
 		// computing the side
 		float sens = -1f;
-		if (controller.GetKey("throw"))
-			sens = controller.GetAxis("throw");
+		if (controller.GetKey("up"))
+			sens = controller.GetAxis("up");
 		if (System.Math.Abs(sens)<Game.thresholdAxis)
 			sens = -1f;
 

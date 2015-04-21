@@ -1,0 +1,15 @@
+{
+	"a1":"left",
+	"a2":"right",
+	"a3":"down",
+	"a4":"up",
+	"a5":"action",
+	"a6":"validate",
+	"a7":"stop",
+	"a8":"select",
+	"a9":"start",
+	"a10":"bip",
+	"a11":"jump",
+	"a12":"switchCamera",
+	"a13":"inverseCamera"
+}
