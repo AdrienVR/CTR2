@@ -3,29 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using MiniJSON;
+using System.Linq;
 
 public class ControllerResources
 {
-	public static Dictionary <string, string> actions = new Dictionary<string, string>
-	{
-		{"Avancer","validate"},
-		{"Sauter","jump"},
-		{"Actionner Arme","action"},
-		{"Mettre en Pause","start"},
-		{"Changer Vue","switchCamera"},
-		{"Inverser Camera","inverseCamera"},
-		{"Tourner Gauche","left"},
-		{"Tourner Droite","right"},
-		{"Reculer","down"},
-		{"Klaxonner","bip"},
-	};
-
 	const string relativePath = "Config";
 
 	public static int controllers = 0;
 
 	private static IDictionary controllersDictionary;
 	private static IDictionary actionsDictionary;
+
+	public static List<string> ActionNames;
 
 	private static void LoadConfigFiles()
 	{
@@ -38,6 +27,12 @@ public class ControllerResources
 
 		controllersDictionary = (IDictionary) Json.Deserialize(controllersConfigFile);
 		actionsDictionary = (IDictionary) Json.Deserialize(actionsConfigFile);
+
+		ActionNames = new List<string>();
+		foreach(string action in actionsDictionary.Values)
+		{
+			ActionNames.Add(action);
+		}
 	}
 
 	public static Dictionary <string, List <VirtualKey> > GetButtons(string type)

@@ -175,10 +175,24 @@ public class Menus : MonoBehaviour
 		}
 	}
 
+	void InitReglageMenu()
+	{
+		menuReglages =  new List <string> 
+		{
+			tr("Reglages Controles"),
+			tr("JOUEUR :"),
+			tr("RETOUR")
+		};
+		foreach(string action in ControllerResources.ActionNames)
+		{
+			menuReglages.Insert(2, tr(action));
+		}
+	}
+
 	// Use this for initialization
 	void Start ()
 	{
-
+		InitReglageMenu();
 		if (Application.loadedLevelName == "mainmenu") configWeaponsStates= new List <bool> ();
 		normalTime = Time.timeScale;
 		cameraMenu = (GameObject)GameObject.Instantiate (Resources.Load("cameraMenu"));
@@ -436,9 +450,11 @@ public class Menus : MonoBehaviour
 				textbutton.guiText.anchor=TextAnchor.MiddleLeft;
 				textAffiches.Add(textbutton);
 				GameObject textcontrol =(GameObject)Instantiate (Resources.Load ("textControl"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,0),Quaternion.identity);
-				//string action = ControllerAPI.GetActionName(menu[i]);
+
+				string name = ControllerResources.ActionNames[i-2];
+				string action = ControllerInterface.GetController(1).GetNameKey(name);
 				//string name  = ControllerAPI.KeyIs(positionH, action);
-				textcontrol.guiText.text=name;
+				textcontrol.guiText.text=action;
 				
 				controlAffiches.Add(textcontrol);
 				GameObject flecheD = (GameObject)Instantiate (Resources.Load ("menuFlecheD"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)2.5f)),pos.y,5),Quaternion.identity);
@@ -774,9 +790,9 @@ public class Menus : MonoBehaviour
 				textPlayer.guiText.text="Joueur "+positionH;
 				for(int i=0;i<controlAffiches.Count;i++)
 				{
-					//string action =ControllerAPI.GetActionName(menuCourant[i+2]);
-					//string name  = ControllerAPI.KeyIs(positionH, action);
-					controlAffiches[i].guiText.text=name;
+					string name = ControllerResources.ActionNames[i];
+					string action = ControllerInterface.GetController(positionH - 1).GetNameKey(name);
+					controlAffiches[i].guiText.text = action;
 				}
 				if(booleans["right_down"])
 				{
@@ -808,10 +824,11 @@ public class Menus : MonoBehaviour
 					controlAffiches[position-1].guiText.text="?";
 					controlAffiches[position-1].guiText.color=Color.blue;
 					waitingForKey = true;
-					//string action =ControllerAPI.GetActionName(menuCourant[position+1]);
-					//string name  = ControllerAPI.KeyIs(positionH, action);
+					
+					string name = ControllerResources.ActionNames[0];
+					string action = ControllerInterface.GetController(1).GetNameKey(name);
 
-					StartCoroutine(setKey("", ""));
+					StartCoroutine(SetKey(action, name));
 				}
 			}
 			else if(menuCourant[0] == menuPersos[0] && position<menuPersos.Count - 3)
@@ -952,7 +969,7 @@ public class Menus : MonoBehaviour
 		}
 	}
 	
-	IEnumerator setKey(string action, string name)
+	IEnumerator SetKey(string action, string name)
 	{
 		float timeStart = Time.realtimeSinceStartup;
 		while(Time.realtimeSinceStartup - timeStart < 0.1f)
@@ -962,7 +979,18 @@ public class Menus : MonoBehaviour
 		//ControllerAPI.ListenForKey(action, name);
 	}
 	
-	IEnumerator getKey()
+	
+	void VirtualGetKey()
+	{
+		waitingForKey = false;
+		flechesD[position-1].SetActive(true);
+		authorizeNavigate=true;
+		string name = ControllerResources.ActionNames[0];
+		string action = ControllerInterface.GetController(1).GetNameKey(name);
+		controlAffiches[position-1].guiText.text=action;
+	}
+	
+	IEnumerator GetKey()
 	{
 		float timeStart = Time.realtimeSinceStartup;
 		while(Time.realtimeSinceStartup - timeStart < 0.1f)
@@ -972,15 +1000,17 @@ public class Menus : MonoBehaviour
 		waitingForKey = false;
 		flechesD[position-1].SetActive(true);
 		authorizeNavigate=true;
-		//string action = ControllerAPI.GetActionName(menuCourant[position+1]);
-		//string name  = ControllerAPI.KeyIs(positionH, action);
-		controlAffiches[position-1].guiText.text=name;
+		string name = ControllerResources.ActionNames[0];
+		string action = ControllerInterface.GetController(1).GetNameKey(name);
+		controlAffiches[position-1].guiText.text=action;
 	}
 	
 	void CheckNewKey()
 	{
 		//if (ControllerAPI.CheckForAxis() || ControllerAPI.CheckForKey())
-			//StartCoroutine(getKey());
+			//StartCoroutine(GetKey());
+		if (waitingForKey == true && authorizeNavigate == false)
+			VirtualGetKey();
 	}
 
 	void CheckKeys()

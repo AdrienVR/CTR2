@@ -24,6 +24,13 @@ public class ControllerBase
 			}
 		}
 	}
+
+	public string GetNameKey(string actionName)
+	{
+		if (buttons[actionName][0] as Axis != null)
+			return (buttons[actionName][0] as Axis).keyName;
+		return (buttons[actionName][0] as Key).keyName;
+	}
 	
 	public float GetAxis(string actionName)
 	{

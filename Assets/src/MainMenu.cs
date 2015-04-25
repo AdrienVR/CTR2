@@ -7,10 +7,15 @@ public class MainMenu : MonoBehaviour
 	public Texture hover;
 
 	// Use this for initialization
-	void Start ()
+	void Awake ()
 	{
 		InitController ();
-		Application.LoadLevelAdditive("commonScene");
+
+		if (AudioManager.Instance == null && ControllerInterface.Instance == null)
+		{
+			Application.LoadLevelAdditive("commonScene");
+		}
+
 		InitMenus ();
 		
 		#if UNITY_EDITOR
