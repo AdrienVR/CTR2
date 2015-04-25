@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 //using System;
 
+// this class manages the mouvements
 
 public class KartController : MonoBehaviour
 {	
@@ -54,8 +55,10 @@ public class KartController : MonoBehaviour
 	{
 		coeffInitSpeed = speedCoeff;
 
-		foreach (Transform child in transform){
-			if (child.name == "kartSmoke"){
+		foreach (Transform child in transform)
+		{
+			if (child.name == "kartSmoke")
+			{
 				smoke.Add(child.gameObject);
 				continue;
 			}
@@ -77,15 +80,18 @@ public class KartController : MonoBehaviour
 		yTurn = 0;
 		if (Time.timeScale == 0)
 			return;
-		if (!stop && kart_script.AbleToMove()){
+		if (!stop && kart_script.AbleToMove())
+		{
 			forwardNormal = wheels["steering"].forward;
 			//forwardNormal = transform.forward;
 			forwardNormal.y = 0;
 			forwardNormal = normalizeVector (forwardNormal);
 			
-			if (IA_enabled){}
+			if (IA_enabled)
+			{}
 			//controlIA();
-			else{
+			else
+			{
 				controle ();
 				/*
 				if (hasAxis)
@@ -127,7 +133,7 @@ public class KartController : MonoBehaviour
 			}
 
 
-			if (!forward)
+			if (forward == false)
 			{
 				if (System.Math.Abs(accelerationTime) < 0.01f)
 					accelerationTime = 0f;
@@ -141,7 +147,8 @@ public class KartController : MonoBehaviour
 				else if (accelerationTime < 0)
 					accelerationTime += ellapsedTime;
 			}
-			else{
+			else
+			{
 				forward = false;
 				if (accelerationTime < 1)
 					accelerationTime += ellapsedTime;
@@ -308,30 +315,48 @@ public class KartController : MonoBehaviour
 	
 	public void controle()
 	{
-		if(controller.GetKey("down") && !controller.GetKey("validate")){
-			lowForce = -controller.GetAxis("down") * forwardNormal * speedCoeff;
-			backward = true;
+		// wheels turning
+		if ((controller.GetKey("stop") || controller.GetKey("validate")))
+		{
+			if(controller.GetKey("right"))
+				yTurn = 0.5f*controller.GetAxis("right") * turnCoeff;
+			else if(controller.GetKey("left"))
+				yTurn = -0.5f*controller.GetAxis("left") * turnCoeff;
 		}
-		
-		if(controller.GetKey("validate") && !controller.GetKey("down"))
+
+		if (controller.GetKey("stop"))
+	    {}
+		else if(controller.GetKey("validate"))
 		{
 			postForce = forwardNormal*speedCoeff;
 			forward = true;
 		}
+		else if(controller.GetKey("down"))
+		{
+			lowForce = -controller.GetAxis("down") * forwardNormal * speedCoeff;
+			backward = true;
+			if(controller.GetKey("right"))
+				yTurn = -0.5f*controller.GetAxis("right") * turnCoeff;
+			else if(controller.GetKey("left"))
+				yTurn = 0.5f*controller.GetAxis("left") * turnCoeff;
+		}
 		
 		if(controller.GetKeyDown("jump"))
 		{
-			if(dansLesAirs==false)
+			if(dansLesAirs == false)
 			{
-				if (rigidbody.velocity.magnitude < 5 && inAirAfterJump){
+				if (rigidbody.velocity.magnitude < 5 && inAirAfterJump)
+				{
 					rigidbody.MovePosition(rigidbody.position + new Vector3(0,1.75f,0));
 				}
-				else {
+				else 
+				{
 					float high = transform.localRotation.eulerAngles.x;
 					if (high > 180)
 						high = System.Math.Abs(high-360);
 					else 
 						high = 0;
+
 					//Debug.Log("Angle : "+high);
 					high = System.Math.Min(high, 9f);
 					high = System.Math.Max(high, 1.75f);
@@ -342,36 +367,29 @@ public class KartController : MonoBehaviour
 					numberOfJump++;
 			}
 		}
+
 		if(controller.GetKey("jump") )//&& System.Math.Abs(Vector3.Angle(rigidbody.velocity,forwardNormal))>45)
 		{
 			//Debug.Log("Angle : "+transform.localRotation.eulerAngles.x+","+transform.localRotation.eulerAngles.z);
 			//rigidbody.velocity = new Vector3(0,-26f,0);
 		}
 
-		if (!controller.GetKey("down") && (controller.GetKey("stop") || controller.GetKey("validate"))){
-			if(controller.GetKey("right"))
-				yTurn = 0.5f*controller.GetAxis("right") * turnCoeff;
-			else if(controller.GetKey("left"))
-				yTurn = -0.5f*controller.GetAxis("left") * turnCoeff;
-		}
-		else if (controller.GetKey("down")){
-			if(controller.GetKey("right"))
-				yTurn = -0.5f*controller.GetAxis("right") * turnCoeff;
-			else if(controller.GetKey("left"))
-				yTurn = 0.5f*controller.GetAxis("left") * turnCoeff;
-		}
-
 	}
 	
 	public void controlCamera()
 	{
-		if (controller.GetKeyDown ("inverseCamera")) {
+		if (controller.GetKeyDown ("inverseCamera")) 
+		{
 			kart.cm1c.reversed = -1f ;
 		}
-		if (controller.GetKeyUp ("inverseCamera")) {
+
+		if (controller.GetKeyUp ("inverseCamera")) 
+		{
 			kart.cm1c.reversed = 1f ;
 		}
-		if (controller.GetKeyDown ("switchCamera")) {
+
+		if (controller.GetKeyDown ("switchCamera")) 
+		{
 			if (kart.cm1c.positionForward == 1f)
 				kart.cm1c.positionForward = 0.85f ;
 			else

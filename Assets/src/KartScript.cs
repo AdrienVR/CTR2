@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class KartScript : MonoBehaviour {
+// this class manages the actions
+
+public class KartScript : MonoBehaviour 
+{
 	
 	public static bool stop = true;
 	public bool stopDie = false;
@@ -53,11 +56,9 @@ public class KartScript : MonoBehaviour {
 		{
 			if (!kart_state.AbleToShoot())
 				return;
-			facteurSens = 1f;
+			facteurSens = 1;
 			if (controller.GetKey("down"))
-				facteurSens = -controller.GetAxis("up");
-			if (System.Math.Abs(facteurSens)<Game.thresholdAxis)
-				facteurSens = 1f;
+				facteurSens = -1;
 			
 			if (bomb == null)
 				UseWeapon ();
@@ -120,11 +121,9 @@ public class KartScript : MonoBehaviour {
 		}
 
 		// computing the side
-		float sens = -1f;
+		float sens = -1;
 		if (controller.GetKey("up"))
-			sens = controller.GetAxis("up");
-		if (System.Math.Abs(sens)<Game.thresholdAxis)
-			sens = -1f;
+			sens = 1;
 
 		// computing the distance to instantiate the weapon
 		if (w == "bomb")
