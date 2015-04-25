@@ -32,6 +32,10 @@ public class StatGame
 	public string duration;
 	public int nbPlayers, nbAppleBox, nbWeaponBox;
 
+	string tr(string original)
+	{
+		return TranslationResources.GetTraductionOf(original);
+	}
 
 	public StatGame(int n)
 	{
@@ -82,7 +86,7 @@ public class StatGame
 			if(p.numeroPlayer==numeroPlayer)
 				return p;
 		}
-		UnityEngine.Debug.Log ("erreur: il n'y a pas de StatPerso numero " + numeroPlayer);
+		UnityEngine.Debug.LogError ("erreur: il n'y a pas de StatPerso numero " + numeroPlayer);
 		return new StatPerso(-1);
 	}
 
@@ -93,21 +97,21 @@ public class StatGame
 		if(export) lines.Add("<html><head>"+css+"<meta charset=\"UTF-8\"><title>CRASH TEAM RACING II</title></head><body><center><h1>");
 		lines.Add("CRASH TEAM RACING II");
 		if(export) lines.Add("</h1>");
-		lines.Add("Partie jouée le "+DateTime.Now.ToString("dd MMMM yyyy à H:mm"));
+		lines.Add(tr("Partie jouée le ")+DateTime.Now.ToString("dd MMMM yyyy à H:mm"));
 		if(export) lines.Add("</center></br>");
 		lines.Add("");
 		if(export) lines.Add("</br>"+img1);
-		lines.Add("Durée : "+duration);
+		lines.Add(tr("Durée : ")+duration);
 		if(export) lines.Add("</br>"+img2);
-		lines.Add("Map : "+map);
+		lines.Add(tr("Map : ")+map);
 		if(export) lines.Add("</br>"+img3);
-		lines.Add("Nombre de Joueurs : "+nbPlayers);
+		lines.Add(tr("Nombre de Joueurs : ")+nbPlayers);
 		if(export) lines.Add("</br>"+img4);
-		lines.Add("Caisses d'Armes : "+nbWeaponBox+" caisse cassées");
+		lines.Add(tr("Caisses d'Armes : ")+nbWeaponBox+tr(" caisses obtenues"));
 		if(export) lines.Add("</br>"+img5);
-		lines.Add("Caisses de Pommes : "+nbAppleBox+" caisse cassées");
+		lines.Add(tr("Caisses de Pommes : ")+nbAppleBox+tr(" caisses obtenues"));
 		if(export) lines.Add("</br>"+img6);
-		lines.Add("Scores :");
+		lines.Add(tr("Scores :"));
 		if(export) lines.Add("<ul>");
 		foreach (string key in score.Keys)
 		{
@@ -119,11 +123,11 @@ public class StatGame
 		{
 			lines.Add("");
 			if(export) lines.Add("</br><h2>");
-			lines.Add("JOUEUR "+p.numeroPlayer);
+			lines.Add(tr("JOUEUR")+" "+p.numeroPlayer);
 			if(export) lines.Add("</h2></br>"+img6);
-			lines.Add("\t Score : "+p.score+" Pts");
+			lines.Add("\t "+tr("Score : ")+p.score+" Pts");
 			if(export) lines.Add("</br>"+img7);
-			lines.Add("\t Points Marqués : "+p.PtsMarques.Count+" Pts");
+			lines.Add("\t "+tr("Points Marqués : ")+p.PtsMarques.Count+" Pts");
 			List<int> traites = new List<int>();
 			if(export && p.PtsMarques.Count>0) lines.Add("<ul>");
 			else lines.Add("</br>");
@@ -132,30 +136,30 @@ public class StatGame
 				if(j != p.numeroPlayer && !traites.Contains(j))
 				{
 					if(export) lines.Add("<li>");
-					lines.Add("\t\t Contre Joueur "+j+" : "+compte(p.PtsMarques,j)+" Pts");
+					lines.Add("\t\t "+tr("Contre Joueur ")+j+" : "+compte(p.PtsMarques,j)+" Pts");
 					if(export) lines.Add("</br>");
 					traites.Add(j);
 				}
 			}
 			if(export && p.PtsMarques.Count>0) lines.Add("</ul>");
 			if(export) lines.Add(img8);
-			lines.Add("\t Points Perdus (suicide) : "+p.nbSuicides+" Pts");
+			lines.Add("\t "+tr("Points Perdus (suicide) : ")+p.nbSuicides+tr(" Pts"));
 			if(export) lines.Add("</br>");
 			if(export) lines.Add(img9);
 			if(p.PtsDonnes.Count==0)
 			{
-				lines.Add("\t Points Donnés (mort) : "+p.PtsDonnes.Count+" Pts");
+				lines.Add("\t "+tr("Points Donnés (mort) : ")+p.PtsDonnes.Count+tr(" Pts"));
 				if(export) lines.Add("</br>");
 			}
 			else
 			{
-				lines.Add("\t Points Donnés (mort) : "+p.PtsDonnes.Count+" Pts (pire ennemi : Joueur "+most(p.PtsDonnes)+")");
+				lines.Add("\t "+tr("Points Donnés (mort) : ")+p.PtsDonnes.Count+tr(" Pts")+tr(" (pire ennemi : Joueur ")+most(p.PtsDonnes)+")");
 				if(export) lines.Add("</br>");
 			}
 			if (p.getTotalWeapons()>0)
 			{
 				if(export) lines.Add(img4);
-				lines.Add("\t Détail des Armes obtenues : ("+p.getTotalWeapons()+" au total)");
+				lines.Add("\t "+tr("Détail des Armes obtenues : (")+p.getTotalWeapons()+tr(" au total)"));
 				p.printWeapons(lines,export);
 			}
 			if(export) lines.Add("</br>");
@@ -226,6 +230,11 @@ public class StatPerso
 	{
 		numeroPlayer = n;
 	}
+	
+	string tr(string original)
+	{
+		return TranslationResources.GetTraductionOf(original);
+	}
 
 	public void printWeapons(List <string> l, bool export)
 	{
@@ -233,42 +242,42 @@ public class StatPerso
 		if(nbBomb>0)
 		{
 			if(export) l.Add("<li>");
-			l.Add("\t\tBombes : "+ nbBomb);
+			l.Add("\t\t"+tr("Bombes : ")+ nbBomb);
 		}
 		if(nbMissile>0)
 		{
 			if(export) l.Add("<li>");
-			l.Add("\t\tMissiles : "+ nbMissile);
+			l.Add("\t\t"+tr("Missiles : ")+ nbMissile);
 		}
 		if(nbTNT>0)
 		{
 			if(export) l.Add("<li>");
-			l.Add("\t\tTNT : "+ nbTNT);
+			l.Add("\t\t"+tr("TNT : ")+ nbTNT);
 		}
 		if(nbNitro>0)
 		{
 			if(export) l.Add("<li>");
-			l.Add("\t\tNitros : "+ nbNitro);
+			l.Add("\t\t"+tr("Nitros : ")+ nbNitro);
 		}
 		if(nbFlacon>0)
 		{
 			if(export) l.Add("<li>");
-			l.Add("\t\tFlacons : "+ nbFlacon);
+			l.Add("\t\t"+tr("Flacons : ")+ nbFlacon);
 		}
 		if(nbAku>0)
 		{
 			if(export) l.Add("<li>");
-			l.Add("\t\tAku-Aku : "+ nbAku);
+			l.Add("\t\t"+tr("Aku-Aku : ")+ nbAku);
 		}
 		if(nbAccelerator>0)
 		{
 			if(export) l.Add("<li>");
-			l.Add("\t\tTurbos : "+ nbAccelerator);
+			l.Add("\t\t"+tr("Turbos : ")+ nbAccelerator);
 		}
 		if(nbShield>0)
 		{
 			if(export) l.Add("<li>");
-			l.Add("\t\tBoucliers : "+ nbShield);
+			l.Add("\t\t"+tr("Boucliers : ")+ nbShield);
 		}
 		if(export) l.Add("</ul>");
 	}

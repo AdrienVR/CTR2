@@ -30,7 +30,7 @@ public class Menus : MonoBehaviour
 	private static List <GameObject> textureAffichees =  new List <GameObject>();
 	private static List <GameObject> textAffiches =  new List <GameObject>();
 	private static List <GameObject> controlAffiches =  new List <GameObject>();
-	private static Dictionary <int, string> menuCourant = new Dictionary<int, string>();
+	private static List <string> menuCourant = new List <string>();
 	private static Dictionary <string, bool> booleans = new Dictionary<string, bool>{
 		{"up", false},{"down", false},{"left", false},{"right", false},
 		{"ok",false}, {"back", false},{"start", false},
@@ -58,95 +58,122 @@ public class Menus : MonoBehaviour
 	private static int nbPts=8;
 
 	// menus :
-	private static Dictionary <int, string> menuPause =  new Dictionary<int, string>
+	private static List <string> menuPause =  new List <string> 
 	{
-		{0,"Start"},
-		{1,"REPRENDRE"},
-		{2,"RECOMMENCER"},
-		{3,"CHANGER PERSONNAGE"},
-		{4,"CHANGER NIVEAU"},
-		{5,"CHANGER CONFIG"},
-		{6,"QUITTER"},
-		{7,"OPTIONS"}
+		"Start",
+		"REPRENDRE",
+		"RECOMMENCER",
+		"CHANGER PERSONNAGE",
+		"CHANGER NIVEAU",
+		"CHANGER CONFIG",
+		"QUITTER",
+		"OPTIONS"
 	};
-	private static Dictionary <int, string> menuOptions =  new Dictionary<int, string>
+	private static List <string>  menuOptions =  new List <string> 
 	{
-		{0,"Options"},
-		{1,"VOLUME :"},
-		{2,"REGLAGES CONTROLES"},
-		{3,"RETOUR"}
+		"Options",
+		"VOLUME :",
+		"REGLAGES CONTROLES",
+		"RETOUR"
 	};
-	private static Dictionary <int, string> menuReglages =  new Dictionary<int, string>
+	private static List <string>  menuReglages =  new List <string> 
 	{
-		{0,"Reglages Controles"},
-		{1,"JOUEUR :"},
-		{2,"Avancer"},
-		{3,"Reculer"},
-		{4,"Tourner Gauche"},
-		{5,"Tourner Droite"},
-		{6,"Actionner Arme"},
-		{7,"Sauter"},
-		{8,"Inverser Camera"},
-		{9,"Changer Vue"},
-		{10,"Mettre en Pause"},
-		{11,"RETOUR"}
+		"Reglages Controles",
+		"JOUEUR :",
+		"Avancer",
+		"Actionner Arme",
+		"Reculer",
+		"Gauche",
+		"Droite",
+		"Sauter",
+		"Inverser Camera",
+		"Changer Vue",
+		"Mettre en Pause",
+		"RETOUR"
 	};
-	private static Dictionary <int, string> menuFin =  new Dictionary<int, string>
+	private static List <string> menuFin =  new List <string> 
 	{
-		{0,"Fin"},
-		{1,"RECOMMENCER"},
-		{2,"STATISTIQUES"},
-		{3,"CHANGER PERSONNAGE"},
-		{4,"CHANGER NIVEAU"},
-		{5,"CHANGER CONFIG"},
-		{6,"QUITTER"}
+		"Fin",
+		"RECOMMENCER",
+		"STATISTIQUES",
+		"CHANGER PERSONNAGE",
+		"CHANGER NIVEAU",
+		"CHANGER CONFIG",
+		"QUITTER"
 	};
-	public static Dictionary <int, string> mainMenu =  new Dictionary<int, string>
+	public static List <string> mainMenu = new List <string> 
 	{
-		{0,"Crash Team Racing II"},
-		{1,"BATAILLE"},
-		{2,"CREDITS"},
-		{3,"QUITTER"}
+		"Crash Team Racing II",
+		"BATAILLE",
+		"CREDITS",
+		"QUITTER"
 	};
-	private static Dictionary <int, string> menuCredits =  new Dictionary<int, string>
+	private static List <string> menuCredits = new List <string> 
 	{
-		{0,"Credits"},
-		{1,"RETOUR"}
+		"Credits",
+		"RETOUR"
 	};
-	private static Dictionary <int, string> menuPersos =  new Dictionary<int, string>
+	private static List <string> menuPersos = new List <string> 
 	{
-		{0,"Personnages"},
-		{1,"Crash"},
-		{2,"Coco"},
-		{3,"Crash"},
-		{4,"Crash"},
-		{5,"VALIDER"},
-		{6,"RETOUR"}
+		"Personnages",
+		"Crash",
+		"Coco",
+		"Crash",
+		"Crash",
+		"VALIDER",
+		"RETOUR"
 	};
-	private static Dictionary <int, string> menuConfig =  new Dictionary<int, string>
+	private static List <string> menuConfig = new List <string> 
 	{
-		{0,"Choix des Armes"},
-		{1,"Bouclier"},
-		{2,"Bombe"},
-		{3,"Bombe x 3"},
-		{4,"Potion"},
-		{5,"Turbo"},
-		{6,"Missile"},
-		{7,"Missile x 3"},
-		{8,"Aku-Aku"},
-		{9,"TNT"},
-		{10,"8"},
-		{11,"VALIDER"},
-		{12,"RETOUR"}
+		"Choix des Armes",
+		"Bouclier",
+		"Bombe",
+		"Bombe x 3",
+		"Potion",
+		"Turbo",
+		"Missile",
+		"Missile x 3",
+		"Aku-Aku",
+		"TNT",
+		"8",
+		"VALIDER",
+		"RETOUR"
 	};
-	private static Dictionary <int, string> menuMaps =  new Dictionary<int, string>
+	private static List <string> menuMaps =  new List <string> 
 	{
-		{0,"Niveaux"},
-		{1,"VALIDER"},
-		{2,"RETOUR"}
+		"Niveaux",
+		"VALIDER",
+		"RETOUR"
 	};
 
-	public static Dictionary <int, string> menuToGo=mainMenu;
+	public static List <string> menuToGo = mainMenu;
+
+	private static bool m_translationDone = false;
+
+	private static List<List<string>> translatableLists;
+
+	//called before start
+	void Awake()
+	{
+		if (m_translationDone == false)
+		{
+			translatableLists = new List<List<string>>
+			{
+				menuConfig, menuCourant, menuCredits, menuFin, 
+				menuMaps, menuOptions, menuPause, menuPersos,
+				menuReglages, menuToGo
+			};
+
+			foreach(List<string> list in translatableLists)
+			{
+				for (int i = 0; i < list.Count; i++)
+				{
+					list[i] = tr(list[i]);
+				}
+			}
+			m_translationDone = true;
+		}
+	}
 
 	// Use this for initialization
 	void Start ()
@@ -272,16 +299,17 @@ public class Menus : MonoBehaviour
 		
 		Destroy (greyT);
 		GameObject j1 =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.27f,0.35f,0),Quaternion.identity);
-		j1.guiText.text = "Joueur "+winner.numeroJoueur+" : "+winner.nbPoints+" Pts";
-		Main.statistics.score.Add ("Joueur " + winner.numeroJoueur, winner.nbPoints);
+		string player = tr("Joueur") + " ";
+		j1.guiText.text = player+winner.numeroJoueur+" : "+winner.nbPoints+" Pts";
+		Main.statistics.score.Add (player + winner.numeroJoueur, winner.nbPoints);
 		j1.guiText.color = Color.yellow;
 		loosers = loosers.OrderBy(x => x.nbPoints).ToList();
 		loosers.Reverse ();
 		foreach(Kart k in loosers)
 		{
 			GameObject j =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.27f,0.35f-0.08f*(loosers.IndexOf(k)+1),0),Quaternion.identity);
-			j.guiText.text = "Joueur "+k.numeroJoueur+" : "+k.nbPoints+" Pts";
-			Main.statistics.score.Add("Joueur "+k.numeroJoueur,k.nbPoints);
+			j.guiText.text = player+k.numeroJoueur+" : "+k.nbPoints+" Pts";
+			Main.statistics.score.Add(player+k.numeroJoueur,k.nbPoints);
 		}
 		KartController.stop = false;
 		winner.kart_script.GetTransform().position = main.listRespawn [0].position;
@@ -342,7 +370,7 @@ public class Menus : MonoBehaviour
 		}
 		
 	}
-	public void displayMenu(Dictionary <int, string> menu)
+	public void displayMenu(List<string> menu)
 	{
 		viderMenu ();
 		if(cameraMenu) cameraMenu.SetActive (true);
@@ -364,10 +392,15 @@ public class Menus : MonoBehaviour
 		menuCourant = menu;
 		authorizeNavigate = true;
 	}
-	
-	bool specialButton(Dictionary <int, string> menu, int i)
+
+	string tr(string original)
 	{
-		if(menu[i]=="VOLUME :")
+		return TranslationResources.GetTraductionOf(original);
+	}
+	
+	bool specialButton(List <string> menu, int i)
+	{
+		if(menu[i]==tr("VOLUME :"))
 		{
 			Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
 			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
@@ -380,9 +413,9 @@ public class Menus : MonoBehaviour
 			textAffiches.Add(textbutton);
 			return true;
 		}
-		else if(menu[0]=="Reglages Controles" && menu[i]!="RETOUR")
+		else if(menu[0]==tr("Reglages Controles") && menu[i]!=tr("RETOUR"))
 		{
-			if(menu[i]=="JOUEUR :")
+			if(menu[i]==tr("JOUEUR :"))
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
 				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
@@ -392,7 +425,7 @@ public class Menus : MonoBehaviour
 				textAffiches.Add(textbutton);
 				textPlayer = (GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,6),Quaternion.identity);
 				positionH=main.players[0].numeroJoueur;
-				textPlayer.guiText.text="Joueur "+positionH;
+				textPlayer.guiText.text=tr("Joueur")+" "+positionH;
 			}
 			else if(i>1)
 			{
@@ -413,7 +446,7 @@ public class Menus : MonoBehaviour
 			}
 			return true;
 		}
-		else if(menu[0]=="Fin")
+		else if(menu[0]==tr("Fin"))
 		{
 			if(titreAffiche.transform.position.x != 0.8f)
 				titreAffiche.transform.position = new Vector3(0.8f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
@@ -518,7 +551,7 @@ public class Menus : MonoBehaviour
 					Debug.Log("AJOUT D'UN BOOLEEN");
 				}
 				GameObject textTitre =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.5f,0.4f,2f),Quaternion.identity);
-				textTitre.guiText.text="Nombre de Points";
+				textTitre.guiText.text=tr("Nombre de Points");
 				triangleFond = textTitre;
 				position=menuConfig.Count-3;
 			}
@@ -607,10 +640,10 @@ public class Menus : MonoBehaviour
 						textureAffichees [position].guiTexture.texture = hover;
 						textAffiches[i].guiText.color=Color.white;
 						textAffiches[position].guiText.color=Color.black;
-						if(menuCourant[0]=="Reglages Controles")
+						if(menuCourant[0]==tr("Reglages Controles"))
 						{
 							textPlayer.guiText.color=Color.white; 
-							if(menuCourant[position+1]=="JOUEUR :")
+							if(menuCourant[position+1]==tr("JOUEUR :"))
 							{
 								textPlayer.guiText.color=Color.black;
 							}
@@ -717,15 +750,15 @@ public class Menus : MonoBehaviour
 			}
 			if(booleans["ok"])
 			{
-				if(menuCourant[position+1]=="RETOUR")
+				if(menuCourant[position+1]==tr("RETOUR"))
 					AudioManager.Play("cancelMenu");
 				else
 					AudioManager.Play("validateMenu");
 				action(menuCourant,position);
 			}
-			if(booleans["right"] && menuCourant[position+1]=="VOLUME :" && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
-			if(booleans["left"] && menuCourant[position+1]=="VOLUME :" && AudioListener.volume>=0.008f) AudioListener.volume-=0.008f;;
-			if(menuCourant[position+1]=="VOLUME :")
+			if(booleans["right"] && menuCourant[position+1]==tr("VOLUME :") && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
+			   if(booleans["left"] && menuCourant[position+1]==tr("VOLUME :") && AudioListener.volume>=0.008f) AudioListener.volume-=0.008f;;
+			if(menuCourant[position+1]==tr("VOLUME :"))
 			{
 				Destroy(triangleVolume);
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menuCourant.Count/2-1),-1);
@@ -736,7 +769,7 @@ public class Menus : MonoBehaviour
 				else if (AudioListener.volume>=0.4f && AudioListener.volume<0.6f) triangleVolume.guiTexture.texture=triVolume2;
 				else triangleVolume.guiTexture.texture=triVolume3;
 			}
-			else if(menuCourant[position+1]=="JOUEUR :")
+			else if(menuCourant[position+1]==tr("JOUEUR :"))
 			{
 				textPlayer.guiText.text="Joueur "+positionH;
 				for(int i=0;i<controlAffiches.Count;i++)
@@ -759,7 +792,7 @@ public class Menus : MonoBehaviour
 				}
 				
 			}
-			else if((menuCourant[0]=="Reglages Controles") && (menuCourant[position+1]!="Reglages Controles") && (menuCourant[position+1]!="JOUEUR :") && (menuCourant[position+1]!="RETOUR"))
+			else if((menuCourant[0]==tr("Reglages Controles")) && (menuCourant[position+1]!=tr("Reglages Controles")) && (menuCourant[position+1]!=tr("JOUEUR :")) && (menuCourant[position+1]!=tr("RETOUR")))
 			{
 				/*
 				foreach(string a in ControllerAPI.buttonProfiles[Game.playersMapping[positionH]].Keys)
@@ -1002,131 +1035,119 @@ public class Menus : MonoBehaviour
 		}
 	}
 	
-	void action(Dictionary <int, string> menu,int p)
+	void action(List <string> menu,int p)
 	{
-		if(menu[0]=="Start")
+		if(menu[0]==tr("Start"))
 		{
-			switch (menu[p+1])
+			if(menu[p+1].Equals( tr("REPRENDRE") ))
 			{
-			case "REPRENDRE":
 				Pause();
-				break;
-			case "RECOMMENCER":
-				StartCoroutine(changeLevel("loaded"));
-				Restart();
-				break;
-			case "OPTIONS":
+			}
+			else if (menu[p+1].Equals( tr("RECOMMENCER")))
+			{
+					StartCoroutine(changeLevel("loaded"));
+					Restart();
+			}
+			else if (menu[p+1].Equals( tr("OPTIONS")))
+			{
+					displayMenu(menuOptions);
+			}
+			else if (menu[p+1].Equals( tr("CHANGER CONFIG")))
+			{
+
+			}
+			else if (menu[p+1].Equals( tr("CHANGER NIVEAU")))
+			{
+					if (Application.loadedLevelName == "plage")
+						//Application.LoadLevel("dinoRace");
+						StartCoroutine(changeLevel("parking"));
+					else
+						StartCoroutine(changeLevel("plage"));
+					//Application.LoadLevel("plage");
+					Restart();
+			}
+			else if (menu[p+1].Equals(tr("QUITTER")))
+			{
+					Application.Quit();
+			}
+		}
+		if(menu[0]==tr("Fin"))
+		{
+			if(menu[p+1].Equals( tr("RECOMMENCER")))
+			{
+					StartCoroutine(changeLevel("loaded"));
+					Restart();
+			}
+			else if (menu[p+1].Equals( tr("CHANGER NIVEAU")))
+			{
+					Restart();
+					Menus.menuToGo=menuMaps;
+					StartCoroutine(changeLevel("mainmenu"));
+			}
+			else if (menu[p+1].Equals( tr("CHANGER PERSONNAGE")))
+			{
+					Restart();
+					Menus.menuToGo=menuPersos;
+					StartCoroutine(changeLevel("mainmenu"));
+			}
+			else if (menu[p+1].Equals( tr("CHANGER CONFIG")))
+			{
+					Restart();
+					Menus.menuToGo=menuConfig;
+					StartCoroutine(changeLevel("mainmenu"));
+			}
+			else if (menu[p+1].Equals( tr("QUITTER")))
+			{
+					Application.Quit();
+			}
+		}
+		if(menu[0]==tr("Options"))
+		{
+			if(menu[p+1].Equals( tr("REGLAGES CONTROLES")))
+			{
+					displayMenu(menuReglages);
+			}
+			else if (menu[p+1].Equals(  tr("RETOUR")))
+			{
+					displayMenu(menuPause);
+			}
+		}
+		if(menu[0]==tr("Reglages Controles"))
+		{
+			if(menu[p+1].Equals( tr("RETOUR") ))
+			{
 				displayMenu(menuOptions);
-				break;
-			case "CHANGER CONFIG":
-				break;
-			case "CHANGER NIVEAU":
-				if (Application.loadedLevelName == "plage")
-					//Application.LoadLevel("dinoRace");
-					StartCoroutine(changeLevel("parking"));
-				else
-					StartCoroutine(changeLevel("plage"));
-				//Application.LoadLevel("plage");
-				Restart();
-				break;
-			case "QUITTER":
-				Application.Quit();
-				break;
-			default:
-				break;
-			}
-		}
-		if(menu[0]=="Fin")
-		{
-			switch (menu[p+1])
-			{
-			case "RECOMMENCER":
-				StartCoroutine(changeLevel("loaded"));
-				Restart();
-				break;
-			case "CHANGER NIVEAU":
-				Restart();
-				Menus.menuToGo=menuMaps;
-				StartCoroutine(changeLevel("mainmenu"));
-				break;
-			case "CHANGER PERSONNAGE":
-				Restart();
-				Menus.menuToGo=menuPersos;
-				StartCoroutine(changeLevel("mainmenu"));
-				break;
-			case "CHANGER CONFIG":
-				Restart();
-				Menus.menuToGo=menuConfig;
-				StartCoroutine(changeLevel("mainmenu"));
-				break;
-			case "QUITTER":
-				Application.Quit();
-				break;
-			default:
-				break;
-			}
-		}
-		if(menu[0]=="Options")
-		{
-			switch (menu[p+1])
-			{
-			case "REGLAGES CONTROLES":
-				displayMenu(menuReglages);
-				break;
-			case "RETOUR":
-				displayMenu(menuPause);
-				break;
-			default:
-				break;
-			}
-		}
-		if(menu[0]=="Reglages Controles")
-		{
-			switch (menu[p+1])
-			{
-			case "RETOUR":
-				displayMenu(menuOptions);
-				break;
-			default:
-				break;
 			}
 		}
 		if(menu[0]==mainMenu[0])
 		{
-			switch (menu[p+1])
+			if(menu[p+1].Equals( tr("QUITTER")))
 			{
-			case "QUITTER":
 				Application.Quit();
-				break;
-			case "CREDITS":
+			}
+			else if (menu[p+1].Equals( tr("CREDITS")))
+			{
 				displayMenu(menuCredits);
-				break;
-			case "BATAILLE":
+			}
+			else if (menu[p+1].Equals(tr("BATAILLE")))
+			{
 				displayMenu(menuPersos);
 				cadre1.guiTexture.enabled=true;
 				cadre5.guiTexture.enabled = true;
 				ShowRoom.ShowModel(menuPersos[position+1]);
-				break;
-			default:
-				break;
 			}
 		}
 		if(menu[0]==menuCredits[0])
 		{
-			switch (menu[p+1])
+			if(menu[p+1].Equals( tr("RETOUR") ))
 			{
-			case "RETOUR":
 				displayMenu(mainMenu);
-				break;
-			default:
-				break;
 			}
 		}
 		if(menu[0]==menuMaps[0])
 		{
-			switch (menu[p+1])
+			if(menu[p+1].Equals(tr("RETOUR")))
 			{
-			case "RETOUR":
 				ShowRoom.Leave();
 				displayMenu(menuPersos);
 				persos=new List<string>();
@@ -1134,8 +1155,9 @@ public class Menus : MonoBehaviour
 				falseok=false;
 				cadre5.guiTexture.enabled = true;
 				ShowRoom.ShowModel(menuPersos[position+1]);
-				break;
-			case "VALIDER":
+			}
+			else if (menu[p+1].Equals(tr("VALIDER")))
+			{
 				falseok=true;
 				ShowRoom.Leave();
 				map=Game.listMapForMenu[positionH];
@@ -1144,16 +1166,12 @@ public class Menus : MonoBehaviour
 				cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre6"), textureAffichees [position].transform.position+new Vector3(0,0,2f), Quaternion.identity);
 				cadre1.guiTexture.enabled = true;
 				weapons=new List<string>();
-				break;
-			default:
-				break;
 			}
 		}
 		if(menu[0]==menuPersos[0])
 		{
-			switch (menu[p+1])
+			if(menu[p+1].Equals(tr("RETOUR")))
 			{
-			case "RETOUR":
 				ShowRoom.Leave();
 				cadre5.guiTexture.enabled = false;
 				for(int n=0;n<persos.Count;n++)
@@ -1168,8 +1186,9 @@ public class Menus : MonoBehaviour
 				}
 				falseok=true;
 				persos=new List<string>();
-				break;
-			case "VALIDER":
+			}
+			else if(menu[p+1].Equals( tr("VALIDER")))
+			{
 				if(persos.Count>1)
 				{
 					ShowRoom.Leave();
@@ -1177,26 +1196,31 @@ public class Menus : MonoBehaviour
 					displayMenu(menuMaps);
 					positionH=0;
 				}
-				break;
-			default:
-				break;
 			}
 		}
 		if(menu[0]==menuConfig[0])
 		{
-			switch (menu[p+1])
+			if(menu[p+1].Equals( tr("RETOUR") ))
 			{
-			case "RETOUR":
 				cadre1.guiTexture.enabled = false;
 				displayMenu(menuMaps);
 				j = 5;
 				configWeaponsStates=new List<bool>();
-				break;
-			case "VALIDER":
+			}
+			else if(menu[p+1].Equals( tr("VALIDER") ))
+			{
 				transformBoolToString();
 				for(int i=0;i< weapons.Count;i++)
 				{
-					weapons[i]=Game.translateNameWeapons[weapons[i]];
+					foreach(string key in Game.translateNameWeapons.Keys)
+					{
+						if (tr (key) == weapons[i])
+						{
+							weapons[i] = Game.translateNameWeapons[key];
+							break;
+						}
+					}
+					//weapons[i]=Game.translateNameWeapons[weapons[i]];
 				}
 				Game.gameWeapons=weapons;
 				/*for(int i =0;i< persos.Count;i++)
@@ -1206,9 +1230,6 @@ public class Menus : MonoBehaviour
 				Game.listKarts=persos;
 				Game.nbPoints=nbPts;
 				StartCoroutine(changeLevel(Game.translateNameMaps[map]));
-				break;
-			default:
-				break;
 			}
 		}
 	}

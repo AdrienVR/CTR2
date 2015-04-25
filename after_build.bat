@@ -1,1 +1,1 @@
-xcopy "Assets\src\API\*.JSON" "Build\CTR2_Data\config\*.JSON" /e /i /y
+xcopy "Assets\Config\*.JSON" "Build\CTR2_Data\Config\*.JSON" /e /i /y

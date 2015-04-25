@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class HighControl : MonoBehaviour {
-	private KartController kc;
+	//private KartController kc;
 	private float previousHigh;
 	private List<float> moyPente = new List<float>(){0,0,0,0,0,0,0,0,0,0};
 	private int i = 0;
@@ -12,7 +12,7 @@ public class HighControl : MonoBehaviour {
 
 	void Start ()
 	{
-		kc = GetComponent<KartController>();
+		//kc = GetComponent<KartController>();
 		
 		previousHigh = transform.position.y;
 	}

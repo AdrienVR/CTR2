@@ -9,7 +9,6 @@ public class ControllerResources
 	public static Dictionary <string, string> actions = new Dictionary<string, string>
 	{
 		{"Avancer","validate"},
-		{"Reculer","down"},
 		{"Sauter","jump"},
 		{"Actionner Arme","action"},
 		{"Mettre en Pause","start"},
@@ -17,8 +16,11 @@ public class ControllerResources
 		{"Inverser Camera","inverseCamera"},
 		{"Tourner Gauche","left"},
 		{"Tourner Droite","right"},
+		{"Reculer","down"},
 		{"Klaxonner","bip"},
 	};
+
+	const string relativePath = "Config";
 
 	public static int controllers = 0;
 
@@ -27,11 +29,7 @@ public class ControllerResources
 
 	private static void LoadConfigFiles()
 	{
-#if UNITY_EDITOR
-		string relativePath = Path.Combine("src", "API");
-#else
-		string relativePath = "config";
-#endif
+
 		string path = Path.Combine(Application.dataPath, Path.Combine(relativePath, "ControllersConfig.JSON"));
 		string controllersConfigFile = File.ReadAllText(path);
 		
@@ -42,7 +40,7 @@ public class ControllerResources
 		actionsDictionary = (IDictionary) Json.Deserialize(actionsConfigFile);
 	}
 
-	public static Dictionary <string, List<VirtualKey>> GetButtons(string type)
+	public static Dictionary <string, List <VirtualKey> > GetButtons(string type)
 	{
 		if (controllersDictionary == null || actionsDictionary == null)
 		{
@@ -63,15 +61,15 @@ public class ControllerResources
 		
 		IDictionary controller = (IDictionary) controllersDictionary[type];
 
-		Dictionary <string, List<VirtualKey>> buttons = new Dictionary <string, List<VirtualKey>>();
+		Dictionary <string, List <VirtualKey> > buttons = new Dictionary <string, List<VirtualKey>>();
 
 		bool succeed = false;
-		bool usingAxis = false;
+		//bool usingAxis = false;
 		bool isControllerDependant = false;
 		foreach (string action in controller.Keys) 
 		{
 			string realActionName = actionsDictionary[action] as string;
-			List<VirtualKey> virtualKeys = new List<VirtualKey>();
+			List<VirtualKey> virtualKeys = new List <VirtualKey> ();
 			IList keys = (IList) controller[action];
 			foreach(string key in keys)
 			{
@@ -86,19 +84,19 @@ public class ControllerResources
 				{
 					if (isControllerDependant)
 						offset = controllers * 8;
-					string axisName = KeyCodes.axis[KeyCodes.axisNames.IndexOf(contractedAxisName)];
+					string axisName = KeyCodes.axis[KeyCodes.axisNames.IndexOf(contractedAxisName) + offset];
 					string sign = key.Substring(key.Length - 1, 1);
 					if (sign == "+")
 						virtualKeys.Add( new Axis(realActionName, axisName, 0, 1) );
 					else // sign == "-"
 						virtualKeys.Add( new Axis(realActionName, axisName, 0, -1) );
-					usingAxis = true;
+					//usingAxis = true;
 				}
 				else if (KeyCodes.codeNames.IndexOf(key) != -1)
 				{
 					if (isControllerDependant)
 						offset = controllers * 20;
-					KeyCode code = KeyCodes.codes[KeyCodes.codeNames.IndexOf(key)];
+					KeyCode code = KeyCodes.codes[KeyCodes.codeNames.IndexOf(key) + offset];
 					virtualKeys.Add(new Key(code,realActionName));
 				}
 				else

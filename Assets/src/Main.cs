@@ -24,7 +24,7 @@ public class Main : MonoBehaviour
 
 	public static bool forward;
 	public static bool right=false;
-	private bool musicStarted = false;
+	//private bool musicStarted = false;
 
 	public static StatGame statistics;
 

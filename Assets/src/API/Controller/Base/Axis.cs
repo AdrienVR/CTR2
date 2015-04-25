@@ -15,7 +15,7 @@ public class Axis : VirtualKey
 	private float m_currentValue;
 	private int m_index;
 
-	private float m_minValue;
+	//private float m_minValue;
 	private float m_maxValue;
 
 	private float thresholdAxis = 0.9f;
@@ -25,7 +25,7 @@ public class Axis : VirtualKey
 		this.actionName = actionName;
 		this.keyName = axisName;
 
-		m_minValue = minValue;
+		//m_minValue = minValue;
 		m_maxValue = maxValue;
 
 		m_valueStates = new List<float>();

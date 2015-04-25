@@ -15,7 +15,7 @@ public class CameraController : MonoBehaviour
 	void Start() {
 		startTime = Time.time;
 		Vector3 objectiv  = kc.transform.position + backward - reversed*positionForward*6*kc.transform.forward+kc.transform.right*4;
-		Vector3 tr = (transform.position - objectiv)/20f;
+		//Vector3 tr = (transform.position - objectiv)/20f;
 		//while (Vector3.Distance(transform.position, objectiv)>100f){
 		transform.position = 0.75f*objectiv;
 		//}
