@@ -54,19 +54,13 @@ public class Main : MonoBehaviour
 		forward = false;
 	}*/
 
-	IEnumerator SetCommon()
+	void Awake()
 	{
+		
 		if (AudioManager.Instance == null && ControllerInterface.Instance == null)
 		{
-			yield return new WaitForSeconds(0.1f);
 			Application.LoadLevelAdditive("commonScene");
 		}
-	}
-
-	void Start()
-	{
-
-		StartCoroutine(SetCommon());
 
 		nbPtsPartie = Game.nbPoints;
 		nbPlayer = Game.listKarts.Count;
@@ -89,6 +83,10 @@ public class Main : MonoBehaviour
 #else
 		Screen.showCursor = false;
 #endif
+	}
+
+	void Start()
+	{
 
 		Debug.Log ("Starting with "+ ControllerInterface.NumberOfController + " controllers.");
 

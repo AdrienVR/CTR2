@@ -47,8 +47,10 @@ public class KartScript : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		if (controller.GetKeyDown("action")) {
+	void Update () 
+	{
+		if (controller.GetKeyDown("action")) 
+		{
 			if (!kart_state.AbleToShoot())
 				return;
 			facteurSens = 1f;
@@ -59,7 +61,8 @@ public class KartScript : MonoBehaviour {
 			
 			if (bomb == null)
 				UseWeapon ();
-			else {
+			else 
+			{
 				bomb.BombActionExplosion ();
 				bomb = null;
       		}

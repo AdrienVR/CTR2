@@ -6,7 +6,7 @@ using System.IO;
 public class ControllerManager : MonoBehaviour 
 {
 
-	void Start()
+	void Awake()
 	{
 		if (ControllerInterface.Instance == null)
 		{

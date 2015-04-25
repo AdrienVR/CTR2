@@ -10,10 +10,7 @@ public class ControllerInterface
 
 	public static int NumberOfController 
 	{
-		get
-		{
-			return Instance.instantiatedControllers;
-		}
+		get{return Instance.instantiatedControllers;}
 	}
 
 	private static List<ControllerBase> allControllers = new List<ControllerBase>();
@@ -28,6 +25,7 @@ public class ControllerInterface
 		allControllers.Add(new ControllerBase("Keyboard1"));
 		allControllers.Add(new ControllerBase("Keyboard2"));
 		allControllers.Add(new ControllerBase("Keyboard3"));
+		UpdateInternal();
 	}
 	
 	public void UpdateInternal() 

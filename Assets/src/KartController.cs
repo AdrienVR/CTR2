@@ -307,7 +307,7 @@ public class KartController : MonoBehaviour
 	}
 	
 	public void controle()
-	{	
+	{
 		if(controller.GetKey("down") && !controller.GetKey("validate")){
 			lowForce = -controller.GetAxis("down") * forwardNormal * speedCoeff;
 			backward = true;
