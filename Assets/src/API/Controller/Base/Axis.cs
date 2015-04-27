@@ -5,9 +5,7 @@ using System.IO;
 
 public class Axis : VirtualKey
 {
-	
-	public new string actionName;
-	public new string keyName;
+	private string axisName;
 
 	public int historyCount = 5;
 
@@ -23,7 +21,8 @@ public class Axis : VirtualKey
 	public Axis(string actionName, string axisName, float minValue, float maxValue) 
 	{
 		this.actionName = actionName;
-		this.keyName = axisName;
+		this.axisName = axisName;
+		this.keyName = axisName + (maxValue == 1 ? "+" : "-");
 
 		//m_minValue = minValue;
 		m_maxValue = maxValue;
@@ -42,7 +41,7 @@ public class Axis : VirtualKey
 
 	private void UpdateValues()
 	{
-		m_currentValue = Input.GetAxis (keyName);
+		m_currentValue = Input.GetAxis (axisName);
 		m_valueStates.RemoveAt(0);
 		m_valueStates.Insert(m_valueStates.Count, m_currentValue);
 	}
@@ -79,7 +78,7 @@ public class Axis : VirtualKey
 	
 	public override float GetAxis()
 	{
-		float raw = Input.GetAxis(keyName);
+		float raw = Input.GetAxis(axisName);
 		return raw / m_maxValue;
 	}
 

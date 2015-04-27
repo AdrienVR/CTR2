@@ -6,10 +6,6 @@ using System.IO;
 
 public class Key : VirtualKey
 {
-
-	public new string actionName;
-	public new string keyName;
-
 	private KeyCode keyCode;
 	
 	public Key(KeyCode keyCode, string actionName) 

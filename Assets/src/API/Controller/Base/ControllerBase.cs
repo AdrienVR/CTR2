@@ -8,6 +8,9 @@ public class ControllerBase
 
 	private Dictionary <string, List<VirtualKey>> buttons;
 
+	public string newKeyAction;
+	public VirtualKey newKey;
+
 	public ControllerBase  (string type) 
 	{
 		Debug.Log("Initializing controller "+type);
@@ -23,13 +26,42 @@ public class ControllerBase
 				button.UpdateInternal();
 			}
 		}
+
+		if (string.IsNullOrEmpty(newKeyAction) == false)
+		{
+			foreach(KeyCode keycode in KeyCodes.codes)
+			{
+				if (Input.GetKey(keycode))
+				{
+					newKey = new Key(keycode, newKeyAction);
+					buttons[newKeyAction][0] = newKey;
+					newKeyAction = "";
+				}
+			}
+			foreach(string axis in KeyCodes.axis)
+			{
+				float axisValue = Input.GetAxis(axis);
+				if (Mathf.Abs (axisValue) > 0.9f)
+				{
+					float max = 1;
+					if (axisValue < 0)
+						max = -1;
+					newKey = new Axis(newKeyAction,axis,0, max);
+					buttons[newKeyAction][0] = newKey;
+					newKeyAction = "";
+				}
+			}
+		}
 	}
 
 	public string GetNameKey(string actionName)
 	{
-		if (buttons[actionName][0] as Axis != null)
-			return (buttons[actionName][0] as Axis).keyName;
-		return (buttons[actionName][0] as Key).keyName;
+		return buttons[actionName][0].keyName;
+	}
+	
+	public void ListenNewKey(string actionName)
+	{
+		newKeyAction = actionName;
 	}
 	
 	public float GetAxis(string actionName)

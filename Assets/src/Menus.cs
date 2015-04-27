@@ -187,6 +187,21 @@ public class Menus : MonoBehaviour
 		{
 			menuReglages.Insert(2, tr(action));
 		}
+		configActionNames = new List<string>(new string[ControllerResources.ActionNames.Count + 3]);
+	}
+
+	List<string> configActionNames;
+	
+	void UpdateReglageMenu(ControllerBase controller)
+	{
+		configActionNames[1] = tr("Joueur")+" "+positionH;
+		for(int i = 0 ; i < ControllerResources.ActionNames.Count ; i++)
+		{
+			string action = ControllerResources.ActionNames[i];
+			menuReglages[i + 2] = tr (action);
+			configActionNames[i + 2] = controller.GetNameKey(action);
+		}
+
 	}
 
 	// Use this for initialization
@@ -244,14 +259,23 @@ public class Menus : MonoBehaviour
 	void Update ()
 	{
 		//Debug.Log (configWeaponsStates.Count);
-		if (!waitingForKey){
+		if (waitingForKey == false)
+		{
 			CheckKeys();
-			if (readyToMove)
+
+			if (readyToMove == true && lockMove == false)
 				navigateMenu ();
+
 			ResetBooleans();
 		}
 		else
-			CheckNewKey();
+		{
+			if (ControllerInterface.GetController(positionH - 1).newKey != null)
+			{
+				StartCoroutine(GetKey());
+				ControllerInterface.GetController(positionH - 1).newKey = null;
+			}
+		}
 		if(main!=null)
 		{
 			testPause ();
@@ -392,9 +416,9 @@ public class Menus : MonoBehaviour
 		GameObject textTitre =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*menu.Count/2f,0),Quaternion.identity);
 		textTitre.guiText.text=menu[0];
 		titreAffiche = textTitre;
-		for (int i = 1; i<menu.Count; i++)
+		for (int i = 1 ; i < menu.Count ; i++)
 		{
-			if(!specialButton(menu,i))
+			if(specialButton(menu,i) == false)
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
 				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
@@ -429,34 +453,36 @@ public class Menus : MonoBehaviour
 		}
 		else if(menu[0]==tr("Reglages Controles") && menu[i]!=tr("RETOUR"))
 		{
+			positionH = main.players[0].numeroJoueur;
+			UpdateReglageMenu(ControllerInterface.GetController(positionH - 1));
+
 			if(menu[i]==tr("JOUEUR :"))
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
 				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+
 				fleches = (GameObject)Instantiate (Resources.Load ("menuFleches"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,5),Quaternion.identity);
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)4)),pos.y,0),Quaternion.identity);
 				textbutton.guiText.text=menu[i];
 				textAffiches.Add(textbutton);
+
 				textPlayer = (GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,6),Quaternion.identity);
-				positionH=main.players[0].numeroJoueur;
-				textPlayer.guiText.text=tr("Joueur")+" "+positionH;
+				textPlayer.guiText.text = configActionNames[i];
 			}
-			else if(i>1)
+			else if(i > 1)
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
 				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)2.2f)),pos.y,0),Quaternion.identity);
 				textbutton.guiText.text=menu[i];
 				textbutton.guiText.anchor=TextAnchor.MiddleLeft;
 				textAffiches.Add(textbutton);
-				GameObject textcontrol =(GameObject)Instantiate (Resources.Load ("textControl"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,0),Quaternion.identity);
 
-				string name = ControllerResources.ActionNames[i-2];
-				string action = ControllerInterface.GetController(1).GetNameKey(name);
-				//string name  = ControllerAPI.KeyIs(positionH, action);
-				textcontrol.guiText.text=action;
-				
+				GameObject textcontrol =(GameObject)Instantiate (Resources.Load ("textControl"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,0),Quaternion.identity);
+				textcontrol.guiText.text = configActionNames[i];
 				controlAffiches.Add(textcontrol);
+
 				GameObject flecheD = (GameObject)Instantiate (Resources.Load ("menuFlecheD"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)2.5f)),pos.y,5),Quaternion.identity);
 				flechesD.Add(flecheD);
 			}
@@ -727,6 +753,32 @@ public class Menus : MonoBehaviour
 				}
 
 			}
+			
+			if((menuCourant[0]==tr("Reglages Controles")) && (menuCourant[position+1]!=tr("Reglages Controles")) && (menuCourant[position+1]!=tr("JOUEUR :")) && (menuCourant[position+1]!=tr("RETOUR")))
+			{
+				/*
+				foreach(string a in ControllerAPI.buttonProfiles[Game.playersMapping[positionH]].Keys)
+				{
+					listKeys.Add(ControllerAPI.buttonProfiles[Game.playersMapping[positionH]][a]);
+				}*/
+				if(booleans["right_down"])
+				{
+					AudioManager.Play("validateMenu");
+					authorizeNavigate=false;
+					//Destroy(flechesD[position-1]);
+					flechesD[position-1].SetActive(false);
+					controlAffiches[position-1].guiText.text="?";
+					controlAffiches[position-1].guiText.color=Color.blue;
+					waitingForKey = true;
+					
+					int controllerNumber = positionH - 1;
+					string name = ControllerResources.ActionNames[position-1];
+					
+					StartCoroutine(SetKey(controllerNumber, name));
+					return;
+				}
+			}
+
 			if (booleans["down"])
 			{
 				AudioManager.Play("downMenu");
@@ -808,29 +860,6 @@ public class Menus : MonoBehaviour
 				}
 				
 			}
-			else if((menuCourant[0]==tr("Reglages Controles")) && (menuCourant[position+1]!=tr("Reglages Controles")) && (menuCourant[position+1]!=tr("JOUEUR :")) && (menuCourant[position+1]!=tr("RETOUR")))
-			{
-				/*
-				foreach(string a in ControllerAPI.buttonProfiles[Game.playersMapping[positionH]].Keys)
-				{
-					listKeys.Add(ControllerAPI.buttonProfiles[Game.playersMapping[positionH]][a]);
-				}*/
-				if(booleans["right_down"])
-				{
-					AudioManager.Play("validateMenu");
-					authorizeNavigate=false;
-					//Destroy(flechesD[position-1]);
-					flechesD[position-1].SetActive(false);
-					controlAffiches[position-1].guiText.text="?";
-					controlAffiches[position-1].guiText.color=Color.blue;
-					waitingForKey = true;
-					
-					string name = ControllerResources.ActionNames[0];
-					string action = ControllerInterface.GetController(1).GetNameKey(name);
-
-					StartCoroutine(SetKey(action, name));
-				}
-			}
 			else if(menuCourant[0] == menuPersos[0] && position<menuPersos.Count - 3)
 			{
 				if(booleans["right_down"])
@@ -839,6 +868,7 @@ public class Menus : MonoBehaviour
 					if(position==menuPersos.Count-4) position=0;
 					else position++;
 					ShowRoom.ShowModel(menuPersos[position+1]);
+					StartCoroutine(RestrictMovement());
 				}
 				else if(booleans["left_down"])
 				{
@@ -846,6 +876,7 @@ public class Menus : MonoBehaviour
 					if(position==0) position=menuPersos.Count-4;
 					else position--;
 					ShowRoom.ShowModel(menuPersos[position+1]);
+					StartCoroutine(RestrictMovement());
 				}
 				else if(booleans["ok"])
 				{
@@ -961,56 +992,35 @@ public class Menus : MonoBehaviour
 					}
 				}
 			}
-			if (lockMove == true)
-			{
-				readyToMove = false;
-				lockMove = false;
-			}
 		}
 	}
-	
-	IEnumerator SetKey(string action, string name)
+
+	IEnumerator WaitIgnoringTimeScale(float duration)
 	{
 		float timeStart = Time.realtimeSinceStartup;
-		while(Time.realtimeSinceStartup - timeStart < 0.1f)
+		while(Time.realtimeSinceStartup - timeStart <duration)
 		{
 			yield return new WaitForEndOfFrame ();
 		}
-		//ControllerAPI.ListenForKey(action, name);
 	}
 	
-	
-	void VirtualGetKey()
+	IEnumerator SetKey(int i, string action)
 	{
-		waitingForKey = false;
-		flechesD[position-1].SetActive(true);
-		authorizeNavigate=true;
-		string name = ControllerResources.ActionNames[0];
-		string action = ControllerInterface.GetController(1).GetNameKey(name);
-		controlAffiches[position-1].guiText.text=action;
+		yield return StartCoroutine(WaitIgnoringTimeScale(0.25f));
+
+		ControllerInterface.GetController(i).ListenNewKey(action);
 	}
 	
 	IEnumerator GetKey()
 	{
-		float timeStart = Time.realtimeSinceStartup;
-		while(Time.realtimeSinceStartup - timeStart < 0.1f)
-		{
-			yield return new WaitForEndOfFrame ();
-		}
+		AudioManager.Play("validateMenu");
+		yield return StartCoroutine(WaitIgnoringTimeScale(0.1f));
 		waitingForKey = false;
-		flechesD[position-1].SetActive(true);
-		authorizeNavigate=true;
-		string name = ControllerResources.ActionNames[0];
-		string action = ControllerInterface.GetController(1).GetNameKey(name);
-		controlAffiches[position-1].guiText.text=action;
-	}
-	
-	void CheckNewKey()
-	{
-		//if (ControllerAPI.CheckForAxis() || ControllerAPI.CheckForKey())
-			//StartCoroutine(GetKey());
-		if (waitingForKey == true && authorizeNavigate == false)
-			VirtualGetKey();
+		flechesD[position - 1].SetActive(true);
+		authorizeNavigate = true;
+		string name = ControllerResources.ActionNames[position - 1];
+		string action = ControllerInterface.GetController(positionH - 1).GetNameKey(name);
+		controlAffiches[position - 1].guiText.text=action;
 	}
 
 	void CheckKeys()
@@ -1038,21 +1048,13 @@ public class Menus : MonoBehaviour
 	IEnumerator RestrictMovement()
 	{
 		lockMove = true;
-		float timeStart = Time.realtimeSinceStartup;
-		while(Time.realtimeSinceStartup - timeStart < 0.2f)
-		{
-			yield return new WaitForEndOfFrame ();
-		}
-		readyToMove = true;
+		yield return StartCoroutine(WaitIgnoringTimeScale(0.2f));
+		lockMove = false;
 	}
-	
+
 	IEnumerator changeLevel(string level)
 	{
-		float timeStart = Time.realtimeSinceStartup;
-		while(Time.realtimeSinceStartup - timeStart < 0.2f)
-		{
-			yield return new WaitForEndOfFrame ();
-		}
+		yield return StartCoroutine(WaitIgnoringTimeScale(0.2f));
 		if(level=="loaded")
 		{
 			Application.LoadLevel (Application.loadedLevel);
@@ -1084,7 +1086,9 @@ public class Menus : MonoBehaviour
 			}
 			else if (menu[p+1].Equals( tr("CHANGER CONFIG")))
 			{
-
+				Restart();
+				Menus.menuToGo=menuConfig;
+				StartCoroutine(changeLevel("mainmenu"));
 			}
 			else if (menu[p+1].Equals( tr("CHANGER NIVEAU")))
 			{
@@ -1252,7 +1256,15 @@ public class Menus : MonoBehaviour
 					}
 					//weapons[i]=Game.translateNameWeapons[weapons[i]];
 				}
-				Game.gameWeapons=weapons;
+				if (weapons.Count < 1)
+				{
+					Game.gameWeapons =  new List <string> {
+						"greenBeaker","greenShield","bomb","triple_bomb","triple_missile","Aku-Aku","TNT","turbo"};
+				}
+				else
+				{
+					Game.gameWeapons=weapons;
+				}
 				/*for(int i =0;i< persos.Count;i++)
 				{
 					Game.listKarts[i]=persos[i];

@@ -7,6 +7,8 @@ using System.Linq;
 
 public class ControllerResources
 {
+
+	// JSON files path : Assets/Config (for Unity Editor) and Build/X_Data/Config (for Built Player)
 	const string relativePath = "Config";
 
 	public static int controllers = 0;
