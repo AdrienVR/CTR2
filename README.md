@@ -17,7 +17,7 @@ The project began in June 2014 and should release a final version on December 14
   
 4 players in local and network mode.
 
-## Software Requirements to participate to the project
+## Software Requirements to participate in the project
 
 * Unity3D
 * Windows/Mac OS as Unity is still unavailable for Linux.
