@@ -11,5 +11,6 @@
 	"a10":"bip",
 	"a11":"jump",
 	"a12":"switchCamera",
-	"a13":"inverseCamera"
+	"a13":"inverseCamera",
+	"a14":"back",
 }

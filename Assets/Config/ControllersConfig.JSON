@@ -1,5 +1,11 @@
 {
-	"Keyboard1": 
+	"0":["Keyboard1"],
+	"1":["Keyboard2"],
+	"2":["Keyboard3"],
+	"3":["Controller (XBOX 360 For Windows)", "Controller (Xbox 360 Wireless Receiver for Windows)", "XBOX 360 For Windows (Controller)"],
+	"4":["MotioninJoy Virtual Game Controller"]
+};{
+	"0": 
 	{
 		"a1":["Q"],
 		"a2":["D"],
@@ -13,9 +19,10 @@
 		"a10":["F1"],
 		"a11":["Space"],
 		"a12":["F2"],
-		"a13":["F3"]
+		"a13":["F3"],
+		"a14":["None"]
 	},
-	"Keyboard2": 
+	"1":
 	{
 		"a1":["J"],
 		"a2":["L"],
@@ -29,9 +36,10 @@
 		"a10":["F9"],
 		"a11":["B"],
 		"a12":["F10"],
-		"a13":["F11"]
+		"a13":["F11"],
+		"a14":["None"]
 	},
-	"Keyboard3": 
+	"2": 
 	{
 		"a1":["LeftArrow"],
 		"a2":["RightArrow"],
@@ -45,9 +53,10 @@
 		"a10":["None"],
 		"a11":["None"],
 		"a12":["None"],
-		"a13":["None"]
+		"a13":["None"],
+		"a14":["Backspace"]
 	},
-	"Controller (Xbox 360 Wireless Receiver for Windows)":
+	"3":
 	{
 		"a1":["X-","2-","4-"],
 		"a2":["X+","2+","4+"],
@@ -61,25 +70,10 @@
 		"a10":["B8","B9"],
 		"a11":["B4","B5"],
 		"a12":["1+"],
-		"a13":["1-"]
+		"a13":["1-"],
+		"a14":["B3"]
 	},
-	"XBOX 360 For Windows (Controller)":
-	{
-		"a1":["X-","2-","4-"],
-		"a2":["X+","2+","4+"],
-		"a3":["Y+","3+","5-"],
-		"a4":["Y-","3-","5+"],
-		"a5":["B1"],
-		"a6":["B0"],
-		"a7":["B2"],
-		"a8":["B6"],
-		"a9":["B7"],
-		"a10":["B8","B9"],
-		"a11":["B4","B5"],
-		"a12":["1+"],
-		"a13":["1-"]
-	},
-	"MotioninJoy Virtual Game Controller":
+	"4":
 	{
 		"a1":["X-","2-"],
 		"a2":["X+","2+"],
@@ -93,6 +87,7 @@
 		"a10":["B10","B11"],
 		"a11":["B4","B5"],
 		"a12":["B6"],
-		"a13":["B7"]
+		"a13":["B7"],
+		"a14":["B0"]
 	}
 }

@@ -1,1 +1,0 @@
-xcopy "Assets\Config\*.JSON" "Build\CTR2_Data\Config\*.JSON" /e /i /y

@@ -13,7 +13,7 @@ public class KartController : MonoBehaviour
 	public float coeffInitSpeed;
 	public Dictionary <string, float> speedDuration = new Dictionary <string,  float>();
 	public Dictionary <string, float> speedToAdd = new Dictionary <string,  float>();
-	private bool isGoingInAir = false;
+    private bool isGoingInAir = false;
 	private bool inAirAfterJump=true;
 
 	private Vector3 postForce;
@@ -53,7 +53,7 @@ public class KartController : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		coeffInitSpeed = speedCoeff;
+        coeffInitSpeed = speedCoeff;
 
 		foreach (Transform child in transform)
 		{
@@ -70,7 +70,7 @@ public class KartController : MonoBehaviour
 		
 		kart_script = GetComponent <KartScript> ();
 
-		controller = ControllerInterface.GetController(kart.numeroJoueur - 1);
+		controller = ControllerManager.Instance.GetController(kart.numeroJoueur - 1);
 	}
 	
 	void Update()
@@ -110,7 +110,7 @@ public class KartController : MonoBehaviour
 		{
 			//rigidbody.velocity = new Vector3(postForce.x, rigidbody.velocity.y, postForce.z);
 			if (dansLesAirs)
-				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
+				GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x,-26f,GetComponent<Rigidbody>().velocity.z);
 		}
 		else
 		{
@@ -123,11 +123,11 @@ public class KartController : MonoBehaviour
 			{
 				kart_script.tnt.transform.position = kart_script.tnt.transform.position + new Vector3 (0, 5f);
 				ExplosionScript e = kart_script.tnt.GetComponent <ExplosionScript>();
-				e.animation.Stop();
+				e.GetComponent<Animation>().Stop();
 				e.disamorced = true;
 				e.SetName("tntDropped");
 				e.transform.parent = null;
-				e.rigidbody.velocity = Vector3.zero;
+				e.GetComponent<Rigidbody>().velocity = Vector3.zero;
 				kart_script.tnt = null;
 		        numberOfJump = 0;
 			}
@@ -157,12 +157,12 @@ public class KartController : MonoBehaviour
 
 			}
 			if (accelerationTime > 0)
-				rigidbody.velocity = Vector3.Slerp(Vector3.zero,postForce,accelerationTime);
+				GetComponent<Rigidbody>().velocity = Vector3.Slerp(Vector3.zero,postForce,accelerationTime);
 			else
-				rigidbody.velocity = Vector3.Slerp(Vector3.zero,lowForce,-accelerationTime);
+				GetComponent<Rigidbody>().velocity = Vector3.Slerp(Vector3.zero,lowForce,-accelerationTime);
 
 			if (dansLesAirs)
-				rigidbody.velocity = new Vector3(rigidbody.velocity.x,-26f,rigidbody.velocity.z);
+				GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x,-26f,GetComponent<Rigidbody>().velocity.z);
 			transform.Rotate (0, yTurn, 0);
 
 			controlWheels ();
@@ -210,7 +210,7 @@ public class KartController : MonoBehaviour
 		twTimeWheels = System.Math.Min (twTimeWheels,0.25f);
 
 		// STEERING WHEEL
-		if (yTurnWheel==0 || System.Math.Abs(rigidbody.velocity.magnitude) < 1f){
+		if (yTurnWheel==0 || System.Math.Abs(GetComponent<Rigidbody>().velocity.magnitude) < 1f){
 			if (System.Math.Abs (twTime) < 0.01f)
 				twTime = 0;
 			if (twTime>0)
@@ -294,7 +294,7 @@ public class KartController : MonoBehaviour
 		}
 		else{
 			float rgb = 0.1f;
-			if (rigidbody.velocity.magnitude>1)
+			if (GetComponent<Rigidbody>().velocity.magnitude>1)
 				rgb = 0.05f;
 			else if (controller.GetKey("validate"))
 				rgb = 0.5f;
@@ -345,9 +345,9 @@ public class KartController : MonoBehaviour
 		{
 			if(dansLesAirs == false)
 			{
-				if (rigidbody.velocity.magnitude < 5 && inAirAfterJump)
+				if (GetComponent<Rigidbody>().velocity.magnitude < 5 && inAirAfterJump)
 				{
-					rigidbody.MovePosition(rigidbody.position + new Vector3(0,1.75f,0));
+					GetComponent<Rigidbody>().MovePosition(GetComponent<Rigidbody>().position + new Vector3(0,1.75f,0));
 				}
 				else 
 				{
@@ -360,7 +360,7 @@ public class KartController : MonoBehaviour
 					//Debug.Log("Angle : "+high);
 					high = System.Math.Min(high, 9f);
 					high = System.Math.Max(high, 1.75f);
-					rigidbody.MovePosition(rigidbody.position + new Vector3(0,high,0));
+					GetComponent<Rigidbody>().MovePosition(GetComponent<Rigidbody>().position + new Vector3(0,high,0));
 				}
 				
 				if (kart_script.tnt)

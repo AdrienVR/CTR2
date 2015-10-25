@@ -1,8 +1,15 @@
 fileFormatVersion: 2
 guid: 449e689afbeb2744ca70b2b8fe7e6aa6
+timeCreated: 1444866729
+licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - CategoriesManager: {fileID: 11490218, guid: c547738d66f7fd8459066a328c34599b,
+      type: 2}
+  - loopSource: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
+  assetBundleName: 
+  assetBundleVariant: 

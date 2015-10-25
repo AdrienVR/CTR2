@@ -41,11 +41,11 @@ public class ExplosionScript : MonoBehaviour {
 	void Start () {
 		if (name == "Aku-Aku")
 		{
-			AudioManager.Play("akuaku", true);
+			AudioManager.Instance.Play("akuaku", true);
 		}
 		else if (name == "blueShield" || name == "greenShield")
 		{
-			AudioManager.Play("shieldOn");
+			AudioManager.Instance.Play("shieldOn");
 		}
 		if (Game.protectWeapons.IndexOf(name) != -1 && name != "blueShield")
 			StartCoroutine (TimeToLive());
@@ -176,7 +176,7 @@ public class ExplosionScript : MonoBehaviour {
 	
 	void OnCollisionEnter(Collision collision)
 	{
-		rigidbody.velocity = Vector3.zero;
+		GetComponent<Rigidbody>().velocity = Vector3.zero;
 		if (name == "tntDropped"){
 			StartCoroutine(tntExplosion());
 		}
@@ -196,11 +196,11 @@ public class ExplosionScript : MonoBehaviour {
 		else
 		{
 			exploded = true;
-			gameObject.renderer.enabled = false;
+			gameObject.GetComponent<Renderer>().enabled = false;
 			
 			if (name == "blueShield" || name == "greenShield")
 			{
-				AudioManager.Play("shieldOff");
+				AudioManager.Instance.Play("shieldOff");
 			}
 			Destroy(gameObject, 1f);
 		}
@@ -217,16 +217,16 @@ public class ExplosionScript : MonoBehaviour {
 			
 			if (weaponType == WeaponType.BlueShield || weaponType == WeaponType.GreenShield)
 			{
-				AudioManager.Play("shieldOff");
+				AudioManager.Instance.Play("shieldOff");
 			}
 			//Debug.Log(name);
 			if (name != "bomb")
 				SetAllCollidersStatus (false);
 			exploded = true;
 			if (explosionClip != null)
-				animation.Play (explosionClip.name);
+				GetComponent<Animation>().Play (explosionClip.name);
 			if (name != "TNT" || !kartCollided){
-				audio.Play ();
+				GetComponent<AudioSource>().Play ();
 
 				bool hadChildren = false;
 				foreach (Transform child in gameObject.transform)
@@ -235,12 +235,12 @@ public class ExplosionScript : MonoBehaviour {
 					hadChildren = true;
 				}
 				if (!hadChildren)
-					gameObject.renderer.enabled = false;
+					gameObject.GetComponent<Renderer>().enabled = false;
 
-				gameObject.light.color = explosionColor;
+				gameObject.GetComponent<Light>().color = explosionColor;
 				yield return new WaitForSeconds (0.1f);
 				SetAllCollidersStatus (false);
-				gameObject.light.color = new Color();
+				gameObject.GetComponent<Light>().color = new Color();
 				Destroy(gameObject, 3f);
 			}
 			else
@@ -263,13 +263,13 @@ public class ExplosionScript : MonoBehaviour {
 	}
 
 	IEnumerator tntExplosion(){
-		audio.Play ();
-		gameObject.light.color = explosionColor;
+		GetComponent<AudioSource>().Play ();
+		gameObject.GetComponent<Light>().color = explosionColor;
 		yield return new WaitForSeconds (0.1f);
-		gameObject.light.color = new Color();
+		gameObject.GetComponent<Light>().color = new Color();
 		if (!disamorced)
 			kartCollided.Die (owner,name);
-		gameObject.renderer.enabled = false;
+		gameObject.GetComponent<Renderer>().enabled = false;
 		Destroy(gameObject, 3f);
 	}
 
@@ -287,7 +287,7 @@ public class ExplosionScript : MonoBehaviour {
 
 		if (name == "Aku-Aku")
 		{
-			AudioManager.PlayDefaultMapMusic();
+			AudioManager.Instance.PlayDefaultMapMusic();
 		}
 
 		//maybe not clean but works...
@@ -305,13 +305,13 @@ public class ExplosionScript : MonoBehaviour {
 	void Update () {
 		// for bombs, missiles and launched shields
 		if (Game.launchWeapons.IndexOf(name) != -1) {
-			rigidbody.velocity = new Vector3(vitesseInitiale.x,-20f,vitesseInitiale.z);
+			GetComponent<Rigidbody>().velocity = new Vector3(vitesseInitiale.x,-20f,vitesseInitiale.z);
 			if (exploded && name[0] == 'b')
-				rigidbody.velocity = Vector3.zero;
+				GetComponent<Rigidbody>().velocity = Vector3.zero;
 		}
 		// for Aku-Aku and shields
 		else if (Game.protectWeapons.IndexOf(name) != -1) {
-			transform.position = owner.rigidbody.transform.position + new Vector3(0f,-0.2f);
+			transform.position = owner.GetComponent<Rigidbody>().transform.position + new Vector3(0f,-0.2f);
 		}
 		else if (name == "tntExploded") {
 			if (!disamorced)

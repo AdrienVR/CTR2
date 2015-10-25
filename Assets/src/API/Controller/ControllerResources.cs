@@ -13,25 +13,24 @@ public class ControllerResources
 
 	public static int controllers = 0;
 
-	private static IDictionary controllersDictionary;
-	private static IDictionary actionsDictionary;
-
 	public static List<string> ActionNames;
 
 	private static void LoadConfigFiles()
 	{
 
 		string path = Path.Combine(Application.dataPath, Path.Combine(relativePath, "ControllersConfig.JSON"));
-		string controllersConfigFile = File.ReadAllText(path);
-		
-		path = Path.Combine(Application.dataPath, Path.Combine(relativePath, "ActionsConfig.JSON"));
-		string actionsConfigFile = File.ReadAllText(path); 
+        string completeFile = File.ReadAllText(path);
+        string[] controllersConfigFile = completeFile.Split(';');
 
-		controllersDictionary = (IDictionary) Json.Deserialize(controllersConfigFile);
-		actionsDictionary = (IDictionary) Json.Deserialize(actionsConfigFile);
+        path = Path.Combine(Application.dataPath, Path.Combine(relativePath, "ActionsConfig.JSON"));
+		string actionsConfigFile = File.ReadAllText(path);
+
+        s_controllersTypes = (IDictionary)Json.Deserialize(controllersConfigFile[0]);
+        s_controllersDictionary = (IDictionary) Json.Deserialize(controllersConfigFile[1]);
+		s_actionsDictionary = (IDictionary) Json.Deserialize(actionsConfigFile);
 
 		ActionNames = new List<string>();
-		foreach(string action in actionsDictionary.Values)
+		foreach(string action in s_actionsDictionary.Values)
 		{
 			ActionNames.Add(action);
 		}
@@ -39,12 +38,25 @@ public class ControllerResources
 
 	public static Dictionary <string, List <VirtualKey> > GetButtons(string type)
 	{
-		if (controllersDictionary == null || actionsDictionary == null)
+		if (s_controllersDictionary == null || s_actionsDictionary == null)
 		{
 			LoadConfigFiles();
 		}
 
-		if (controllersDictionary.Contains(type) == false)
+        bool controllerTypeConfigured = false;
+        string typeKey = "";
+
+        foreach (string key in s_controllersTypes.Keys)
+        {
+            IList typedControllers = (IList)s_controllersTypes[key];
+            if (typedControllers.Contains(type))
+            {
+                controllerTypeConfigured = true;
+                typeKey = key;
+                break;
+            }
+        }
+		if (controllerTypeConfigured == false)
 		{
 			Debug.LogError("The controller : '"+type + "' has no default config !");
 			if (type == "Keyboard1")
@@ -56,7 +68,7 @@ public class ControllerResources
 			return GetButtons("Keyboard1");
 		}
 		
-		IDictionary controller = (IDictionary) controllersDictionary[type];
+		IDictionary controller = (IDictionary) s_controllersDictionary[typeKey];
 
 		Dictionary <string, List <VirtualKey> > buttons = new Dictionary <string, List<VirtualKey>>();
 
@@ -65,7 +77,7 @@ public class ControllerResources
 		bool isControllerDependant = false;
 		foreach (string action in controller.Keys) 
 		{
-			string realActionName = actionsDictionary[action] as string;
+			string realActionName = s_actionsDictionary[action] as string;
 			List<VirtualKey> virtualKeys = new List <VirtualKey> ();
 			IList keys = (IList) controller[action];
 			foreach(string key in keys)
@@ -114,4 +126,8 @@ public class ControllerResources
 
 		return buttons;
 	}
+    
+    private static IDictionary s_controllersTypes;
+    private static IDictionary s_controllersDictionary;
+    private static IDictionary s_actionsDictionary;
 }

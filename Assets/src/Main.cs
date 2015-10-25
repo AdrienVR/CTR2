@@ -56,12 +56,6 @@ public class Main : MonoBehaviour
 
 	void Awake()
 	{
-		
-		if (AudioManager.Instance == null && ControllerInterface.Instance == null)
-		{
-			Application.LoadLevelAdditive("commonScene");
-		}
-
 		nbPtsPartie = Game.nbPoints;
 		nbPlayer = Game.listKarts.Count;
 		nbPlayer = System.Math.Max (nbPlayer, 1);
@@ -73,22 +67,20 @@ public class Main : MonoBehaviour
 			listRespawn.Add(respawnPoint);
 		}
 
-		gameObject.AddComponent ("Game");
+		gameObject.AddComponent <Game>();
 		main = this;
 		Kart.setCoefficients (speedCoeff, turnCoeff);
 		Init ();
 
 #if UNITY_EDITOR
 		Application.runInBackground = true;
-#else
-		Screen.showCursor = false;
 #endif
 	}
 
 	void Start()
 	{
 
-		Debug.Log ("Starting with "+ ControllerInterface.NumberOfController + " controllers.");
+		Debug.Log ("Starting with "+ ControllerManager.Instance.NumberOfController + " controllers.");
 
 	}
 
@@ -115,7 +107,7 @@ public class Main : MonoBehaviour
 
 	void InitMenus()
 	{
-		Menus m =(Menus)gameObject.AddComponent ("Menus");
+		Menus m =(Menus)gameObject.AddComponent <Menus>();
 		m.normal = normal;
 		m.hover = hover;
 		m.triVolume1 = triVolume1;

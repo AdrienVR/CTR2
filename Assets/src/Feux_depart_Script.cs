@@ -24,17 +24,17 @@ public class Feux_depart_Script : MonoBehaviour {
 		gt.texture = textureList [0];
 		yield return new WaitForSeconds (0.8f);
 		gt.texture = textureList [1];
-		AudioManager.Play("bip1");
+		AudioManager.Instance.Play("bip1");
 		yield return new WaitForSeconds (0.8f);
 		gt.texture = textureList [2];
-		AudioManager.Play("bip1");
+		AudioManager.Instance.Play("bip1");
 		yield return new WaitForSeconds (0.8f);
 		gt.texture = textureList [3];
-		AudioManager.Play("bip1");
+		AudioManager.Instance.Play("bip1");
 		yield return new WaitForSeconds (0.8f);
 		gt.texture = textureList [4];
-		AudioManager.Play("bip2");
-		AudioManager.PlayDefaultMapMusic();
+		AudioManager.Instance.Play("bip2");
+		AudioManager.Instance.PlayDefaultMapMusic();
 		KartController.stop = false;
 
 		yield return new WaitForSeconds (0.8f);

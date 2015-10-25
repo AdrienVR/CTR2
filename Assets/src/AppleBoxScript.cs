@@ -23,8 +23,8 @@ public class AppleBoxScript : MonoBehaviour
 			return;
 		}
 		
-		audio.Play ();
-		collider.enabled = false;
+		GetComponent<AudioSource>().Play ();
+		GetComponent<Collider>().enabled = false;
 
 		if (taker.name == null)
 			return;
@@ -35,10 +35,10 @@ public class AppleBoxScript : MonoBehaviour
 	
 	IEnumerator Take()
 	{
-		animation.Play ("boxDisappear");
+		GetComponent<Animation>().Play ("boxDisappear");
 		yield return new WaitForSeconds (2f);
-		animation.Play ("boxGrow");
+		GetComponent<Animation>().Play ("boxGrow");
 		yield return new WaitForSeconds (1.3f);
-		collider.enabled = true;
+		GetComponent<Collider>().enabled = true;
 	}
 }

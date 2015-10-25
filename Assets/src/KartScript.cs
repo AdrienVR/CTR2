@@ -33,7 +33,7 @@ public class KartScript : MonoBehaviour
 	void Start () {
 		kc = GetComponent<KartController>();
 		kart_state = GetComponent<KartState>();
-		controller = ControllerInterface.GetController(kart.numeroJoueur - 1);
+		controller = ControllerManager.Instance.GetController(kart.numeroJoueur - 1);
 
 		
 		foreach (Transform child in transform){
@@ -183,7 +183,7 @@ public class KartScript : MonoBehaviour
 				}
 				else if (w == "greenBeaker" || w=="redBeaker")
 					if (sens == 1f)
-						arme.rigidbody.AddForce(2000f*new Vector3(sens * kc.forwardNormal.x, 0.2f, sens * kc.forwardNormal.z));
+						arme.GetComponent<Rigidbody>().AddForce(2000f*new Vector3(sens * kc.forwardNormal.x, 0.2f, sens * kc.forwardNormal.z));
 				//arme.vitesseInstant =  90f*new Vector3(sens * forwardNormal.x, 0, sens * forwardNormal.z);
 			}
 			else
@@ -252,7 +252,7 @@ public class KartScript : MonoBehaviour
 		{
 			kart.nbApples ++;
 			kart.SetIllumination((kart.nbApples == 10));
-			audio.Play();
+			GetComponent<AudioSource>().Play();
 			kart.guitextApples.text = "x "+kart.nbApples.ToString();
 			kart.drawWeaponGui();
 			yield return new WaitForSeconds (0.27f);
@@ -353,7 +353,7 @@ public class KartScript : MonoBehaviour
 			kart_state.SetInvincibility(4);
 		foreach(string w in wheels.Keys)
 		{
-			wheels [w].renderer.enabled = false;
+			wheels [w].GetComponent<Renderer>().enabled = false;
 		}
 		float time = 0f;
 		float last_time = 0f;
@@ -370,7 +370,7 @@ public class KartScript : MonoBehaviour
 				clignotement /= 2;
 				foreach(string w in wheels.Keys)
 				{
-					wheels [w].renderer.enabled = !wheels [w].renderer.enabled;
+					wheels [w].GetComponent<Renderer>().enabled = !wheels [w].GetComponent<Renderer>().enabled;
 				}
 				/*foreach(GameObject w in smoke){
 					w.SetActive(!w.activeSelf);
@@ -379,7 +379,7 @@ public class KartScript : MonoBehaviour
 		}
 		foreach(string w in wheels.Keys)
 		{
-			wheels [w].renderer.enabled = true;
+			wheels [w].GetComponent<Renderer>().enabled = true;
 		}
 		foreach(GameObject w in smoke){
 			w.SetActive(true);

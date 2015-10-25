@@ -7,9 +7,11 @@ public class Party : MonoBehaviour {
 	public int parties = 0;
 	public static List<string> colors = new List<string>() {"red", "blue", "green", "yellow", "pink"};
 	private bool ready = true;
+    private GameObject m_paperParent;
 	// Use this for initialization
 	void Start () {
-	}
+        m_paperParent = new GameObject("Papers");
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
@@ -22,9 +24,10 @@ public class Party : MonoBehaviour {
 				float z = (float)Random.Range (-100,100);
 				Vector3 pos = new Vector3(x,0,z);
 				color = colors[i%colors.Count];
-				GameObject kart = GameObject.Instantiate (Resources.Load("Papers/"+color+"Paper"), pos, new Quaternion()) as GameObject;
-				kart.transform.position = pos;
-				parties++;
+				GameObject paper = GameObject.Instantiate (Resources.Load("Papers/"+color+"Paper"), pos, new Quaternion()) as GameObject;
+				paper.transform.position = pos;
+                paper.transform.parent = m_paperParent.transform;
+                parties++;
 			}
 		}
 		StartCoroutine(wait());

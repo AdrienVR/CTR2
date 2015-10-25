@@ -155,7 +155,9 @@ public class Menus : MonoBehaviour
 	//called before start
 	void Awake()
 	{
-		if (m_translationDone == false)
+        m_menuParent = new GameObject("Menu").transform;
+
+        if (m_translationDone == false)
 		{
 			translatableLists = new List<List<string>>
 			{
@@ -191,8 +193,9 @@ public class Menus : MonoBehaviour
 	}
 
 	List<string> configActionNames;
-	
-	void UpdateReglageMenu(ControllerBase controller)
+    private Transform m_menuParent;
+
+    void UpdateReglageMenu(ControllerBase controller)
 	{
 		configActionNames[1] = tr("Joueur")+" "+positionH;
 		for(int i = 0 ; i < ControllerResources.ActionNames.Count ; i++)
@@ -217,13 +220,13 @@ public class Menus : MonoBehaviour
 			cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre1"), textureAffichees [position].transform.position, Quaternion.identity);
 		cadre5=(GameObject)Instantiate (Resources.Load ("cadre5"),new Vector3(0.85f,0.5f,0),Quaternion.identity);
 		if(cadre5)
-			cadre5.guiTexture.enabled = false;
+			cadre5.GetComponent<GUITexture>().enabled = false;
 		if(cadre1)
 		{
-			cadre1.guiTexture.enabled = false;
+			cadre1.GetComponent<GUITexture>().enabled = false;
 			foreach( Transform child in cadre1.transform)
 			{	
-				child.guiTexture.enabled = false;
+				child.GetComponent<GUITexture>().enabled = false;
 			}
 		}
 		if(menuToGo==menuPersos)
@@ -232,14 +235,14 @@ public class Menus : MonoBehaviour
 			numSelection=1;
 			falseok=false;
 			ShowRoom.ShowModel(menuPersos[position+1]);
-			if(cadre1) cadre1.guiTexture.enabled=true;
-			if(cadre5) cadre5.guiTexture.enabled = true;
+			if(cadre1) cadre1.GetComponent<GUITexture>().enabled=true;
+			if(cadre5) cadre5.GetComponent<GUITexture>().enabled = true;
 			configWeaponsStates=new List<bool>();
 			weapons = new List<string>();
 		}
 		if(menuToGo==menuMaps)
 		{
-			if(cadre1) cadre1.guiTexture.enabled = false;
+			if(cadre1) cadre1.GetComponent<GUITexture>().enabled = false;
 			j = 5;
 			configWeaponsStates=new List<bool>();
 			weapons = new List<string>();
@@ -249,7 +252,7 @@ public class Menus : MonoBehaviour
 		{
 			falseok=true;
 			if(textureAffichees [position]) cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre6"), textureAffichees [position].transform.position+new Vector3(0,0,2f), Quaternion.identity);
-			if(cadre1) cadre1.guiTexture.enabled = true;
+			if(cadre1) cadre1.GetComponent<GUITexture>().enabled = true;
 			weapons=new List<string>();	
 			configWeaponsStates=new List<bool>();
 		}
@@ -270,10 +273,10 @@ public class Menus : MonoBehaviour
 		}
 		else
 		{
-			if (ControllerInterface.GetController(positionH - 1).newKey != null)
+			if (ControllerManager.Instance.GetController(positionH - 1).newKey != null)
 			{
 				StartCoroutine(GetKey());
-				ControllerInterface.GetController(positionH - 1).newKey = null;
+				ControllerManager.Instance.GetController(positionH - 1).newKey = null;
 			}
 		}
 		if(main!=null)
@@ -292,9 +295,9 @@ public class Menus : MonoBehaviour
 	
 	void testPause()
 	{
-		if (ControllerInterface.GetKeyDown("start"))
+		if (ControllerManager.Instance.GetKeyDown("start"))
 		{
-			AudioManager.Play("validateMenu");
+			AudioManager.Instance.Play("validateMenu");
 			Pause();
 		}
 	}
@@ -314,11 +317,11 @@ public class Menus : MonoBehaviour
 			}
 			if(winner!=null)
 			{
-				k.c2d.camera.enabled=false;
+				k.c2d.GetComponent<Camera>().enabled=false;
 				if(k != winner)
 				{
 					Main.statistics.getStatPerso(k.numeroJoueur).score=k.nbPoints;
-					k.camera.camera.rect=new Rect ();
+					k.camera.GetComponent<Camera>().rect=new Rect ();
 					if(loosers.IndexOf(k)==-1)
 						loosers.Add(k);
 				}
@@ -338,15 +341,15 @@ public class Menus : MonoBehaviour
 		Destroy (greyT);
 		GameObject j1 =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.27f,0.35f,0),Quaternion.identity);
 		string player = tr("Joueur") + " ";
-		j1.guiText.text = player+winner.numeroJoueur+" : "+winner.nbPoints+" Pts";
+		j1.GetComponent<GUIText>().text = player+winner.numeroJoueur+" : "+winner.nbPoints+" Pts";
 		Main.statistics.score.Add (player + winner.numeroJoueur, winner.nbPoints);
-		j1.guiText.color = Color.yellow;
+		j1.GetComponent<GUIText>().color = Color.yellow;
 		loosers = loosers.OrderBy(x => x.nbPoints).ToList();
 		loosers.Reverse ();
 		foreach(Kart k in loosers)
 		{
 			GameObject j =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.27f,0.35f-0.08f*(loosers.IndexOf(k)+1),0),Quaternion.identity);
-			j.guiText.text = player+k.numeroJoueur+" : "+k.nbPoints+" Pts";
+			j.GetComponent<GUIText>().text = player+k.numeroJoueur+" : "+k.nbPoints+" Pts";
 			Main.statistics.score.Add(player+k.numeroJoueur,k.nbPoints);
 		}
 		KartController.stop = false;
@@ -372,7 +375,7 @@ public class Menus : MonoBehaviour
 			percent = ellapsed / total;
 			ellapsed += (Time.time - lastTime);
 			yield return new WaitForSeconds (0.01f);
-			winner.camera.camera.rect = Lerp(winner.camera.camera.rect,obj, percent); 
+			winner.camera.GetComponent<Camera>().rect = Lerp(winner.camera.GetComponent<Camera>().rect,obj, percent); 
 		}
 	}
 	
@@ -392,7 +395,7 @@ public class Menus : MonoBehaviour
 			inPause=true;
 			displayMenu(menuPause);
 			Time.timeScale=0f;
-			AudioManager.SetCategoryVolume("musics", 0.25f);
+			AudioManager.Instance.SetCategoryVolume("musics", 0.25f);
 			Main.statistics.pauseGame(true);
 			//AudioListener.pause = true;
 		}
@@ -403,7 +406,7 @@ public class Menus : MonoBehaviour
 			viderMenu ();
 			Destroy(greyT);
 			Time.timeScale=normalTime;
-			AudioManager.SetCategoryVolume("musics", 1f);
+			AudioManager.Instance.SetCategoryVolume("musics", 1f);
 			//AudioListener.pause = false;
 		}
 		
@@ -414,7 +417,7 @@ public class Menus : MonoBehaviour
 		if(cameraMenu) cameraMenu.SetActive (true);
 		position = 0;
 		GameObject textTitre =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*menu.Count/2f,0),Quaternion.identity);
-		textTitre.guiText.text=menu[0];
+		textTitre.GetComponent<GUIText>().text=menu[0];
 		titreAffiche = textTitre;
 		for (int i = 1 ; i < menu.Count ; i++)
 		{
@@ -423,7 +426,8 @@ public class Menus : MonoBehaviour
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
 				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
-				textbutton.guiText.text=menu[i];
+                textbutton.transform.parent = m_menuParent;
+                textbutton.GetComponent<GUIText>().text=menu[i];
 				textAffiches.Add(textbutton);
 			}
 		}
@@ -441,46 +445,55 @@ public class Menus : MonoBehaviour
 		if(menu[i]==tr("VOLUME :"))
 		{
 			Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+            GameObject newButton = (GameObject)Instantiate(Resources.Load("menuButton"), pos, Quaternion.identity);
+            newButton.transform.parent = m_menuParent;
+            textureAffichees.Add(newButton);
 			triangleFond = (GameObject)Instantiate (Resources.Load ("menuBackgroundTriangle"),new Vector3(pos.x,pos.y,2),Quaternion.identity);
 			triangleVolume = (GameObject)Instantiate (Resources.Load ("menuVolumeTriangle"),new Vector3(pos.x,pos.y,3),Quaternion.identity);
-			Rect t = new Rect(triangleVolume.guiTexture.pixelInset.x,triangleVolume.guiTexture.pixelInset.y,250*AudioListener.volume*1.42f,25*AudioListener.volume*1.42f);
-			triangleVolume.guiTexture.pixelInset=t;
+			Rect t = new Rect(triangleVolume.GetComponent<GUITexture>().pixelInset.x,triangleVolume.GetComponent<GUITexture>().pixelInset.y,250*AudioListener.volume*1.42f,25*AudioListener.volume*1.42f);
+			triangleVolume.GetComponent<GUITexture>().pixelInset=t;
 			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)3)),pos.y,0),Quaternion.identity);
-			textbutton.guiText.text=menu[i];
-			textAffiches.Add(textbutton);
+			textbutton.GetComponent<GUIText>().text=menu[i];
+            textbutton.transform.parent = m_menuParent;
+            textAffiches.Add(textbutton);
 			return true;
 		}
 		else if(menu[0]==tr("Reglages Controles") && menu[i]!=tr("RETOUR"))
 		{
 			positionH = main.players[0].numeroJoueur;
-			UpdateReglageMenu(ControllerInterface.GetController(positionH - 1));
+			UpdateReglageMenu(ControllerManager.Instance.GetController(positionH - 1));
 
 			if(menu[i]==tr("JOUEUR :"))
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+                GameObject newButton = (GameObject)Instantiate(Resources.Load("menuButton"), pos, Quaternion.identity);
+                newButton.transform.parent = m_menuParent;
+                textureAffichees.Add(newButton);
 
-				fleches = (GameObject)Instantiate (Resources.Load ("menuFleches"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,5),Quaternion.identity);
+                fleches = (GameObject)Instantiate (Resources.Load ("menuFleches"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,5),Quaternion.identity);
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)4)),pos.y,0),Quaternion.identity);
-				textbutton.guiText.text=menu[i];
+				textbutton.GetComponent<GUIText>().text=menu[i];
 				textAffiches.Add(textbutton);
+                textbutton.transform.parent = m_menuParent;
 
-				textPlayer = (GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,6),Quaternion.identity);
-				textPlayer.guiText.text = configActionNames[i];
+                textPlayer = (GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,6),Quaternion.identity);
+				textPlayer.GetComponent<GUIText>().text = configActionNames[i];
 			}
 			else if(i > 1)
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
+                GameObject newButton = (GameObject)Instantiate(Resources.Load("menuButton"), pos, Quaternion.identity);
+                newButton.transform.parent = m_menuParent;
+                textureAffichees.Add(newButton);
 
-				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)2.2f)),pos.y,0),Quaternion.identity);
-				textbutton.guiText.text=menu[i];
-				textbutton.guiText.anchor=TextAnchor.MiddleLeft;
+                GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x-(float)((float)400/(float)((float)Screen.width*(float)2.2f)),pos.y,0),Quaternion.identity);
+				textbutton.GetComponent<GUIText>().text=menu[i];
+				textbutton.GetComponent<GUIText>().anchor=TextAnchor.MiddleLeft;
 				textAffiches.Add(textbutton);
+                textbutton.transform.parent = m_menuParent;
 
-				GameObject textcontrol =(GameObject)Instantiate (Resources.Load ("textControl"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,0),Quaternion.identity);
-				textcontrol.guiText.text = configActionNames[i];
+                GameObject textcontrol =(GameObject)Instantiate (Resources.Load ("textControl"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)5)),pos.y,0),Quaternion.identity);
+				textcontrol.GetComponent<GUIText>().text = configActionNames[i];
 				controlAffiches.Add(textcontrol);
 
 				GameObject flecheD = (GameObject)Instantiate (Resources.Load ("menuFlecheD"),new Vector3(pos.x+(float)((float)400/(float)((float)Screen.width*(float)2.5f)),pos.y,5),Quaternion.identity);
@@ -493,32 +506,41 @@ public class Menus : MonoBehaviour
 			if(titreAffiche.transform.position.x != 0.8f)
 				titreAffiche.transform.position = new Vector3(0.8f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
 			Vector3 pos =new Vector3(0.8f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
-			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
-			textbutton.guiText.text=menu[i];
+            GameObject newButton = (GameObject)Instantiate(Resources.Load("menuButton"), pos, Quaternion.identity);
+            newButton.transform.parent = m_menuParent;
+            textureAffichees.Add(newButton);
+            GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+			textbutton.GetComponent<GUIText>().text=menu[i];
 			textAffiches.Add(textbutton);
-			return true;
+            textbutton.transform.parent = m_menuParent;
+            return true;
 		}
 		else if(menu[0]==mainMenu[0])
 		{		
 			if(i==1) triangleFond=(GameObject)GameObject.Instantiate (Resources.Load("404"));
 			titreAffiche.transform.position = new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
 			Vector3 pos =new Vector3(0.8f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
-			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
-			textbutton.guiText.text=menu[i];
+            GameObject newButton = (GameObject)Instantiate(Resources.Load("menuButton"), pos, Quaternion.identity);
+            newButton.transform.parent = m_menuParent;
+            textureAffichees.Add(newButton);
+            GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+			textbutton.GetComponent<GUIText>().text=menu[i];
 			textAffiches.Add(textbutton);
-			return true;
+            textbutton.transform.parent = m_menuParent;
+            return true;
 		}
 		else if(menu[0]==menuCredits[0])
 		{
 			titreAffiche.transform.position = new Vector3(0.5f,0.55f+(((float)heightLabel/2)/(float)Screen.height)*7/2f,0);
 			Vector3 pos =new Vector3(0.5f,0.15f+(((float)heightLabel/2)/(float)Screen.height)*(menu.Count/2-i),-1);
-			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
-			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
-			textbutton.guiText.text=menu[i];
+            GameObject newButton = (GameObject)Instantiate(Resources.Load("menuButton"), pos, Quaternion.identity);
+            newButton.transform.parent = m_menuParent;
+            textureAffichees.Add(newButton);
+            GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+			textbutton.GetComponent<GUIText>().text=menu[i];
 			textAffiches.Add(textbutton);
-			return true;
+            textbutton.transform.parent = m_menuParent;
+            return true;
 		}
 		else if(menu[0]==menuMaps[0])
 		{
@@ -528,16 +550,19 @@ public class Menus : MonoBehaviour
 			{
 				positionH=0;
 				nameMap =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,0.25f,0),Quaternion.identity);
-				nameMap.guiText.text=Game.listMapForMenu[positionH];
+				nameMap.GetComponent<GUIText>().text=Game.listMapForMenu[positionH];
 				fleches=(GameObject)Instantiate (Resources.Load ("menuFleches"),new Vector3(pos.x,0.25f,0),Quaternion.identity);
 				
 				ShowRoom.ShowModel(listMapForMenu[1]);
-			}
-			textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
-			GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
-			textbutton.guiText.text=menu[i];
+            }
+            GameObject newButton = (GameObject)Instantiate(Resources.Load("menuButton"), pos, Quaternion.identity);
+            newButton.transform.parent = m_menuParent;
+            textureAffichees.Add(newButton);
+            GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+			textbutton.GetComponent<GUIText>().text=menu[i];
 			textAffiches.Add(textbutton);
-			return true;
+            textbutton.transform.parent = m_menuParent;
+            return true;
 		}
 		else if(menu[0]==menuPersos[0])
 		{	
@@ -567,17 +592,20 @@ public class Menus : MonoBehaviour
 
 				textureAffichees.Add(p);
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y-(float)80/(float)Screen.width,0),Quaternion.identity);
-				textbutton.guiText.text=menu[i];
+				textbutton.GetComponent<GUIText>().text=menu[i];
 				textAffiches.Add(textbutton);
-			}
+                textbutton.transform.parent = m_menuParent;
+            }
 			else
 			{
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(1-j),-1);
 				if(j==5) j++;
 				else if(j==6) j--;
-				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
-				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
-				textbutton.guiText.text=menu[i];
+                GameObject newButton = (GameObject)Instantiate(Resources.Load("menuButton"), pos, Quaternion.identity);
+                newButton.transform.parent = m_menuParent;
+                textureAffichees.Add(newButton);
+                GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+				textbutton.GetComponent<GUIText>().text=menu[i];
 				textAffiches.Add(textbutton);
 			}
 			return true;
@@ -593,7 +621,7 @@ public class Menus : MonoBehaviour
 					Debug.Log("AJOUT D'UN BOOLEEN");
 				}
 				GameObject textTitre =(GameObject)Instantiate (Resources.Load ("textTitreMenu"),new Vector3(0.5f,0.4f,2f),Quaternion.identity);
-				textTitre.guiText.text=tr("Nombre de Points");
+				textTitre.GetComponent<GUIText>().text=tr("Nombre de Points");
 				triangleFond = textTitre;
 				position=menuConfig.Count-3;
 			}
@@ -638,31 +666,37 @@ public class Menus : MonoBehaviour
 				textureAffichees.Add(p);
 				tempAffiches.Add(q);
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y-(float)80/(float)Screen.width,0),Quaternion.identity);
-				textbutton.guiText.text=menu[i];
+				textbutton.GetComponent<GUIText>().text=menu[i];
 				textAffiches.Add(textbutton);
-			}
+                textbutton.transform.parent = m_menuParent;
+            }
 			else if (i==menuConfig.Count()-3)
 			{
 				Vector3 pos =new Vector3(0.5f,0.65f+(((float)heightLabel/2)/(float)Screen.height)*(1-j),-1);
 				j++;
 				GameObject r =(GameObject)Instantiate (Resources.Load ("menuButtonPetit"),pos,Quaternion.identity);
-				r.guiTexture.pixelInset.Set(-25,-25,50,50);
+                r.transform.parent = m_menuParent;
+                r.GetComponent<GUITexture>().pixelInset.Set(-25,-25,50,50);
 				fleches=(GameObject)Instantiate (Resources.Load ("menuFleches"),pos,Quaternion.identity);
 				textureAffichees.Add(r);
 				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
-				textbutton.guiText.text=menu[i];
+				textbutton.GetComponent<GUIText>().text=menu[i];
 				textAffiches.Add(textbutton);
-			}
+                textbutton.transform.parent = m_menuParent;
+            }
 			else
 			{
 				Vector3 pos =new Vector3(0.5f,0.6f+(((float)heightLabel/2)/(float)Screen.height)*(1-j),-1);
 				if(j==7) j--;
 				else j++;
-				textureAffichees.Add((GameObject)Instantiate (Resources.Load ("menuButton"),pos,Quaternion.identity));
-				GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
-				textbutton.guiText.text=menu[i];
+                GameObject newButton = (GameObject)Instantiate(Resources.Load("menuButton"), pos, Quaternion.identity);
+                newButton.transform.parent = m_menuParent;
+                textureAffichees.Add(newButton);
+                GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(pos.x,pos.y,0),Quaternion.identity);
+				textbutton.GetComponent<GUIText>().text=menu[i];
 				textAffiches.Add(textbutton);
-			}
+                textbutton.transform.parent = m_menuParent;
+            }
 			return true;
 		}
 		else return false;
@@ -678,76 +712,76 @@ public class Menus : MonoBehaviour
 				{
 					for(int i=0; i<textAffiches.Count;i++)
 					{
-						textureAffichees [i].guiTexture.texture = normal;
-						textureAffichees [position].guiTexture.texture = hover;
-						textAffiches[i].guiText.color=Color.white;
-						textAffiches[position].guiText.color=Color.black;
+						textureAffichees [i].GetComponent<GUITexture>().texture = normal;
+						textureAffichees [position].GetComponent<GUITexture>().texture = hover;
+						textAffiches[i].GetComponent<GUIText>().color=Color.white;
+						textAffiches[position].GetComponent<GUIText>().color=Color.black;
 						if(menuCourant[0]==tr("Reglages Controles"))
 						{
-							textPlayer.guiText.color=Color.white; 
+							textPlayer.GetComponent<GUIText>().color=Color.white; 
 							if(menuCourant[position+1]==tr("JOUEUR :"))
 							{
-								textPlayer.guiText.color=Color.black;
+								textPlayer.GetComponent<GUIText>().color=Color.black;
 							}
-							if(i<controlAffiches.Count) controlAffiches[i].guiText.color=Color.white;
+							if(i<controlAffiches.Count) controlAffiches[i].GetComponent<GUIText>().color=Color.white;
 							if(position>0 && position<menuCourant.Count-2)
 							{
-								controlAffiches[position-1].guiText.color=Color.black;
+								controlAffiches[position-1].GetComponent<GUIText>().color=Color.black;
 							}
 						}
 					}
 				}
 				else if (menuCourant[0]==menuConfig[0])
 				{
-					textureAffichees [menuConfig.Count-3].guiTexture.texture = normal;
-					textureAffichees [menuConfig.Count-2].guiTexture.texture = normal;
-					textureAffichees [menuConfig.Count-4].guiTexture.texture = normal;
-					textAffiches[menuConfig.Count-3].guiText.color=Color.white;
-					textAffiches[menuConfig.Count-2].guiText.color=Color.white;
-					textAffiches[menuConfig.Count-4].guiText.color=Color.white;
-					textAffiches[menuConfig.Count-4].guiText.text=nbPts.ToString();
+					textureAffichees [menuConfig.Count-3].GetComponent<GUITexture>().texture = normal;
+					textureAffichees [menuConfig.Count-2].GetComponent<GUITexture>().texture = normal;
+					textureAffichees [menuConfig.Count-4].GetComponent<GUITexture>().texture = normal;
+					textAffiches[menuConfig.Count-3].GetComponent<GUIText>().color=Color.white;
+					textAffiches[menuConfig.Count-2].GetComponent<GUIText>().color=Color.white;
+					textAffiches[menuConfig.Count-4].GetComponent<GUIText>().color=Color.white;
+					textAffiches[menuConfig.Count-4].GetComponent<GUIText>().text=nbPts.ToString();
 					if(position>=menuConfig.Count-4)
 					{
-						textureAffichees [position].guiTexture.texture = hover;
-						textAffiches[position].guiText.color=Color.black;
-						cadre1.guiTexture.enabled = false;
+						textureAffichees [position].GetComponent<GUITexture>().texture = hover;
+						textAffiches[position].GetComponent<GUIText>().color=Color.black;
+						cadre1.GetComponent<GUITexture>().enabled = false;
 					}
 					else if (cadre1)
 					{
 						cadre1.transform.position=textureAffichees[position].transform.position+new Vector3(0,0,2f);
-						cadre1.guiTexture.enabled = true;
+						cadre1.GetComponent<GUITexture>().enabled = true;
 						foreach( Transform child in cadre1.transform)
 						{	
-							child.guiTexture.enabled = true;
+							child.GetComponent<GUITexture>().enabled = true;
 						}
 					}
 				}
 				else
 				{
-					textureAffichees [menuPersos.Count-3].guiTexture.texture = normal;
-					textureAffichees [menuPersos.Count-2].guiTexture.texture = normal;
-					textAffiches[menuPersos.Count-3].guiText.color=Color.white;
-					textAffiches[menuPersos.Count-2].guiText.color=Color.white;
+					textureAffichees [menuPersos.Count-3].GetComponent<GUITexture>().texture = normal;
+					textureAffichees [menuPersos.Count-2].GetComponent<GUITexture>().texture = normal;
+					textAffiches[menuPersos.Count-3].GetComponent<GUIText>().color=Color.white;
+					textAffiches[menuPersos.Count-2].GetComponent<GUIText>().color=Color.white;
 					if(position>=menuPersos.Count-3)
 					{
-						textureAffichees [position].guiTexture.texture = hover;
-						textAffiches[position].guiText.color=Color.black;
+						textureAffichees [position].GetComponent<GUITexture>().texture = hover;
+						textAffiches[position].GetComponent<GUIText>().color=Color.black;
 						if(cadre1)
 						{
-							cadre1.guiTexture.enabled = false;
+							cadre1.GetComponent<GUITexture>().enabled = false;
 							foreach( Transform child in cadre1.transform)
 							{	
-								child.guiTexture.enabled = false;
+								child.GetComponent<GUITexture>().enabled = false;
 							}
 						}
 					}
 					else if (cadre1)
 					{
 						cadre1.transform.position=textureAffichees[position].transform.position+new Vector3(0,0,2f);
-						cadre1.guiTexture.enabled = true;
+						cadre1.GetComponent<GUITexture>().enabled = true;
 						foreach( Transform child in cadre1.transform)
 						{	
-							child.guiTexture.enabled = true;
+							child.GetComponent<GUITexture>().enabled = true;
 						}
 					}
 				}
@@ -763,12 +797,12 @@ public class Menus : MonoBehaviour
 				}*/
 				if(booleans["right_down"])
 				{
-					AudioManager.Play("validateMenu");
+					AudioManager.Instance.Play("validateMenu");
 					authorizeNavigate=false;
 					//Destroy(flechesD[position-1]);
 					flechesD[position-1].SetActive(false);
-					controlAffiches[position-1].guiText.text="?";
-					controlAffiches[position-1].guiText.color=Color.blue;
+					controlAffiches[position-1].GetComponent<GUIText>().text="?";
+					controlAffiches[position-1].GetComponent<GUIText>().color=Color.blue;
 					waitingForKey = true;
 					
 					int controllerNumber = positionH - 1;
@@ -781,7 +815,7 @@ public class Menus : MonoBehaviour
 
 			if (booleans["down"])
 			{
-				AudioManager.Play("downMenu");
+				AudioManager.Instance.Play("downMenu");
 				StartCoroutine(RestrictMovement());
 			}
 			if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
@@ -800,7 +834,7 @@ public class Menus : MonoBehaviour
 
 			if (booleans["up"] && readyToMove)
 			{
-				AudioManager.Play("downMenu");
+				AudioManager.Instance.Play("downMenu");
 				StartCoroutine(RestrictMovement());
 			}
 			if(menuCourant[0]==menuPersos[0] && position<menuPersos.Count-3)
@@ -819,9 +853,9 @@ public class Menus : MonoBehaviour
 			if(booleans["ok"])
 			{
 				if(menuCourant[position+1]==tr("RETOUR"))
-					AudioManager.Play("cancelMenu");
+					AudioManager.Instance.Play("cancelMenu");
 				else
-					AudioManager.Play("validateMenu");
+					AudioManager.Instance.Play("validateMenu");
 				action(menuCourant,position);
 			}
 			if(booleans["right"] && menuCourant[position+1]==tr("VOLUME :") && AudioListener.volume<=0.692) AudioListener.volume+=0.008f;
@@ -831,30 +865,30 @@ public class Menus : MonoBehaviour
 				Destroy(triangleVolume);
 				Vector3 pos =new Vector3(0.5f,0.5f+(((float)heightLabel/2)/(float)Screen.height)*(menuCourant.Count/2-1),-1);
 				triangleVolume = (GameObject)Instantiate (Resources.Load ("menuVolumeTriangle"),new Vector3(pos.x,pos.y,3),Quaternion.identity);
-				Rect t = new Rect(triangleVolume.guiTexture.pixelInset.x,triangleVolume.guiTexture.pixelInset.y,250*AudioListener.volume*1.42f,25*AudioListener.volume*1.42f);
-				triangleVolume.guiTexture.pixelInset=t;
-				if(AudioListener.volume<0.4f) triangleVolume.guiTexture.texture=triVolume1;
-				else if (AudioListener.volume>=0.4f && AudioListener.volume<0.6f) triangleVolume.guiTexture.texture=triVolume2;
-				else triangleVolume.guiTexture.texture=triVolume3;
+				Rect t = new Rect(triangleVolume.GetComponent<GUITexture>().pixelInset.x,triangleVolume.GetComponent<GUITexture>().pixelInset.y,250*AudioListener.volume*1.42f,25*AudioListener.volume*1.42f);
+				triangleVolume.GetComponent<GUITexture>().pixelInset=t;
+				if(AudioListener.volume<0.4f) triangleVolume.GetComponent<GUITexture>().texture=triVolume1;
+				else if (AudioListener.volume>=0.4f && AudioListener.volume<0.6f) triangleVolume.GetComponent<GUITexture>().texture=triVolume2;
+				else triangleVolume.GetComponent<GUITexture>().texture=triVolume3;
 			}
 			else if(menuCourant[position+1]==tr("JOUEUR :"))
 			{
-				textPlayer.guiText.text="Joueur "+positionH;
+				textPlayer.GetComponent<GUIText>().text="Joueur "+positionH;
 				for(int i=0;i<controlAffiches.Count;i++)
 				{
 					string name = ControllerResources.ActionNames[i];
-					string action = ControllerInterface.GetController(positionH - 1).GetNameKey(name);
-					controlAffiches[i].guiText.text = action;
+					string action = ControllerManager.Instance.GetController(positionH - 1).GetNameKey(name);
+					controlAffiches[i].GetComponent<GUIText>().text = action;
 				}
 				if(booleans["right_down"])
 				{
-					AudioManager.Play("downMenu");
+					AudioManager.Instance.Play("downMenu");
 					if(positionH<main.players.Count) positionH++;
 					else positionH=1;
 				}
 				else if(booleans["left_down"])
 				{
-					AudioManager.Play("downMenu");
+					AudioManager.Instance.Play("downMenu");
 					if(positionH>1) positionH--;
 					else positionH=main.players.Count;
 				}
@@ -864,7 +898,7 @@ public class Menus : MonoBehaviour
 			{
 				if(booleans["right_down"])
 				{
-					AudioManager.Play("downMenu");
+					AudioManager.Instance.Play("downMenu");
 					if(position==menuPersos.Count-4) position=0;
 					else position++;
 					ShowRoom.ShowModel(menuPersos[position+1]);
@@ -872,7 +906,7 @@ public class Menus : MonoBehaviour
 				}
 				else if(booleans["left_down"])
 				{
-					AudioManager.Play("downMenu");
+					AudioManager.Instance.Play("downMenu");
 					if(position==0) position=menuPersos.Count-4;
 					else position--;
 					ShowRoom.ShowModel(menuPersos[position+1]);
@@ -904,11 +938,12 @@ public class Menus : MonoBehaviour
 								break;
 						}
 						GameObject textbutton =(GameObject)Instantiate (Resources.Load ("textButton"),new Vector3(0.85f,0.66f-0.07f*numSelection,0),Quaternion.identity);
-						textbutton.guiText.text="J"+numSelection+" : "+menuCourant[position+1];
-						textbutton.guiText.color=c;
-						textbutton.guiText.fontSize=40;
+						textbutton.GetComponent<GUIText>().text="J"+numSelection+" : "+menuCourant[position+1];
+						textbutton.GetComponent<GUIText>().color=c;
+						textbutton.GetComponent<GUIText>().fontSize=40;
 						textAffiches.Add(textbutton);
-						if(numSelection<4)
+                        textbutton.transform.parent = m_menuParent;
+                        if (numSelection<4)
 						{
 							numSelection++;
 							cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre"+numSelection), textureAffichees [position].transform.position+new Vector3(0,0,2f), Quaternion.identity);
@@ -923,20 +958,20 @@ public class Menus : MonoBehaviour
 			{
 				if(booleans["right_down"])
 				{
-					AudioManager.Play("downMenu");
+					AudioManager.Instance.Play("downMenu");
 					ShowRoom.ShowModel(listMapForMenu[positionH]);
 
 					if(positionH==Game.listMapForMenu.Count-1) positionH=0;
 					else positionH++;
-					nameMap.guiText.text=Game.listMapForMenu[positionH];
+					nameMap.GetComponent<GUIText>().text=Game.listMapForMenu[positionH];
 				}
 				if(booleans["left_down"])
 				{
-					AudioManager.Play("downMenu");
+					AudioManager.Instance.Play("downMenu");
 					ShowRoom.ShowModel(listMapForMenu[positionH]);
 					if(positionH==0) positionH=Game.listMapForMenu.Count-1;
 					else positionH--;
-					nameMap.guiText.text=Game.listMapForMenu[positionH];
+					nameMap.GetComponent<GUIText>().text=Game.listMapForMenu[positionH];
 				}
 			}
 			else if (menuCourant[0]==menuConfig[0] )//&& configWeaponsStates.Count==8)
@@ -945,13 +980,13 @@ public class Menus : MonoBehaviour
 				{
 					if(booleans["right_down"])
 					{
-						AudioManager.Play("downMenu");
+						AudioManager.Instance.Play("downMenu");
 						if(position==menuConfig.Count-5) position=0;
 						else position++;
 					}
 					else if(booleans["left_down"])
 					{
-						AudioManager.Play("downMenu");
+						AudioManager.Instance.Play("downMenu");
 						if(position==0) position=menuConfig.Count-5;
 						else position--;
 					}
@@ -960,13 +995,13 @@ public class Menus : MonoBehaviour
 				{
 					if(booleans["right_down"])
 					{
-						AudioManager.Play("downMenu");
+						AudioManager.Instance.Play("downMenu");
 						if(nbPts==99) nbPts=1;
 						else nbPts++;
 					}
 					else if(booleans["left_down"])
 					{
-						AudioManager.Play("downMenu");
+						AudioManager.Instance.Play("downMenu");
 						if(nbPts==1) nbPts=99;
 						else nbPts--;
 					}
@@ -983,11 +1018,11 @@ public class Menus : MonoBehaviour
 					{
 						if(configWeaponsStates[position])// && !falseok)
 						{
-							tempAffiches[position].guiTexture.color=new Color(241f/255f,255f/255f,0f/255f);
+							tempAffiches[position].GetComponent<GUITexture>().color=new Color(241f/255f,255f/255f,0f/255f);
 						}
 						else
 						{
-							tempAffiches[position].guiTexture.color=new Color(255f/255f,0f/255f,0f/255f);
+							tempAffiches[position].GetComponent<GUITexture>().color=new Color(255f/255f,0f/255f,0f/255f);
 						}
 					}
 				}
@@ -1008,41 +1043,41 @@ public class Menus : MonoBehaviour
 	{
 		yield return StartCoroutine(WaitIgnoringTimeScale(0.25f));
 
-		ControllerInterface.GetController(i).ListenNewKey(action);
+		ControllerManager.Instance.GetController(i).ListenNewKey(action);
 	}
 	
 	IEnumerator GetKey()
 	{
-		AudioManager.Play("validateMenu");
+		AudioManager.Instance.Play("validateMenu");
 		yield return StartCoroutine(WaitIgnoringTimeScale(0.1f));
 		waitingForKey = false;
 		flechesD[position - 1].SetActive(true);
 		authorizeNavigate = true;
 		string name = ControllerResources.ActionNames[position - 1];
-		string action = ControllerInterface.GetController(positionH - 1).GetNameKey(name);
-		controlAffiches[position - 1].guiText.text=action;
+		string action = ControllerManager.Instance.GetController(positionH - 1).GetNameKey(name);
+		controlAffiches[position - 1].GetComponent<GUIText>().text=action;
 	}
 
 	void CheckKeys()
 	{
 
 		if (readyToMove){
-			booleans["up"] = ControllerInterface.GetKey("up");
-			booleans["down"] = ControllerInterface.GetKey("down");
-			booleans["right"] = ControllerInterface.GetKey("right");
-			booleans["left"] = ControllerInterface.GetKey("left");
+			booleans["up"] = ControllerManager.Instance.GetKey("up");
+			booleans["down"] = ControllerManager.Instance.GetKey("down");
+			booleans["right"] = ControllerManager.Instance.GetKey("right");
+			booleans["left"] = ControllerManager.Instance.GetKey("left");
 
 		}
 		//Debug.Log(readyToMove +","+ booleans["up"]);
 		
-		booleans["ok"] = ControllerInterface.GetKeyDown("validate");
-		booleans["back"] = ControllerInterface.GetKeyDown("action");
-		booleans["start"] = ControllerInterface.GetKeyDown("start");
+		booleans["ok"] = ControllerManager.Instance.GetKeyDown("validate");
+		booleans["back"] = ControllerManager.Instance.GetKeyDown("action");
+		booleans["start"] = ControllerManager.Instance.GetKeyDown("start");
 		
-		booleans["up_down"] = ControllerInterface.GetKeyDown("up");
-		booleans["down_down"] = ControllerInterface.GetKeyDown("down");
-		booleans["right_down"] = ControllerInterface.GetKeyDown("right");
-		booleans["left_down"] = ControllerInterface.GetKeyDown("left");
+		booleans["up_down"] = ControllerManager.Instance.GetKeyDown("up");
+		booleans["down_down"] = ControllerManager.Instance.GetKeyDown("down");
+		booleans["right_down"] = ControllerManager.Instance.GetKeyDown("right");
+		booleans["left_down"] = ControllerManager.Instance.GetKeyDown("left");
 	}
 	
 	IEnumerator RestrictMovement()
@@ -1058,12 +1093,10 @@ public class Menus : MonoBehaviour
 		if(level=="loaded")
 		{
 			Application.LoadLevel (Application.loadedLevel);
-			Application.LoadLevelAdditive("commonScene");
 		}
 		else
 		{
 			Application.LoadLevel (level);
-			Application.LoadLevelAdditive("commonScene");
 		}
 	}
 	
@@ -1166,8 +1199,8 @@ public class Menus : MonoBehaviour
 			else if (menu[p+1].Equals(tr("BATAILLE")))
 			{
 				displayMenu(menuPersos);
-				cadre1.guiTexture.enabled=true;
-				cadre5.guiTexture.enabled = true;
+				cadre1.GetComponent<GUITexture>().enabled=true;
+				cadre5.GetComponent<GUITexture>().enabled = true;
 				ShowRoom.ShowModel(menuPersos[position+1]);
 			}
 		}
@@ -1187,7 +1220,7 @@ public class Menus : MonoBehaviour
 				persos=new List<string>();
 				numSelection=0;
 				falseok=false;
-				cadre5.guiTexture.enabled = true;
+				cadre5.GetComponent<GUITexture>().enabled = true;
 				ShowRoom.ShowModel(menuPersos[position+1]);
 			}
 			else if (menu[p+1].Equals(tr("VALIDER")))
@@ -1198,7 +1231,7 @@ public class Menus : MonoBehaviour
 				if(map!=null)
 					displayMenu(menuConfig);
 				cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre6"), textureAffichees [position].transform.position+new Vector3(0,0,2f), Quaternion.identity);
-				cadre1.guiTexture.enabled = true;
+				cadre1.GetComponent<GUITexture>().enabled = true;
 				weapons=new List<string>();
 			}
 		}
@@ -1207,16 +1240,16 @@ public class Menus : MonoBehaviour
 			if(menu[p+1].Equals(tr("RETOUR")))
 			{
 				ShowRoom.Leave();
-				cadre5.guiTexture.enabled = false;
+				cadre5.GetComponent<GUITexture>().enabled = false;
 				for(int n=0;n<persos.Count;n++)
 					persos.RemoveAt(n);
 				displayMenu(mainMenu);
 				numSelection=1;
 				cadre1 = (GameObject)GameObject.Instantiate (Resources.Load ("cadre1"), textureAffichees [position].transform.position+new Vector3(0,0,2f), Quaternion.identity);
-				cadre1.guiTexture.enabled=false;
+				cadre1.GetComponent<GUITexture>().enabled=false;
 				foreach( Transform child in cadre1.transform)
 				{	
-					child.guiTexture.enabled = false;
+					child.GetComponent<GUITexture>().enabled = false;
 				}
 				falseok=true;
 				persos=new List<string>();
@@ -1226,7 +1259,7 @@ public class Menus : MonoBehaviour
 				if(persos.Count>1)
 				{
 					ShowRoom.Leave();
-					cadre5.guiTexture.enabled = false;
+					cadre5.GetComponent<GUITexture>().enabled = false;
 					displayMenu(menuMaps);
 					positionH=0;
 				}
@@ -1236,7 +1269,7 @@ public class Menus : MonoBehaviour
 		{
 			if(menu[p+1].Equals( tr("RETOUR") ))
 			{
-				cadre1.guiTexture.enabled = false;
+				cadre1.GetComponent<GUITexture>().enabled = false;
 				displayMenu(menuMaps);
 				j = 5;
 				configWeaponsStates=new List<bool>();
@@ -1302,10 +1335,10 @@ public class Menus : MonoBehaviour
 	{
 		if(cadre1)
 		{
-			cadre1.guiTexture.enabled = false;
+			cadre1.GetComponent<GUITexture>().enabled = false;
 			foreach( Transform child in cadre1.transform)
 			{	
-				child.guiTexture.enabled = false;
+				child.GetComponent<GUITexture>().enabled = false;
 			}
 		}
 		authorizeNavigate = false;

@@ -18,8 +18,8 @@ public class WeaponBoxScript : MonoBehaviour {
 		if (!other.isTrigger)
 			return;
 		//animation
-		collider.enabled = false;
-		audio.Play ();
+		GetComponent<Collider>().enabled = false;
+		GetComponent<AudioSource>().Play ();
 		StartCoroutine (Take());
 		Main.statistics.nbWeaponBox++;
 		//find who to give weapon
@@ -50,10 +50,10 @@ public class WeaponBoxScript : MonoBehaviour {
 	IEnumerator PlaySound()
 	{
 		while (nbImgArmes<25 && nbImgArmes>0) {
-			audio.PlayOneShot(randomMusic);
+			GetComponent<AudioSource>().PlayOneShot(randomMusic);
 			yield return new WaitForSeconds (randomMusic.length*3/4);
 		}
-		audio.PlayOneShot(endMusic);
+		GetComponent<AudioSource>().PlayOneShot(endMusic);
 	}
 
 	public bool selectRandomWeapon()
@@ -93,10 +93,10 @@ public class WeaponBoxScript : MonoBehaviour {
 	
 	IEnumerator Take()
 	{
-		animation.Play ("boxDisappear");
+		GetComponent<Animation>().Play ("boxDisappear");
 		yield return new WaitForSeconds (2f);
-		animation.Play ("boxGrow");
+		GetComponent<Animation>().Play ("boxGrow");
 		yield return new WaitForSeconds (1.3f);
-		collider.enabled = true;
+		GetComponent<Collider>().enabled = true;
 	}
 }

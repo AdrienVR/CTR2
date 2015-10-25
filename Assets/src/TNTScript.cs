@@ -142,7 +142,7 @@ public class TNTScript : MonoBehaviour {
 	
 	void OnCollisionEnter(Collision collision)
 	{
-		rigidbody.velocity = Vector3.zero;
+		GetComponent<Rigidbody>().velocity = Vector3.zero;
 		if (name == "tntDropped"){
 			StartCoroutine(tntExplosion());
 		}
@@ -163,17 +163,17 @@ public class TNTScript : MonoBehaviour {
 			SetAllCollidersStatus (false);
 			exploded = true;
 			if (explosionClip != null)
-				animation.Play (explosionClip.name);
+				GetComponent<Animation>().Play (explosionClip.name);
 			if (name != "TNT" || !kartCollided){
-				audio.Play ();
+				GetComponent<AudioSource>().Play ();
 				gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
 				foreach (Transform child in gameObject.transform)
 				{
 					Destroy(child.gameObject);
 				}
-				gameObject.light.color = explosionColor;
+				gameObject.GetComponent<Light>().color = explosionColor;
 				yield return new WaitForSeconds (0.1f);
-				gameObject.light.color = new Color();
+				gameObject.GetComponent<Light>().color = new Color();
 				Destroy(gameObject, 3f);
 			}
 			else
@@ -196,10 +196,10 @@ public class TNTScript : MonoBehaviour {
 	}
 
 	IEnumerator tntExplosion(){
-		audio.Play ();
-		gameObject.light.color = explosionColor;
+		GetComponent<AudioSource>().Play ();
+		gameObject.GetComponent<Light>().color = explosionColor;
 		yield return new WaitForSeconds (0.1f);
-		gameObject.light.color = new Color();
+		gameObject.GetComponent<Light>().color = new Color();
 		if (!disamorced)
 			kartCollided.Die (owner,name);
 		gameObject.transform.localScale = new Vector3 (0.01f,0.01f,0.01f);
@@ -232,13 +232,13 @@ public class TNTScript : MonoBehaviour {
 	void Update () {
 		// for bombs, missiles and launched shields
 		if (Game.launchWeapons.IndexOf(name) != -1) {
-			rigidbody.velocity = new Vector3(vitesseInitiale.x,-20f,vitesseInitiale.z);
+			GetComponent<Rigidbody>().velocity = new Vector3(vitesseInitiale.x,-20f,vitesseInitiale.z);
 			if (exploded && name[0] == 'b')
-				rigidbody.velocity = Vector3.zero;
+				GetComponent<Rigidbody>().velocity = Vector3.zero;
 		}
 		// for Aku-Aku and shields
 		else if (Game.protectWeapons.IndexOf(name) != -1) {
-			transform.position = owner.rigidbody.transform.position + new Vector3(0f,-0.2f);
+			transform.position = owner.GetComponent<Rigidbody>().transform.position + new Vector3(0f,-0.2f);
 		}
 		else if (name == "tntExploded") {
 			if (!disamorced)

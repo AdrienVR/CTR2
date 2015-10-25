@@ -3,40 +3,33 @@ using System.Collections;
 
 public class MainMenu : MonoBehaviour
 {
-	public Texture normal;
-	public Texture hover;
+    public Texture normal;
+    public Texture hover;
 
-	// Use this for initialization
-	void Awake ()
-	{
-		InitController ();
+    // Use this for initialization
+    void Awake()
+    {
+        InitController();
 
-		if (AudioManager.Instance == null && ControllerInterface.Instance == null)
-		{
-			Application.LoadLevelAdditive("commonScene");
-		}
+        InitMenus();
 
-		InitMenus ();
-		
-		#if UNITY_EDITOR
-		Application.runInBackground = true;
-		#else
-		Screen.showCursor = false;
-		#endif
-	}
+#if UNITY_EDITOR
+        Application.runInBackground = true;
+#endif
+    }
 
-	void InitController()
-	{
-		KartController.stop = true;
-	}
+    void InitController()
+    {
+        KartController.stop = true;
+    }
 
-	void InitMenus()
-	{
-		Instantiate (Resources.Load ("videoFond"));
-		Menus m =(Menus)gameObject.AddComponent ("Menus");
-		m.displayMenu(Menus.menuToGo);
-		m.normal = normal;
-		m.hover = hover;
+    void InitMenus()
+    {
+        Instantiate(Resources.Load("videoFond"));
+        Menus menu = (Menus)gameObject.AddComponent<Menus>();
+        menu.displayMenu(Menus.menuToGo);
+        menu.normal = normal;
+        menu.hover = hover;
 
-	}
+    }
 }
