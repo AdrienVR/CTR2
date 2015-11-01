@@ -295,8 +295,11 @@ public class KartScript : MonoBehaviour
 	
 	public void Die(GameObject killer, string weapon)
 	{
-		//Debug.Log ("mort");
-		if(tnt && weapon != "tntExploded")
+        Animator anim = transform.GetChild(0).GetComponent<Animator>();
+        anim.enabled = true;
+        anim.Play("Dead");
+        //Debug.Log ("mort");
+        if (tnt && weapon != "tntExploded")
 			Destroy(tnt);
 		if (shield != null)
 		{
