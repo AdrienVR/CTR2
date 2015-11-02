@@ -71,6 +71,8 @@ public class ControllerManager : MonoBehaviour
         }
         else if (m_instantiatedControllers < m_nControllers)
         {
+            if (Input.GetJoystickNames()[m_instantiatedControllers].Trim() == "")
+                return;
             m_allControllers.Insert(m_instantiatedControllers, new ControllerBase(Input.GetJoystickNames()[m_instantiatedControllers]));
             m_instantiatedControllers++;
             ControllerResources.controllers = m_instantiatedControllers;

@@ -7,7 +7,7 @@
 		_Bias ("Edge Bias", Range(0.5, 30.0)) = 4.0
 		_Edge ("Edge Sharpness", Float) = 10.0
 		_Fall ("Blend Falloff", Range(-1,1)) = 1.0
-		_Caca ("Caca", Range(0, 1)) = 1.0
+		_Specular ("Specular", Range(0, 1)) = 1.0
 	}
 		
 	SubShader
@@ -31,7 +31,7 @@
 		float _Edge;
 		float _Bias;
 		float _Fall;
-		float _Caca;
+		float _Specular;
 		
 		void surf (Input IN, inout SurfaceOutput o)
 		{
@@ -41,7 +41,7 @@
 			mask *= IN.color.r;
 			mask *= _Bias;
 			mask = pow(mask, _Edge);
-			mask = clamp((mask.r - IN.color.r) / _Fall, 0.0, _Caca);
+			mask = clamp((mask.r - IN.color.r) / _Fall, 0.0, _Specular);
 			col = tex2D (_Under, IN.uv_Under).rgb * 1 - mask.r;
 			//col = max(tex2D (_Over, IN.uv_Over).rgb * mask.r, col);
 			o.Albedo = col;

@@ -20,7 +20,7 @@ public class CameraController : MonoBehaviour
 		transform.position = 0.75f*objectiv;
 		//}
 		journeyLength = Vector3.Distance(transform.position, kc.transform.position);
-		//Debug.Log ("caca " + journeyLength);
+		//Debug.Log ("duree de voyage " + journeyLength);
 
 	}
 		

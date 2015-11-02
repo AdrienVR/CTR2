@@ -8,7 +8,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(EventTrigger))]
-public class MenuButton : MonoBehaviour
+public class MenuButton : NavigationCross
 {
     public Menu ParentMenu;
     public CrossMenuButton Cross;
@@ -16,7 +16,10 @@ public class MenuButton : MonoBehaviour
 
     public bool Active
     {
-        get { return ParentMenu.SelectedButton == this; }
+        get
+        {
+            return ParentMenu.SelectedButton == this;
+        }
         set
         {
             if (value == true)
@@ -53,23 +56,19 @@ public class MenuButton : MonoBehaviour
             }
             if (Cross.Up != null && UpAction())
             {
-                Cross.Up.Active = true;
-                Active = false;
+                Cross.Up.OnUp();
             }
             if (Cross.Down != null && DownAction())
             {
-                Cross.Down.Active = true;
-                Active = false;
+                Cross.Down.OnDown();
             }
             if (Cross.Left != null && LeftAction())
             {
-                Cross.Left.Active = true;
-                Active = false;
+                Cross.Left.OnLeft();
             }
             if (Cross.Right != null && RightAction())
             {
-                Cross.Right.Active = true;
-                Active = false;
+                Cross.Right.OnRight();
             }
         }
         else
@@ -78,6 +77,27 @@ public class MenuButton : MonoBehaviour
                 Deselect();
             m_timer = 0;
         }
+    }
+
+    public override void OnLeft()
+    {
+        ((MenuButton)Cross.Right).Active = false;
+        Active = true;
+    }
+    public override void OnRight()
+    {
+        ((MenuButton)Cross.Left).Active = false;
+        Active = true;
+    }
+    public override void OnUp()
+    {
+        ((MenuButton)Cross.Down).Active = false;
+        Active = true;
+    }
+    public override void OnDown()
+    {
+        ((MenuButton)Cross.Up).Active = false;
+        Active = true;
     }
 
     public void Validate()

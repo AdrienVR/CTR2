@@ -4,8 +4,8 @@ using System;
 [Serializable]
 public class CrossMenuButton{
 
-    public MenuButton Left;
-    public MenuButton Right;
-    public MenuButton Up;
-    public MenuButton Down;
+    public NavigationCross Left;
+    public NavigationCross Right;
+    public NavigationCross Up;
+    public NavigationCross Down;
 }
