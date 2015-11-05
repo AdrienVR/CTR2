@@ -43,16 +43,15 @@ public class ShowRoom : MonoBehaviour
         int x = model.x + 1;
         int y = model.y + 1;
         Vector3 modelPosition = ModelTransforms[y].ModelLineTransforms[x].position;
-        x = model.x + 1 + 1;
-        y = model.y + 1;
 
-        if (x > Length)
+        if (model.x + 1 > Length)
         {
-            Vector3 destination = ModelTransforms[y].ModelLineTransforms[Length + 1].position;
+            Vector3 rightDestination = ModelTransforms[y].ModelLineTransforms[Length + 1].position;
+            Vector3 leftDestination = ModelTransforms[y].ModelLineTransforms[0].position;
             CameraViewers[cameraIndex].GoTo(
                 new Vector3[3] {
-                    modelPosition,
-                    modelPosition,
+                    rightDestination,
+                    leftDestination,
                     modelPosition
             });
         }
@@ -65,23 +64,24 @@ public class ShowRoom : MonoBehaviour
     public void ShowModelFromRight(string modelName, int cameraIndex = 0)
     {
         Model model = FindModel(modelName);
-        int x = model.x + 1 - 1;
+        int x = model.x + 1;
         int y = model.y + 1;
+        Vector3 modelPosition = ModelTransforms[y].ModelLineTransforms[x].position;
 
-        if (x < 1)
+        if (model.x + 2 - 1 < 1)
         {
-            Vector3[] positions = new Vector3[3]
-            {
-                ModelTransforms[y].ModelLineTransforms[0].position,
-                ModelTransforms[y].ModelLineTransforms[Length + 1].position,
-                ModelTransforms[y].ModelLineTransforms[Length].position
-            };
-            CameraViewers[cameraIndex].GoTo(ModelTransforms[y].ModelLineTransforms[1], positions);
+            Vector3 leftDestination = ModelTransforms[y].ModelLineTransforms[0].position;
+            Vector3 rightDestination = ModelTransforms[y].ModelLineTransforms[Length + 1].position;
+            CameraViewers[cameraIndex].GoTo(
+                new Vector3[3] {
+                    leftDestination,
+                    rightDestination,
+                    modelPosition
+            });
         }
         else
         {
-            Transform destination = ModelTransforms[y].ModelLineTransforms[x];
-            CameraViewers[cameraIndex].GoTo(destination);
+            CameraViewers[cameraIndex].GoTo(new Vector3[1] { modelPosition });
         }
     }
 
@@ -89,22 +89,23 @@ public class ShowRoom : MonoBehaviour
     {
         Model model = FindModel(modelName);
         int x = model.x + 1;
-        int y = model.y + 1 - 1;
+        int y = model.y + 1;
+        Vector3 modelPosition = ModelTransforms[y].ModelLineTransforms[x].position;
 
-        if (y < 1)
+        if (model.y + 1 > Height)
         {
-            Vector3[] positions = new Vector3[3]
-            {
-                ModelTransforms[y].ModelLineTransforms[x].position,
-                ModelTransforms[y].ModelLineTransforms[x].position,
-                ModelTransforms[y].ModelLineTransforms[x].position
-            };
-            CameraViewers[cameraIndex].GoTo(ModelTransforms[y].ModelLineTransforms[1], positions);
+            Vector3 downDestination = ModelTransforms[Height + 1].ModelLineTransforms[x].position;
+            Vector3 upDestination = ModelTransforms[0].ModelLineTransforms[x].position;
+            CameraViewers[cameraIndex].GoTo(
+                new Vector3[3] {
+                    downDestination,
+                    upDestination,
+                    modelPosition
+            });
         }
         else
         {
-            Transform destination = ModelTransforms[y].ModelLineTransforms[x];
-            CameraViewers[cameraIndex].GoTo(destination);
+            CameraViewers[cameraIndex].GoTo(new Vector3[1] { modelPosition });
         }
     }
 
@@ -112,22 +113,23 @@ public class ShowRoom : MonoBehaviour
     {
         Model model = FindModel(modelName);
         int x = model.x + 1;
-        int y = model.y + 1 - 1;
+        int y = model.y + 1;
+        Vector3 modelPosition = ModelTransforms[y].ModelLineTransforms[x].position;
 
-        if (y < 1)
+        if (model.y + 2 - 1 < 1)
         {
-            Vector3[] positions = new Vector3[3]
-            {
-                ModelTransforms[y].ModelLineTransforms[x].position,
-                ModelTransforms[y].ModelLineTransforms[x].position,
-                ModelTransforms[y].ModelLineTransforms[x].position
-            };
-            CameraViewers[cameraIndex].GoTo(ModelTransforms[y].ModelLineTransforms[1], positions);
+            Vector3 leftDestination = ModelTransforms[0].ModelLineTransforms[x].position;
+            Vector3 rightDestination = ModelTransforms[Height + 1].ModelLineTransforms[x].position;
+            CameraViewers[cameraIndex].GoTo(
+                new Vector3[3] {
+                    leftDestination,
+                    rightDestination,
+                    modelPosition
+            });
         }
         else
         {
-            Transform destination = ModelTransforms[y].ModelLineTransforms[x];
-            CameraViewers[cameraIndex].GoTo(destination);
+            CameraViewers[cameraIndex].GoTo(new Vector3[1] { modelPosition });
         }
     }
 

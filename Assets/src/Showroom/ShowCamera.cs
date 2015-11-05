@@ -7,8 +7,8 @@ public class ShowCamera : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        m_currentDestination = transform.position;
-        m_timer = 0;
+        m_timer = MovingDuration;
+        m_destination = new Vector3[] { transform.position };
     }
 
     // Update is called once per frame
