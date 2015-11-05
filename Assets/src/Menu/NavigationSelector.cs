@@ -33,22 +33,22 @@ public class NavigationSelector : NavigationCross
     public override void OnLeft()
     {
         transform.SetParent(SelectorManager.GetLeftParent(ref m_x, ref m_y), false);
-        ShowRoom.ShowModelFromRight(transform.parent.name);
+        ShowRoom.ShowModelFromRight(transform.parent.name, PlayerIndex);
     }
     public override void OnRight()
     {
         transform.SetParent(SelectorManager.GetRightParent(ref m_x, ref m_y), false);
-        ShowRoom.ShowModelFromLeft(transform.parent.name);
+		ShowRoom.ShowModelFromLeft(transform.parent.name, PlayerIndex);
     }
     public override void OnUp()
     {
         transform.SetParent(SelectorManager.GetUpParent(ref m_x, ref m_y), false);
-        ShowRoom.ShowModelFromDown(transform.parent.name);
+		ShowRoom.ShowModelFromDown(transform.parent.name, PlayerIndex);
     }
     public override void OnDown()
     {
         transform.SetParent(SelectorManager.GetDownParent(ref m_x, ref m_y), false);
-        ShowRoom.ShowModelFromUp(transform.parent.name);
+		ShowRoom.ShowModelFromUp(transform.parent.name, PlayerIndex);
     }
 
     // Actions

@@ -15,6 +15,6 @@ public class PlayerMenuAction : MenuAction
     {
         Logo.PlayLeavingAnimation();
         Title.PlayLeavingAnimation();
-        base.OnHideBack();
+		base.OnDraw();
     }
 }

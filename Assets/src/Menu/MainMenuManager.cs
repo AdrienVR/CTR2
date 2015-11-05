@@ -27,26 +27,23 @@ public class MainMenuManager : MonoBehaviour
     void Awake()
     {
         m_menus = GetComponentsInChildren<Menu>();
-        /*
+        
         foreach (Menu menu in m_menus)
         {
             if (menu == DefaultMenu)
             {
                 DefaultMenu.gameObject.SetActive(true);
-                DefaultMenu.MenuAction.OnDraw();
             }
             else
             {
                 menu.gameObject.SetActive(false);
             }
         }
-        DefaultMenu.gameObject.SetActive(true);
-        DefaultMenu.MenuAction.OnDraw();
 
         foreach (GameObject go in GoToEnable)
         {
             go.SetActive(true);
-        }*/
+        }
         DefaultMenu.MenuAction.OnDraw();
     }
 
