@@ -71,8 +71,8 @@ public class ControllerManager : MonoBehaviour
         }
         else if (m_instantiatedControllers < m_nControllers)
         {
-            if (Input.GetJoystickNames()[m_instantiatedControllers].Trim() == "")
-                return;
+            //if (Input.GetJoystickNames()[m_instantiatedControllers].Trim() == "")
+              //  return;
             m_allControllers.Insert(m_instantiatedControllers, new ControllerBase(Input.GetJoystickNames()[m_instantiatedControllers]));
             m_instantiatedControllers++;
             ControllerResources.controllers = m_instantiatedControllers;
@@ -94,6 +94,11 @@ public class ControllerManager : MonoBehaviour
         return 0;
     }
 
+    public float GetAxis(string actionName, int controllerIndex)
+    {
+        return GetController(controllerIndex).GetAxis(actionName);
+    }
+
     public bool GetKey(string actionName)
     {
         bool result = false;
@@ -102,6 +107,11 @@ public class ControllerManager : MonoBehaviour
             result |= controller.GetKey(actionName);
         }
         return result;
+    }
+
+    public bool GetKey(string actionName, int controllerIndex)
+    {
+        return GetController(controllerIndex).GetKey(actionName);
     }
 
     public bool GetKeyDown(string actionName)
@@ -114,6 +124,11 @@ public class ControllerManager : MonoBehaviour
         return result;
     }
 
+    public bool GetKeyDown(string actionName, int controllerIndex)
+    {
+        return GetController(controllerIndex).GetKeyDown(actionName);
+    }
+
     public bool GetKeyUp(string actionName)
     {
         bool result = false;
@@ -124,6 +139,10 @@ public class ControllerManager : MonoBehaviour
         return result;
     }
 
+    public bool GetKeyUp(string actionName, int controllerIndex)
+    {
+        return GetController(controllerIndex).GetKeyUp(actionName);
+    }
 
     // TODO
     public static void Test(int i)

@@ -234,7 +234,6 @@ public class Menus : MonoBehaviour
 			persos=new List<string>();
 			numSelection=1;
 			falseok=false;
-			ShowRoom.ShowModel(menuPersos[position+1]);
 			if(cadre1) cadre1.GetComponent<GUITexture>().enabled=true;
 			if(cadre5) cadre5.GetComponent<GUITexture>().enabled = true;
 			configWeaponsStates=new List<bool>();
@@ -246,7 +245,6 @@ public class Menus : MonoBehaviour
 			j = 5;
 			configWeaponsStates=new List<bool>();
 			weapons = new List<string>();
-			ShowRoom.ShowModel(listMapForMenu[1]);
 		}
 		if(menuToGo==menuConfig)
 		{
@@ -553,7 +551,6 @@ public class Menus : MonoBehaviour
 				nameMap.GetComponent<GUIText>().text=Game.listMapForMenu[positionH];
 				fleches=(GameObject)Instantiate (Resources.Load ("menuFleches"),new Vector3(pos.x,0.25f,0),Quaternion.identity);
 				
-				ShowRoom.ShowModel(listMapForMenu[1]);
             }
             GameObject newButton = (GameObject)Instantiate(Resources.Load("menuButton"), pos, Quaternion.identity);
             newButton.transform.parent = m_menuParent;
@@ -901,7 +898,6 @@ public class Menus : MonoBehaviour
 					AudioManager.Instance.Play("downMenu");
 					if(position==menuPersos.Count-4) position=0;
 					else position++;
-					ShowRoom.ShowModel(menuPersos[position+1]);
 					StartCoroutine(RestrictMovement());
 				}
 				else if(booleans["left_down"])
@@ -909,7 +905,6 @@ public class Menus : MonoBehaviour
 					AudioManager.Instance.Play("downMenu");
 					if(position==0) position=menuPersos.Count-4;
 					else position--;
-					ShowRoom.ShowModel(menuPersos[position+1]);
 					StartCoroutine(RestrictMovement());
 				}
 				else if(booleans["ok"])
@@ -959,7 +954,6 @@ public class Menus : MonoBehaviour
 				if(booleans["right_down"])
 				{
 					AudioManager.Instance.Play("downMenu");
-					ShowRoom.ShowModel(listMapForMenu[positionH]);
 
 					if(positionH==Game.listMapForMenu.Count-1) positionH=0;
 					else positionH++;
@@ -968,7 +962,6 @@ public class Menus : MonoBehaviour
 				if(booleans["left_down"])
 				{
 					AudioManager.Instance.Play("downMenu");
-					ShowRoom.ShowModel(listMapForMenu[positionH]);
 					if(positionH==0) positionH=Game.listMapForMenu.Count-1;
 					else positionH--;
 					nameMap.GetComponent<GUIText>().text=Game.listMapForMenu[positionH];
@@ -1201,7 +1194,6 @@ public class Menus : MonoBehaviour
 				displayMenu(menuPersos);
 				cadre1.GetComponent<GUITexture>().enabled=true;
 				cadre5.GetComponent<GUITexture>().enabled = true;
-				ShowRoom.ShowModel(menuPersos[position+1]);
 			}
 		}
 		if(menu[0]==menuCredits[0])
@@ -1215,18 +1207,15 @@ public class Menus : MonoBehaviour
 		{
 			if(menu[p+1].Equals(tr("RETOUR")))
 			{
-				ShowRoom.Leave();
 				displayMenu(menuPersos);
 				persos=new List<string>();
 				numSelection=0;
 				falseok=false;
 				cadre5.GetComponent<GUITexture>().enabled = true;
-				ShowRoom.ShowModel(menuPersos[position+1]);
 			}
 			else if (menu[p+1].Equals(tr("VALIDER")))
 			{
 				falseok=true;
-				ShowRoom.Leave();
 				map=Game.listMapForMenu[positionH];
 				if(map!=null)
 					displayMenu(menuConfig);
@@ -1239,7 +1228,6 @@ public class Menus : MonoBehaviour
 		{
 			if(menu[p+1].Equals(tr("RETOUR")))
 			{
-				ShowRoom.Leave();
 				cadre5.GetComponent<GUITexture>().enabled = false;
 				for(int n=0;n<persos.Count;n++)
 					persos.RemoveAt(n);
@@ -1258,7 +1246,6 @@ public class Menus : MonoBehaviour
 			{
 				if(persos.Count>1)
 				{
-					ShowRoom.Leave();
 					cadre5.GetComponent<GUITexture>().enabled = false;
 					displayMenu(menuMaps);
 					positionH=0;
