@@ -80,8 +80,7 @@ public class Menu : MonoBehaviour
         {
             nextMenu.MenuAction.OnDraw();
         }
-
-        s_lastMenu = this;
+        
         gameObject.SetActive(false);
     }
 
@@ -91,7 +90,6 @@ public class Menu : MonoBehaviour
     }
 
     private static Menu s_currentMenu;
-    private static Menu s_lastMenu;
 
     private MenuButton m_lastSelected;
     private float m_effectiveTimer;

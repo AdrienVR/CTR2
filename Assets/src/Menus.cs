@@ -49,7 +49,6 @@ public class Menus : MonoBehaviour
 	public int numSelection = 1;
 	private static List <GameObject> tempAffiches =  new List <GameObject>();
 	private static List<bool> configWeaponsStates; // /!\
-	private static List <string> listMapForMenu =  new List <string>(){"Parking","Skull Rock"};
 	
 	// variables statiques pour la config d'une battle
 	private static List<string> persos=new List <string>();
