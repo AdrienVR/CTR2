@@ -17,7 +17,7 @@ public class Kart
     public GameObject c2d;
     public GameObject superLight;
     public GameObject superLightWeapon;
-    public GameObject guiPoints;
+    public GameObject guiPoints, plus1;
 
     public int lastWeaponTextureNb = -1;
     public int numeroJoueur;
@@ -80,6 +80,8 @@ public class Kart
         guiPoints = GameObject.Instantiate(Resources.Load("guiPoints")) as GameObject;
         //guiPoints.transform.position = new Vector3 (guiPoints.transform.position.x, guiPoints.transform.position.y - numeroJoueur * 500, pointGui.transform.position.z);
         guiPoints.layer = LayerMask.NameToLayer("layer2d_j" + numeroJoueur);
+		plus1 = GameObject.Instantiate (Resources.Load ("plus1")) as GameObject;
+		plus1.layer = LayerMask.NameToLayer ("layer2d_j" + numeroJoueur);
         pointText = (GUIText)guiPoints.GetComponent("GUIText");
         pointText.text = "0";
         if (totalPlayers > 2)
