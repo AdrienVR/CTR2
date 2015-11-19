@@ -13,6 +13,8 @@ public class MenuButton : NavigationCross
     public Menu ParentMenu;
     public CrossMenuButton Cross;
     public Menu NextMenu;
+    public EventTrigger.TriggerEvent ValidateCallback;
+
 
     public Animator Animator;
 
@@ -32,11 +34,6 @@ public class MenuButton : NavigationCross
             else
                 Deselect();
         }
-    }
-
-    void Awake()
-    {
-        m_callback = GetComponent<Button>().onClick;
     }
 
     // Update is called once per frame
@@ -133,9 +130,9 @@ public class MenuButton : NavigationCross
                 Menu.CurrentMenu.MenuAction.OnHideNext(NextMenu);
             }
         }
-        if (m_callback != null)
+        if (ValidateCallback != null)
         {
-            m_callback.Invoke();
+            ValidateCallback.Invoke(null);
         }
     }
 
@@ -170,9 +167,4 @@ public class MenuButton : NavigationCross
     {
         return Animator.GetCurrentAnimatorStateInfo(0).IsName("Highlighted");
     }
-
-
-    private UnityEvent m_callback;
-
-    private bool m_selected;
 }

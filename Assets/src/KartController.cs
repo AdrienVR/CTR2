@@ -106,72 +106,6 @@ public class KartController : MonoBehaviour
 	
 	void FixedUpdate()
 	{
-		if(IA_enabled)
-		{
-			//rigidbody.velocity = new Vector3(postForce.x, rigidbody.velocity.y, postForce.z);
-			if (dansLesAirs)
-				GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x,-26f,GetComponent<Rigidbody>().velocity.z);
-		}
-		else
-		{
-			ellapsedTime = Time.time - currentTime;
-			currentTime = Time.time;
-			CheckSpeed();
-
-			
-			if (kart_script.tnt && numberOfJump > 8) 
-			{
-				kart_script.tnt.transform.position = kart_script.tnt.transform.position + new Vector3 (0, 5f);
-				ExplosionScript e = kart_script.tnt.GetComponent <ExplosionScript>();
-				e.GetComponent<Animation>().Stop();
-				e.disamorced = true;
-				e.SetName("tntDropped");
-				e.transform.parent = null;
-				e.GetComponent<Rigidbody>().velocity = Vector3.zero;
-				kart_script.tnt = null;
-		        numberOfJump = 0;
-			}
-
-
-			if (forward == false)
-			{
-				if (System.Math.Abs(accelerationTime) < 0.01f)
-					accelerationTime = 0f;
-				if (accelerationTime > 0)
-					accelerationTime -= ellapsedTime;
-				else if (backward && accelerationTime > -1)
-				{
-					backward = false;
-					accelerationTime -= ellapsedTime;
-				}
-				else if (accelerationTime < 0)
-					accelerationTime += ellapsedTime;
-			}
-			else
-			{
-				forward = false;
-				if (accelerationTime < 1)
-					accelerationTime += ellapsedTime;
-				//rigidbody.velocity = new Vector3(postForce.x, 
-				//                                 rigidbody.velocity.y, postForce.z);
-
-			}
-			if (accelerationTime > 0)
-				GetComponent<Rigidbody>().velocity = Vector3.Slerp(Vector3.zero,postForce,accelerationTime);
-			else
-				GetComponent<Rigidbody>().velocity = Vector3.Slerp(Vector3.zero,lowForce,-accelerationTime);
-
-			if (dansLesAirs)
-				GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x,-26f,GetComponent<Rigidbody>().velocity.z);
-			transform.Rotate (0, yTurn, 0);
-
-			controlWheels ();
-		}
-	}
-	
-	public void SetKart (Kart k)
-	{
-		kart = k;
 	}
 
 	float Slerp(float a, float b, float f)
@@ -190,7 +124,7 @@ public class KartController : MonoBehaviour
 			yTurnWheel = -controller.GetAxis("left");
 		else if(controller.GetKey("right"))
 			yTurnWheel = controller.GetAxis("right");
-		if (System.Math.Abs (yTurnWheel) < Game.thresholdAxis)
+		if (System.Math.Abs (yTurnWheel) < Game.Instance.thresholdAxis)
 			yTurnWheel = 0;
 
 		// WHEELS

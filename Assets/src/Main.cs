@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class Main : MonoBehaviour
 {
-	public int nbPlayer;
 	public Texture normal;
 	public Texture hover;
 	public Texture triVolume3;
@@ -13,11 +12,7 @@ public class Main : MonoBehaviour
 
 	public List<Transform> listRespawn;
 	public List<Kart> players;
-
-	public static int nbPtsPartie = 8;
-
-	public float speedCoeff;
-	public float turnCoeff;
+    
 	public static Main main;
 
 	private string[] lignesArray;
@@ -56,11 +51,7 @@ public class Main : MonoBehaviour
 
 	void Awake()
 	{
-		nbPtsPartie = Game.nbPoints;
-		nbPlayer = Game.listKarts.Count;
-		nbPlayer = System.Math.Max (nbPlayer, 1);
-		nbPlayer = System.Math.Min (nbPlayer, 4);
-		statistics = new StatGame (nbPlayer);
+		statistics = new StatGame (PlayerManager.Instance.CurrentPlayers.Count);
 
 		foreach(Transform respawnPoint in transform)
 		{
@@ -69,7 +60,6 @@ public class Main : MonoBehaviour
 
 		gameObject.AddComponent <Game>();
 		main = this;
-		Kart.setCoefficients (speedCoeff, turnCoeff);
 		Init ();
 
 #if UNITY_EDITOR
@@ -97,23 +87,11 @@ public class Main : MonoBehaviour
 
 	public static void Init()
 	{
-		Kart.totalPlayers = main.nbPlayer;
+		Kart.totalPlayers = PlayerManager.Instance.CurrentPlayers.Count;
 		forward = false;
-		main.CreateNPersos(main.nbPlayer);
-		main.InitMenus ();
+		//main.CreateNPersos(PlayerManager.Instance.CurrentPlayers.Count);
 		Instantiate (Resources.Load ("guiStartFire"));
 		statistics.startGame ();
-	}
-
-	void InitMenus()
-	{
-		Menus m =(Menus)gameObject.AddComponent <Menus>();
-		m.normal = normal;
-		m.hover = hover;
-		m.triVolume1 = triVolume1;
-		m.triVolume2 = triVolume2;
-		m.triVolume3 = triVolume3;
-		m.main = this;
 	}
 	
 	void CreateNPersos(int n)
@@ -121,7 +99,7 @@ public class Main : MonoBehaviour
 		players = new List<Kart>();
 		for (int i=0; i<n; i++)
 		{
-			Kart a = new Kart(listRespawn[i].position, listRespawn[i].rotation, Game.listKarts[i]);
+			Kart a = new Kart(listRespawn[i].position, listRespawn[i].rotation, Game.Instance.Players[i]);
 			players.Add(a);
 		}
 	}

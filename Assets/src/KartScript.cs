@@ -16,10 +16,10 @@ public class KartScript : MonoBehaviour
 	private Kart kart;
 	private KartState kart_state;
 	
-	private ExplosionScript bomb;
+	private WeaponBehavior bomb;
 	private WeaponBoxScript takenWeaponBox;
-	public ExplosionScript shield;
-	public ExplosionScript protection;
+	public WeaponBehavior shield;
+	public WeaponBehavior protection;
 	public GameObject tnt;
 	private List<GameObject> smoke = new List<GameObject>();
 
@@ -62,11 +62,6 @@ public class KartScript : MonoBehaviour
 			
 			if (bomb == null)
 				UseWeapon ();
-			else 
-			{
-				bomb.BombActionExplosion ();
-				bomb = null;
-      		}
     	}
 
 	}
@@ -96,18 +91,7 @@ public class KartScript : MonoBehaviour
 			return;
 
 		Vector3 posToAdd = Vector3.zero;
-		//launch the shield
-		if (shield != null) {
-			shield.vitesseInitiale =  100f*kc.forwardNormal;
-			shield.name = "bomb";
-			posToAdd = transform.position + 6f * (new Vector3 (kc.forwardNormal.x, kc.forwardNormal.y+0.6f, kc.forwardNormal.z));
-			shield.transform.position = posToAdd;
-			shield.transform.rotation = new Quaternion();
-			shield.EnablePhysics();
-			shield.transform.localScale = new Vector3(0.66f,0.75f,0.66f);
-			shield = null;
-			return;
-		}
+		
 		
 		if (weapons.Count == 0)
 			return;
@@ -117,93 +101,13 @@ public class KartScript : MonoBehaviour
 		// superisation
 		if (IsSuper())
 		{
-			w = Game.GetWeaponSuper(w);
 		}
 
 		// computing the side
-		float sens = -1;
-		if (controller.GetKey("up"))
-			sens = 1;
-
-		// computing the distance to instantiate the weapon
-		if (w == "bomb")
-			posToAdd = 6f * (new Vector3 (facteurSens * kc.forwardNormal.x, kc.forwardNormal.y + 0.2f, facteurSens * kc.forwardNormal.z));
-		else if (Game.poseWeapons.IndexOf(w) != -1){
-			if (w == "greenBeaker" || w=="redBeaker")
-				posToAdd = 4f * (new Vector3 (sens*kc.forwardNormal.x, kc.forwardNormal.y + 0.2f, sens*kc.forwardNormal.z));
-			else
-				posToAdd = 4f * (new Vector3 (-kc.forwardNormal.x, kc.forwardNormal.y + 0.2f, -kc.forwardNormal.z));
-		}
-		else
-			posToAdd = 6f * (new Vector3 (kc.forwardNormal.x, kc.forwardNormal.y + 0.2f, kc.forwardNormal.z));
-
-		// computing the angle
-		Quaternion q = Quaternion.Euler (new Vector3(0,transform.rotation.eulerAngles.y,0));
-		if (Game.poseWeapons.IndexOf(w) != -1)
-			q = transform.rotation;
-		
-		//instantiate the weapon
-		if (Game.instatiableWeapons.IndexOf(w)!=-1){
-			GameObject arme1 = Instantiate(Resources.Load("Weapons/"+w), transform.position + posToAdd, q) as GameObject;
-			arme1.name = arme1.name.Split ('(') [0];
-
-			ExplosionScript arme = arme1.GetComponent <ExplosionScript>();
-			if (arme!=null){
-				arme.owner = gameObject;
-				
-				if (w == "bomb") {
-					bomb = arme;
-					arme.vitesseInitiale =  3*kc.speedCoeff*new Vector3(facteurSens * kc.forwardNormal.x, 0, facteurSens * kc.forwardNormal.z);
-					if (kart.nbApples == 10)
-						arme.explosionRadius *= 2.5f;
-				}
-				else if (w == "missile"){
-					if (IsSuper())
-						arme.vitesseInitiale =  4*kc.speedCoeff*kc.forwardNormal;
-					else
-						arme.vitesseInitiale =  2.75f*kc.speedCoeff*kc.forwardNormal;
-				}
-				else if (w == "greenShield"|| w == "blueShield"){
-					shield = arme;
-					shield.lifeTime = 14f;
-				}
-				else if (w == "Aku-Aku" || w == "Uka-Uka") {
-					/*Main.sourceMusic.clip=(AudioClip)Instantiate(Resources.Load("Audio/akuaku"));
-					Main.sourceMusic.Play();*/
-					if (protection!=null)
-						Destroy(arme.gameObject);
-					else{
-						protection = arme;
-					}
-					if (IsSuper())
-						protection.lifeTime = 10f;
-					else
-						protection.lifeTime = 7f;
-					kc.AddSpeed(protection.lifeTime+2, 1.5f, "aku");
-				}
-				else if (w == "greenBeaker" || w=="redBeaker")
-					if (sens == 1f)
-						arme.GetComponent<Rigidbody>().AddForce(2000f*new Vector3(sens * kc.forwardNormal.x, 0.2f, sens * kc.forwardNormal.z));
-				//arme.vitesseInstant =  90f*new Vector3(sens * forwardNormal.x, 0, sens * forwardNormal.z);
-			}
-			else
-				Debug.Log("pb : +"+w);
-		}
-		else if (w=="turbo"){
-			if (IsSuper())
-				kc.AddSpeed(3.0f, 1.5f, w);
-			else
-				kc.AddSpeed(2.0f, 1.5f, w);
-		}
+	
 		
 		//use the weapon so remove
 		weapons.RemoveAt (0);
-		if (weapons.Count == 0) {
-			kart_state.armed = false;
-			kart.undrawWeaponGui();
-		}
-		else
-			kart.drawWeaponGui ();
 	}
 
 	public bool IsArmed()
@@ -254,7 +158,6 @@ public class KartScript : MonoBehaviour
 			kart.SetIllumination((kart.nbApples == 10));
 			GetComponent<AudioSource>().Play();
 			kart.guitextApples.text = "x "+kart.nbApples.ToString();
-			kart.drawWeaponGui();
 			yield return new WaitForSeconds (0.27f);
 		}
 	}
@@ -298,18 +201,6 @@ public class KartScript : MonoBehaviour
         Animator anim = transform.GetChild(0).GetComponent<Animator>();
         anim.enabled = true;
         anim.Play("Dead");
-        //Debug.Log ("mort");
-        if (tnt && weapon != "tntExploded")
-			Destroy(tnt);
-		if (shield != null)
-		{
-			StartCoroutine(shield.ShieldExplosion());
-			if (!kart_state.IsInvincible())
-				kart_state.SetInvincibility(1);
-			return;
-		}
-		if (protection != null)
-			return;
 		// si on est pas invincible : on meurt
 		if (!kart_state.IsInvincible())
 		{

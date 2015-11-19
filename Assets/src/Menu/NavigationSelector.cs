@@ -5,6 +5,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class NavigationSelector : NavigationCross
 {
+    public CharacterManager CharacterManager;
+    public Menu NextMenu;
     public SelectorManager SelectorManager;
     public ShowRoom ShowRoom;
     public Sprite ValidatedSprite;
@@ -54,14 +56,33 @@ public class NavigationSelector : NavigationCross
     // Actions
     public override void OnValidateAction()
     {
-        m_image.sprite = ValidatedSprite;
-        m_locked = true;
+        if (m_locked == false)
+        {
+            AudioManager.Instance.Play("validateMenu");
+
+            m_image.sprite = ValidatedSprite;
+            m_locked = true;
+
+            bool playersReady = CharacterManager.SetPlayerValidationState(PlayerIndex, true, transform.parent.name);
+            if (playersReady == true)
+            {
+                if (NextMenu != null)
+                {
+                    Menu.CurrentMenu.MenuAction.OnHideNext(NextMenu);
+                }
+            }
+        }
     }
 
     public void OnBack()
     {
-        m_image.sprite = m_availableSprite;
-        m_locked = false;
+        if (m_locked == true)
+        {
+            CharacterManager.SetPlayerValidationState(PlayerIndex, false, transform.parent.name);
+
+            m_image.sprite = m_availableSprite;
+            m_locked = false;
+        }
     }
 
     protected override bool UpAction()

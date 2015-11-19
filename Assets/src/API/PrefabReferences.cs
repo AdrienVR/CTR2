@@ -19,5 +19,8 @@ public class PrefabReferences : MonoBehaviour
 
     // public references :
     public AudioCategoryManager AudioCategoryManager;
+    public GameObject WeaponManager;
+    public GameObject CameraConfig;
+    public GameObject PlayerManager;
 
 }

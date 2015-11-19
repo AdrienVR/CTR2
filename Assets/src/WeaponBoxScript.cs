@@ -8,51 +8,57 @@ public class WeaponBoxScript : MonoBehaviour {
 	public AudioClip endMusic;
 	private int nbImgArmes;
 	private float timeLookingWeapon;
-
-	private KartScript taker;
+    
+    public Collider SelfCollider;
+    public AudioSource LoopSource;
+    public AudioSource Source;
 
 
 	void OnTriggerEnter(Collider other)
 	{
-		
-		if (!other.isTrigger)
+		if (other.isTrigger == false)
 			return;
-		//animation
-		GetComponent<Collider>().enabled = false;
-		GetComponent<AudioSource>().Play ();
-		StartCoroutine (Take());
-		Main.statistics.nbWeaponBox++;
-		//find who to give weapon
-		if(Game.characters.IndexOf(other.name) != -1)// si c'est un kart
-		{
-			taker = other.GetComponent <KartScript>();
-		}
-		else if(Game.launchWeapons.IndexOf(other.name) != -1 || Game.shields.IndexOf(other.name) != -1) // si c'est une bombe
-		{
-			ExplosionScript es = other.GetComponent<ExplosionScript>();
-			GameObject owner = es.owner;
-			taker = owner.GetComponent<KartScript>();
-		}
-		else return;
+        //animation
+        SelfCollider.enabled = false;
+        Source.Play();
+		StartCoroutine (TakeCoroutine());
 
-		if (taker.name == null)
+        KartScript player = null;
+
+        if (other.tag != "kart")
+        {
+            if (other.tag == "weapon")
+            {
+                player = other.GetComponent<WeaponBehavior>().Owner;
+            }
+            else
+            {
+                return;
+            }
+        }
+        else
+        {
+            player = other.GetComponent<KartScript>();
+        }
+
+        Main.statistics.nbWeaponBox++;
+
+        if (player.IsArmed() || player.IsWaitingWeapon())
 			return;
-		if (taker.IsArmed() || taker.IsWaitingWeapon())
-			return;
-		taker.setWaitingWeapon (true);
-		taker.SetWeaponBox(this);
+        player.setWaitingWeapon (true);
+        player.SetWeaponBox(this);
 
 		//animation of giving weapon
-		StartCoroutine(AnimArmes());
-		StartCoroutine(PlaySound());
+		StartCoroutine(RandomWeaponSelection(player));
 	}
-	
-	IEnumerator PlaySound()
-	{
-		while (nbImgArmes<25 && nbImgArmes>0) {
-			GetComponent<AudioSource>().PlayOneShot(randomMusic);
+
+    private IEnumerator RandomWeaponSelection(KartScript player)
+    {
+        GetComponent<AudioSource>().PlayOneShot(randomMusic);
+        while (nbImgArmes<25 && nbImgArmes>0) {
 			yield return new WaitForSeconds (randomMusic.length*3/4);
-		}
+            ActivableWeapon weapon = WeaponManager.Instance.GetRandomBattleWeapon();
+        }
 		GetComponent<AudioSource>().PlayOneShot(endMusic);
 	}
 
@@ -64,36 +70,11 @@ public class WeaponBoxScript : MonoBehaviour {
 			return false;
 		return true;
 	}
-
-	IEnumerator AnimArmes()
-	{
-		nbImgArmes = 0;
-		timeLookingWeapon = 0;
-		string weapon = "bomb";
-		/*
-		for(int i=0;i<Game.gameWeapons.Count;i++)
-		{
-			Debug.Log(Game.gameWeapons[i]);
-		}*/
-		while (nbImgArmes < 25) {
-			int rand = Random.Range (0, Game.gameWeapons.Count);
-			weapon = Game.gameWeapons[rand];
-			//weapon = "greenShield";
-			taker.GetKart().lastWeaponTextureNb = Game.GetWeaponNumber(weapon);
-			taker.GetKart().drawWeaponGui();
-			nbImgArmes++;
-			yield return new WaitForSeconds (0.08f);
-			timeLookingWeapon += 0.08f;
-		}
-		taker.SetWeapon(weapon);
-		Main.statistics.getStatPerso (taker.GetKart ().numeroJoueur).addWeapon(weapon);
-		taker.setWaitingWeapon (false);
-		nbImgArmes = 0;
-	}
 	
-	IEnumerator Take()
-	{
-		GetComponent<Animation>().Play ("boxDisappear");
+	private IEnumerator TakeCoroutine()
+    {
+        GetComponent<Collider>().enabled = false;
+        GetComponent<Animation>().Play ("boxDisappear");
 		yield return new WaitForSeconds (2f);
 		GetComponent<Animation>().Play ("boxGrow");
 		yield return new WaitForSeconds (1.3f);

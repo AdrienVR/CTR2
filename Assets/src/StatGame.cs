@@ -41,7 +41,7 @@ public class StatGame
 	{
 		nbPlayers = n;
 		initStatPerso (n);
-		map = Game.translateNameMapsRevert[Application.loadedLevelName];
+		map = Application.loadedLevelName;
 		// args : string m, int nbPlayers
 	}
 
