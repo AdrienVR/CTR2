@@ -25,6 +25,8 @@ public class Game : MonoBehaviour
     
     public int MaxScore = 8;
 
+    
+
     private static Game s_instance;
 
 

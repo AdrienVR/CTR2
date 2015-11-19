@@ -1,16 +1,21 @@
 ﻿
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
 public class NavigationSelector : NavigationCross
 {
+    public static float MarginTime = 0.1f;
+
     public CharacterManager CharacterManager;
     public Menu NextMenu;
     public SelectorManager SelectorManager;
     public ShowRoom ShowRoom;
     public Sprite ValidatedSprite;
     public int PlayerIndex;
+    public NavigationSelector[] Selectors;
 
     void Start()
     {
@@ -40,17 +45,17 @@ public class NavigationSelector : NavigationCross
     public override void OnRight()
     {
         transform.SetParent(SelectorManager.GetRightParent(ref m_x, ref m_y), false);
-		ShowRoom.ShowModelFromLeft(transform.parent.name, PlayerIndex);
+        ShowRoom.ShowModelFromLeft(transform.parent.name, PlayerIndex);
     }
     public override void OnUp()
     {
         transform.SetParent(SelectorManager.GetUpParent(ref m_x, ref m_y), false);
-		ShowRoom.ShowModelFromDown(transform.parent.name, PlayerIndex);
+        ShowRoom.ShowModelFromDown(transform.parent.name, PlayerIndex);
     }
     public override void OnDown()
     {
         transform.SetParent(SelectorManager.GetDownParent(ref m_x, ref m_y), false);
-		ShowRoom.ShowModelFromUp(transform.parent.name, PlayerIndex);
+        ShowRoom.ShowModelFromUp(transform.parent.name, PlayerIndex);
     }
 
     // Actions
@@ -60,7 +65,7 @@ public class NavigationSelector : NavigationCross
         {
             AudioManager.Instance.Play("validateMenu");
 
-            m_image.sprite = ValidatedSprite;
+            Tick();
             m_locked = true;
 
             bool playersReady = CharacterManager.SetPlayerValidationState(PlayerIndex, true, transform.parent.name);
@@ -69,8 +74,31 @@ public class NavigationSelector : NavigationCross
                 if (NextMenu != null)
                 {
                     Menu.CurrentMenu.MenuAction.OnHideNext(NextMenu);
+                    StartCoroutine(ResetSelectors());
                 }
             }
+        }
+    }
+
+    private IEnumerator ResetSelectors()
+    {
+        yield return new WaitForSeconds(NextMenu.LeavingDuration - MarginTime);
+        foreach (NavigationSelector selector in Selectors)
+        {
+            selector.OnBack();
+        }
+    }
+
+    public void Tick()
+    {
+        m_image.sprite = ValidatedSprite;
+    }
+
+    public void Untick()
+    {
+        if (m_image != null)
+        {
+            m_image.sprite = m_availableSprite;
         }
     }
 
@@ -80,7 +108,7 @@ public class NavigationSelector : NavigationCross
         {
             CharacterManager.SetPlayerValidationState(PlayerIndex, false, transform.parent.name);
 
-            m_image.sprite = m_availableSprite;
+            Untick();
             m_locked = false;
         }
     }
@@ -126,3 +154,4 @@ public class NavigationSelector : NavigationCross
     private static int s_x;
     private static int s_y;
 }
+
