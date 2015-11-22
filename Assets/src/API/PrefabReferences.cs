@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class PrefabReferences : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PrefabReferences : MonoBehaviour
         {
             if (s_instance == null)
             {
+                Debug.Log("Load Resources");
                 s_instance = (Resources.Load("PrefabReferences") as GameObject).GetComponent<PrefabReferences>();
             }
             return s_instance;
@@ -16,6 +18,19 @@ public class PrefabReferences : MonoBehaviour
 
     }
     private static PrefabReferences s_instance;
+
+    void Awake()
+    {
+        if (s_instance == null)
+        {
+            s_instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     // public references :
     public AudioCategoryManager AudioCategoryManager;

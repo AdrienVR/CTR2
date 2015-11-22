@@ -18,8 +18,8 @@ public class PlayerManager : MonoBehaviour
             }
             return s_instance;
         }
-
     }
+
     private static PlayerManager s_instance;
 
     [Serializable]
@@ -34,12 +34,15 @@ public class PlayerManager : MonoBehaviour
 
     public List<string> CurrentPlayers;
 
-    public void InstantiatePlayers()
+    public void InstantiatePlayers(Transform[] spawnPoints)
     {
-        foreach(string characterName in CurrentPlayers)
+        for (int i = 0; i < CurrentPlayers.Count; i++)
         {
+            string characterName = CurrentPlayers[i];
             PlayableCharacter character = GetPlayableCharacter(characterName);
-            GameObject go = Instantiate(character.Prefab);
+            GameObject go = Instantiate(character.Prefab, spawnPoints[i].position, spawnPoints[i].rotation) as GameObject;
+            go.transform.localScale = Vector3.one * 0.4f;
+            CameraConfig.Instance.InitializePlayer(go.transform, i, CurrentPlayers.Count);
         }
     }
 

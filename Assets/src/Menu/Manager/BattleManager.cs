@@ -7,6 +7,5 @@ class BattleManager : MonoBehaviour
     public void StartBattle()
     {
         Application.LoadLevel(MapSelector.SelectedMap);
-        PlayerManager.Instance.InstantiatePlayers();
     }
 }

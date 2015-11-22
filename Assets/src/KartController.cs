@@ -314,20 +314,20 @@ public class KartController : MonoBehaviour
 	{
 		if (controller.GetKeyDown ("inverseCamera")) 
 		{
-			kart.cm1c.reversed = -1f ;
+			kart.cm1c.Reversed = -1f ;
 		}
 
 		if (controller.GetKeyUp ("inverseCamera")) 
 		{
-			kart.cm1c.reversed = 1f ;
+			kart.cm1c.Reversed = 1f ;
 		}
 
 		if (controller.GetKeyDown ("switchCamera")) 
 		{
-			if (kart.cm1c.positionForward == 1f)
-				kart.cm1c.positionForward = 0.85f ;
+			if (kart.cm1c.PositionForward == 1f)
+				kart.cm1c.PositionForward = 0.85f ;
 			else
-				kart.cm1c.positionForward = 1f ;
+				kart.cm1c.PositionForward = 1f ;
 		}
 	}
 }
