@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-public class CameraConfig:MonoBehaviour
+public class CameraConfig : MonoBehaviour
 {
     // Singleton
     public static CameraConfig Instance
@@ -34,17 +34,18 @@ public class CameraConfig:MonoBehaviour
     [SerializeField]
     public CameraArray[] PerspectiveCameras;
 
-    public void InitializePlayer(Transform player, int playerIndex, int totalPlayers)
+    public CameraController InitializePlayer(Transform player, int playerIndex, int totalPlayers)
     {
         GameObject cameraGo = Instantiate(OrthographicCameras[totalPlayers - 1].Cameras[playerIndex]);
         Camera camera = cameraGo.GetComponent<Camera>();
         GameObject canvasGo = Instantiate(ReferenceCanvas);
-        SetLayerRecursively(canvasGo, LayerMask.NameToLayer("layer2d_j" + (playerIndex+1)));
+        SetLayerRecursively(canvasGo, LayerMask.NameToLayer("layer2d_j" + (playerIndex + 1)));
         canvasGo.GetComponent<Canvas>().worldCamera = camera;
         canvasGo.transform.SetParent(cameraGo.transform);
 
         cameraGo = Instantiate(PerspectiveCameras[totalPlayers - 1].Cameras[playerIndex]);
         cameraGo.transform.SetParent(player);
+        return cameraGo.GetComponent<CameraController>();
     }
 
     private static void SetLayerRecursively(GameObject go, int layerNumber)

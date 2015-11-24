@@ -40,9 +40,12 @@ public class PlayerManager : MonoBehaviour
         {
             string characterName = CurrentPlayers[i];
             PlayableCharacter character = GetPlayableCharacter(characterName);
+
             GameObject go = Instantiate(character.Prefab, spawnPoints[i].position, spawnPoints[i].rotation) as GameObject;
-            go.transform.localScale = Vector3.one * 0.4f;
-            CameraConfig.Instance.InitializePlayer(go.transform, i, CurrentPlayers.Count);
+
+            PlayerController pc = go.GetComponent<PlayerController>();
+            pc.PlayerIndex = i;
+            pc.CameraController = CameraConfig.Instance.InitializePlayer(go.transform, i, CurrentPlayers.Count);
         }
     }
 
