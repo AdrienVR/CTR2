@@ -13,14 +13,26 @@ public class PostBuildScript
         string buildFile = splittedPath[splittedPath.Length - 1];
         string buildDirectory = pathToBuiltProject.Replace(buildFile, "");
 
-        string name = buildFile.Split('.')[0];
-        string configTarget = name + "_Data" + Path.AltDirectorySeparatorChar + "Config";
+        string projectName = buildFile.Split('.')[0];
 
-        string finalTarget = buildDirectory + configTarget;
+        string sourceDirectory = Application.dataPath + Path.AltDirectorySeparatorChar + "Config";
+        string finalTarget = buildDirectory + projectName + "_Data" + Path.AltDirectorySeparatorChar + "Config"; ;
 
-        Directory.CreateDirectory(finalTarget);
+        CopyDirectory(sourceDirectory, targetDirectory);
 
-        foreach (var file in Directory.GetFiles(Application.dataPath + Path.AltDirectorySeparatorChar + "Config"))
-            File.Copy(file, Path.Combine(finalTarget, Path.GetFileName(file)), true);
+        sourceDirectory = Application.dataPath + Path.AltDirectorySeparatorChar + "Donation";
+        finalTarget = buildDirectory + projectName + "_Data" + Path.AltDirectorySeparatorChar + "Donation"; ;
+
+        CopyDirectory(sourceDirectory, targetDirectory);
+    }
+
+    private static void CopyDirectory(string sourceDirectory, string targetDirectory)
+    {
+        Directory.CreateDirectory(targetDirectory);
+
+        foreach (var file in sourceDirectory.GetFiles())
+        {
+            File.Copy(file, Path.Combine(targetDirectory, Path.GetFileName(file)), true);
+        }
     }
 }
