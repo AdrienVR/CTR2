@@ -7,6 +7,7 @@ public class KartTransformer
     [HideInInspector]
     public float YAngle;
     [HideInInspector]
+    [NonSerialized]
     public KartRigidBody KartRigidbody;
     [HideInInspector]
     public Animator KartAnimator;
@@ -87,11 +88,11 @@ public class KartTransformer
     {
         Vector3 right = (BottomRightWheel.position + FrontRightWheel.position) * 0.5f;
         RaycastHit hitRight;
-        Debug.DrawRay(right, -Vector3.up * DistanceFromGroundCast, Color.blue);
+        //Debug.DrawRay(right, -Vector3.up * DistanceFromGroundCast, Color.blue);
         if (Physics.Raycast(right + Vector3.up * 3, -Vector3.up, out hitRight, DistanceFromGroundCast, m_groundLayerMask))
         {
             Vector3 left = (BottomLeftWheel.position + FrontLeftWheel.position) * 0.5f;
-            Debug.DrawRay(left + Vector3.up * 3, -Vector3.up * DistanceFromGroundCast, Color.red);
+            //Debug.DrawRay(left + Vector3.up * 3, -Vector3.up * DistanceFromGroundCast, Color.red);
             RaycastHit hitLeft;
             if (Physics.Raycast(left + Vector3.up * 3, -Vector3.up, out hitLeft, DistanceFromGroundCast, m_groundLayerMask))
             {
@@ -107,7 +108,7 @@ public class KartTransformer
         if (Physics.Raycast(m_back + Vector3.up * 3, -Vector3.up, out hitBack, DistanceFromGroundCast, m_groundLayerMask))
         {
             RaycastHit hitFront;
-            Debug.DrawRay(m_front + Vector3.up * 3, -Vector3.up * DistanceFromGroundCast, Color.red);
+            //Debug.DrawRay(m_front + Vector3.up * 3, -Vector3.up * DistanceFromGroundCast, Color.red);
             if (Physics.Raycast(m_front + Vector3.up * 3, -Vector3.up, out hitFront, DistanceFromGroundCast, m_groundLayerMask))
             {
                 float y = hitBack.point.y - hitFront.point.y;

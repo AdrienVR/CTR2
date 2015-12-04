@@ -31,8 +31,12 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         m_controller = ControllerManager.Instance.GetController(PlayerIndex);
+        KartRigidbody.transform = transform;
+        KartRigidbody.position = transform.position;
         KartTransformer.KartRigidbody = KartRigidbody;
         KartTransformer.Start();
+
+        KartRigidbody.KartTransformer = KartTransformer;
     }
 
     // Update is called once per frame

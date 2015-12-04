@@ -63,7 +63,7 @@ public class KartControllerRay : MonoBehaviour
 	void FixedUpdate()
 	{
 
-		Debug.DrawRay(transform.position, -transform.up * 2);
+		//Debug.DrawRay(transform.position, -transform.up * 2);
 		RaycastHit hit;
 		if (Physics.Raycast(transform.position, -transform.up, out hit, 2f)){
 			transform.up = Vector3.Slerp(transform.up, hit.normal, 0.05f);

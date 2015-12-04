@@ -15,7 +15,7 @@ public class TranslationResources
 	{
 		if (translationDictionaries == null)
 		{
-			string path = Path.Combine(Application.dataPath, Path.Combine(relativePath, "TranslationFile.JSON"));
+			string path = Path.Combine(Application.streamingAssetsPath, Path.Combine(relativePath, "TranslationFile.JSON"));
 			string file = File.ReadAllText(path);
 
 			translationDictionaries = (IDictionary) Json.Deserialize(file);

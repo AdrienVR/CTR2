@@ -151,9 +151,9 @@ public class ControllerManager : MonoBehaviour
         dictionary["perls"] = "dot";
         dictionary["net"] = "perls";
         dictionary["dot"] = "net";
-        Instance.Write(dictionary, Path.Combine(Application.dataPath, "controller_" + i + ".bin"));
+        Instance.Write(dictionary, Path.Combine(Application.streamingAssetsPath, "controller_" + i + ".bin"));
 
-        dictionary = Read(Path.Combine(Application.dataPath, "controller_" + i + ".bin"));
+        dictionary = Read(Path.Combine(Application.streamingAssetsPath, "controller_" + i + ".bin"));
         foreach (var pair in dictionary)
         {
             Debug.Log(pair);

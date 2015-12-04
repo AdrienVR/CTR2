@@ -18,11 +18,11 @@ public class ControllerResources
 	private static void LoadConfigFiles()
 	{
 
-		string path = Path.Combine(Application.dataPath, Path.Combine(relativePath, "ControllersConfig.JSON"));
+		string path = Path.Combine(Application.streamingAssetsPath, Path.Combine(relativePath, "ControllersConfig.JSON"));
         string completeFile = File.ReadAllText(path);
         string[] controllersConfigFile = completeFile.Split(';');
 
-        path = Path.Combine(Application.dataPath, Path.Combine(relativePath, "ActionsConfig.JSON"));
+        path = Path.Combine(Application.streamingAssetsPath, Path.Combine(relativePath, "ActionsConfig.JSON"));
 		string actionsConfigFile = File.ReadAllText(path);
 
         s_controllersTypes = (IDictionary)Json.Deserialize(controllersConfigFile[0]);

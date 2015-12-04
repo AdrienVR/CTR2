@@ -1,4 +1,4 @@
-﻿// C# example:
+﻿/*
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -16,12 +16,12 @@ public class PostBuildScript
         string projectName = buildFile.Split('.')[0];
 
         string sourceDirectory = Application.dataPath + Path.AltDirectorySeparatorChar + "Config";
-        string finalTarget = buildDirectory + projectName + "_Data" + Path.AltDirectorySeparatorChar + "Config"; ;
+        string targetDirectory = buildDirectory + projectName + "_Data" + Path.AltDirectorySeparatorChar + "Config"; ;
 
         CopyDirectory(sourceDirectory, targetDirectory);
 
         sourceDirectory = Application.dataPath + Path.AltDirectorySeparatorChar + "Donation";
-        finalTarget = buildDirectory + projectName + "_Data" + Path.AltDirectorySeparatorChar + "Donation"; ;
+        targetDirectory = buildDirectory + projectName + "_Data" + Path.AltDirectorySeparatorChar + "Donation"; ;
 
         CopyDirectory(sourceDirectory, targetDirectory);
     }
@@ -30,9 +30,10 @@ public class PostBuildScript
     {
         Directory.CreateDirectory(targetDirectory);
 
-        foreach (var file in sourceDirectory.GetFiles())
+        foreach (var file in Directory.GetFiles(sourceDirectory))
         {
             File.Copy(file, Path.Combine(targetDirectory, Path.GetFileName(file)), true);
         }
     }
 }
+*/
