@@ -13,14 +13,16 @@ public class WeaponBoxScript : MonoBehaviour {
     public AudioSource LoopSource;
     public AudioSource Source;
 
+	void Start()
+	{
+		m_selfCollider = GetComponent<Collider> ();
+	}
 
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.isTrigger == false)
-			return;
         //animation
-        SelfCollider.enabled = false;
-        Source.Play();
+		m_selfCollider.enabled = false;
+        //Source.Play();
 		StartCoroutine (TakeCoroutine());
 
         KartScript player = null;
@@ -80,4 +82,6 @@ public class WeaponBoxScript : MonoBehaviour {
 		yield return new WaitForSeconds (1.3f);
 		GetComponent<Collider>().enabled = true;
 	}
+
+	private Collider m_selfCollider;
 }

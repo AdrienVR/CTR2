@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
 using System;
 
 public class PlayerController : MonoBehaviour
@@ -18,6 +20,10 @@ public class PlayerController : MonoBehaviour
     public float TurnSpeed;
     public float DeceleratingFactor;
     public float MaxSpeed;
+
+	public UIPlayerManager UIPlayerManager;
+
+	public int NbApplesTmp, NbApples;
 
     // Use this for initialization
     void Start()
@@ -110,6 +116,31 @@ public class PlayerController : MonoBehaviour
                 CameraController.PositionForward = 1f;
         }
     }
+
+	public void ChangeApples(int n)
+	{
+		NbApplesTmp = NbApples;
+		if(n >0)
+		{
+			NbApples = System.Math.Min(10, NbApples + n);
+			StartCoroutine (animApplesNb());
+		}
+		else
+			NbApples = System.Math.Max(0, NbApples + n);
+
+	}
+
+	IEnumerator animApplesNb()
+	{
+		while(NbApplesTmp < NbApples)
+		{
+			NbApplesTmp ++;
+			//kart.SetIllumination((kart.nbApples == 10));
+			//GetComponent<AudioSource>().Play();
+			UIPlayerManager.setAppleText(NbApplesTmp.ToString());
+			yield return new WaitForSeconds (0.27f);
+		}
+	}
 
     private ControllerBase m_controller;
     private float m_acceleratingTimer;

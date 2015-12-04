@@ -38,7 +38,8 @@ public class CameraConfig : MonoBehaviour
     {
         GameObject cameraGo = Instantiate(OrthographicCameras[totalPlayers - 1].Cameras[playerIndex]);
         Camera camera = cameraGo.GetComponent<Camera>();
-        GameObject canvasGo = Instantiate(ReferenceCanvas);
+		GameObject canvasGo = Instantiate(ReferenceCanvas);
+		player.GetComponent<PlayerController> ().UIPlayerManager = canvasGo.GetComponent<UIPlayerManager> ();
         SetLayerRecursively(canvasGo, LayerMask.NameToLayer("layer2d_j" + (playerIndex + 1)));
         canvasGo.GetComponent<Canvas>().worldCamera = camera;
         canvasGo.transform.SetParent(cameraGo.transform);
