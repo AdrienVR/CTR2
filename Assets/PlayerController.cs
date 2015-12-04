@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     public AnimationCurve WheelRotationCurve;
     public AnimationCurve SpeedCurve;
 
+    public KartRigidBody KartRigidbody;
+
     public float AcceleratingFactor;
     public float TurnSpeed;
     public float DeceleratingFactor;
@@ -29,19 +31,17 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         m_controller = ControllerManager.Instance.GetController(PlayerIndex);
-        m_rigidbody = GetComponent<Rigidbody>();
-        KartTransformer.KartRigidbody = m_rigidbody;
+        KartTransformer.KartRigidbody = KartRigidbody;
         KartTransformer.Start();
     }
 
     // Update is called once per frame
     void Update()
     {
-        m_rigidbody.velocity = Vector3.zero;
-        m_rigidbody.angularVelocity = Vector3.zero;
         KartTransformer.Update();
         UpdateCamera();
         UpdateGameplay();
+        KartRigidbody.Update();
     }
 
     public void UpdateGameplay()
@@ -59,11 +59,11 @@ public class PlayerController : MonoBehaviour
         }
         if (m_acceleratingTimer > 0)
         {
-            m_rigidbody.position += transform.forward * SpeedCurve.Evaluate(m_acceleratingTimer) * MaxSpeed;
+            KartRigidbody.position += transform.forward * SpeedCurve.Evaluate(m_acceleratingTimer) * MaxSpeed;
         }
         else
         {
-            m_rigidbody.position -= transform.forward * SpeedCurve.Evaluate(-m_acceleratingTimer) * MaxSpeed;
+            KartRigidbody.position -= transform.forward * SpeedCurve.Evaluate(-m_acceleratingTimer) * MaxSpeed;
         }
         // wheels turning
         if ((m_controller.GetKey("stop") || m_controller.GetKey("validate")))
@@ -144,5 +144,4 @@ public class PlayerController : MonoBehaviour
 
     private ControllerBase m_controller;
     private float m_acceleratingTimer;
-    private Rigidbody m_rigidbody;
 }

@@ -7,7 +7,7 @@ public class KartTransformer
     [HideInInspector]
     public float YAngle;
     [HideInInspector]
-    public Rigidbody KartRigidbody;
+    public KartRigidBody KartRigidbody;
     [HideInInspector]
     public Animator KartAnimator;
 
@@ -41,10 +41,7 @@ public class KartTransformer
         UpdateXAngle();
         UpdatePosition();
 
-        KartRigidbody.rotation = Quaternion.Euler(new Vector3(m_xAngle,
-            YAngle,
-            m_zAngle));
-
+        KartRigidbody.rotationEuler = new Vector3(m_xAngle, YAngle, m_zAngle);
     }
 
     private void UpdatePosition()
