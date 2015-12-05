@@ -1,56 +1,58 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class KartState : MonoBehaviour {
+public class KartState
+{
+    public bool armed;
+    public bool waiting;
+    public bool armedEvolute;
 
-	public float unableToShoot;
-	public float unableToMove;
-	public float invincible;
-	public bool armed;
-	public bool waiting;
-	public bool armedEvolute;
+    public void Update()
+    {
+        if (m_shootUnabilityTimer > 0)
+            m_shootUnabilityTimer -= Time.deltaTime;
+        if (m_moveUnabilityTimer > 0)
+            m_moveUnabilityTimer -= Time.deltaTime;
+        if (m_invincibilityTimer > 0)
+            m_invincibilityTimer -= Time.deltaTime;
+    }
 
-	// Use this for initialization
-	void Start () {
-	}
+    public bool AbleToShoot()
+    {
+        if (m_shootUnabilityTimer > 0)
+            return false;
+        return true;
+    }
 
-	void FixedUpdate () {
-		if (unableToShoot > 0)
-			unableToShoot -= Time.deltaTime;
-		if (unableToMove > 0)
-			unableToMove -= Time.deltaTime;
-		if (invincible > 0)
-			invincible -= Time.deltaTime;
-	}
-	
-	public bool AbleToShoot(){
-		if (unableToShoot > 0)
-			return false;
-		return true;
-	}
-	
-	public bool AbleToMove(){
-		if (unableToMove > 0)
-			return false;
-		return true;
-	}
-	
-	public bool IsInvincible(){
-		if (invincible > 0)
-			return true;
-		return false;
-	}
-	
-	public void SetUnabilityToShoot(float a){
-		unableToShoot = a;
-	}
-	
-	public void SetUnabilityToMove(float a){
-		unableToMove = a;
-	}
-	
-	public void SetInvincibility(float a){
-		invincible = a;
-	}
+    public bool CanMove()
+    {
+        if (m_moveUnabilityTimer > 0)
+            return false;
+        return true;
+    }
 
+    public bool IsInvincible()
+    {
+        if (m_invincibilityTimer > 0)
+            return true;
+        return false;
+    }
+
+    public void SetUnabilityToShoot(float duration)
+    {
+        m_shootUnabilityTimer = duration;
+    }
+
+    public void SetUnabilityToMove(float duration)
+    {
+        m_moveUnabilityTimer = duration;
+    }
+
+    public void SetInvincibility(float duration)
+    {
+        m_invincibilityTimer = duration;
+    }
+
+    private float m_shootUnabilityTimer;
+    private float m_moveUnabilityTimer;
+    private float m_invincibilityTimer;
 }

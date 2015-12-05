@@ -127,7 +127,7 @@ public class KartScript : MonoBehaviour
 	
 	public bool AbleToMove()
 	{
-		return kart_state.AbleToMove();
+		return kart_state.CanMove();
 	}
 	
 	public bool IsInvincible()

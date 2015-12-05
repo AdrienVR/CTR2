@@ -11,6 +11,9 @@ public class PlayerController : MonoBehaviour
     public KartTransformer KartTransformer;
 
     [HideInInspector]
+    public KartState KartState;
+
+    [HideInInspector]
     public CameraController CameraController;
 
     public AnimationCurve WheelRotationCurve;
@@ -27,9 +30,13 @@ public class PlayerController : MonoBehaviour
 
 	public int NbApplesTmp, NbApples;
 
+    public bool caca;
+
     // Use this for initialization
     void Start()
     {
+        KartState = new KartState();
+        m_animator = GetComponent<Animator>();
         m_controller = ControllerManager.Instance.GetController(PlayerIndex);
         KartRigidbody.transform = transform;
         KartRigidbody.position = transform.position;
@@ -44,28 +51,43 @@ public class PlayerController : MonoBehaviour
     {
         KartTransformer.Update();
         UpdateCamera();
-        UpdateGameplay();
+
+        if (KartState.CanMove())
+            UpdateGameplay();
         KartRigidbody.Update();
+        KartState.Update();
     }
 
     public void UpdateGameplay()
     {
-        if (m_controller.GetKey("validate"))
+        if (m_controller.GetKey("validate") || caca)
         {
             //Debug.Log(m_acceleratingTimer);
             if (m_acceleratingTimer < 1)
+            {
                 m_acceleratingTimer += Time.deltaTime * AcceleratingFactor;
+                if (m_acceleratingTimer > 1)
+                {
+                    m_acceleratingTimer = 1;
+                }
+            }
         }
         else
         {
             if (m_acceleratingTimer > 0)
+            {
                 m_acceleratingTimer -= Time.deltaTime * DeceleratingFactor;
+                if (m_acceleratingTimer < 0)
+                {
+                    m_acceleratingTimer = 0;
+                }
+            }
         }
         if (m_acceleratingTimer > 0)
         {
             KartRigidbody.position += transform.forward * SpeedCurve.Evaluate(m_acceleratingTimer) * MaxSpeed;
         }
-        else
+        else if (m_acceleratingTimer < 0)
         {
             KartRigidbody.position -= transform.forward * SpeedCurve.Evaluate(-m_acceleratingTimer) * MaxSpeed;
         }
@@ -147,6 +169,15 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+    public void CollisionStop()
+    {
+        m_acceleratingTimer = 0;
+        AudioManager.Instance.Play("Ouille");
+        KartState.SetUnabilityToMove(0.666f);
+        m_animator.Play("Collision");
+    }
+
+    private Animator m_animator;
     private ControllerBase m_controller;
     private float m_acceleratingTimer;
 }

@@ -5,7 +5,6 @@ using UnityEngine;
 [Serializable]
 public class KartRigidBody
 {
-    public float MinSpeedToHurt;
     public PlayerController PlayerController;
 
     [HideInInspector]
@@ -20,6 +19,9 @@ public class KartRigidBody
     public Vector3 rotationEuler;
 
     public const float RayCastLength = 0.5f;
+    public const float SlippageAngle = -0.9f;
+
+    public float CollisionMinSpeed = 0.1f;
 
     public static int WallLayer = 1 << LayerMask.NameToLayer("Wall");
 
@@ -33,19 +35,22 @@ public class KartRigidBody
             return;
         }
 
+        Vector3 horizontalDirection = direction;
+        horizontalDirection.y = 0;
+
+        m_speed = horizontalDirection.magnitude;
+
         RaycastHit hitDirection;
-        if (Vector3.Dot(direction, transform.forward) > 0)
+        if (Vector3.Dot(horizontalDirection, transform.forward) > 0)
         {
-            Vector3 forwardDirection = transform.forward * RayCastLength;
-            Debug.DrawRay(KartTransformer.FrontLeftWheel.position, forwardDirection);
-            Debug.DrawRay(KartTransformer.FrontRightWheel.position, forwardDirection);
-            if (Physics.Raycast(KartTransformer.FrontLeftWheel.position, forwardDirection, out hitDirection, RayCastLength, WallLayer))
+            Vector3 rayDirection = horizontalDirection * RayCastLength;
+            if (Physics.Raycast(KartTransformer.FrontLeftWheel.position, rayDirection, out hitDirection, RayCastLength, WallLayer))
             {
-                Debug.DrawRay(KartTransformer.FrontLeftWheel.position + Vector3.up, forwardDirection, Color.red);
+                CheckForwardSlippage(horizontalDirection, hitDirection);
             }
-            else if (Physics.Raycast(KartTransformer.FrontRightWheel.position, forwardDirection, out hitDirection, RayCastLength, WallLayer))
+            else if (Physics.Raycast(KartTransformer.FrontRightWheel.position, rayDirection, out hitDirection, RayCastLength, WallLayer))
             {
-                Debug.DrawRay(KartTransformer.FrontRightWheel.position + Vector3.up, forwardDirection, Color.red);
+                CheckForwardSlippage(horizontalDirection, hitDirection);
             }
             else
             {
@@ -57,15 +62,13 @@ public class KartRigidBody
         else
         {
             Vector3 forwardDirection = transform.forward * -RayCastLength;
-            Debug.DrawRay(KartTransformer.BottomLeftWheel.position, forwardDirection);
-            Debug.DrawRay(KartTransformer.BottomRightWheel.position, forwardDirection);
             if (Physics.Raycast(KartTransformer.BottomLeftWheel.position, forwardDirection, out hitDirection, RayCastLength, WallLayer))
             {
-                Debug.DrawRay(KartTransformer.BottomLeftWheel.position + Vector3.up, forwardDirection, Color.red);
+                CheckBackwardSlippage(horizontalDirection, hitDirection);
             }
             else if (Physics.Raycast(KartTransformer.BottomRightWheel.position, forwardDirection, out hitDirection, RayCastLength, WallLayer))
             {
-                Debug.DrawRay(KartTransformer.BottomRightWheel.position + Vector3.up, forwardDirection, Color.red);
+                CheckBackwardSlippage(horizontalDirection, hitDirection);
             }
             else
             {
@@ -79,10 +82,48 @@ public class KartRigidBody
         rotationEuler = m_lastRotation;
     }
     
-    private void CheckHurt()
+    private void CheckForwardSlippage(Vector3 horizontalDirection, RaycastHit hitDirection)
     {
+        float dot = Vector3.Dot(horizontalDirection.normalized, hitDirection.normal.normalized);
 
+        if (dot > SlippageAngle)
+        {
+            dot = Vector3.Dot(horizontalDirection, hitDirection.normal.normalized);
+            Vector3 inWallDirection = horizontalDirection - hitDirection.normal.normalized * (dot);
+            position = transform.position + inWallDirection;
+
+            transform.position = position;
+            transform.rotation = Quaternion.Euler(rotationEuler);
+            m_lastRotation = rotationEuler;
+        }
+        else if (m_speed > CollisionMinSpeed)
+        {
+            ApplyCollision();
+        }
     }
+
+    private void CheckBackwardSlippage(Vector3 horizontalDirection, RaycastHit hitDirection)
+    {
+        float dot = Vector3.Dot(horizontalDirection.normalized, hitDirection.normal.normalized);
+
+        if (dot < -SlippageAngle)
+        {
+            dot = Vector3.Dot(horizontalDirection, hitDirection.normal.normalized);
+            Vector3 inWallDirection = horizontalDirection - hitDirection.normal.normalized * (dot);
+            position = transform.position + inWallDirection;
+
+            transform.position = position;
+            transform.rotation = Quaternion.Euler(rotationEuler);
+            m_lastRotation = rotationEuler;
+        }
+    }
+
+    private void ApplyCollision()
+    {
+        PlayerController.CollisionStop();
+    }
+
+    private float m_speed;
 
     private Vector3 m_lastRotation;
 
