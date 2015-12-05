@@ -141,7 +141,8 @@ public class PlayerController : MonoBehaviour
 			NbApplesTmp ++;
 			//kart.SetIllumination((kart.nbApples == 10));
 			//GetComponent<AudioSource>().Play();
-			UIPlayerManager.setAppleText(NbApplesTmp.ToString());
+			UIPlayerManager.AnimApple();
+			UIPlayerManager.SetAppleText(NbApplesTmp.ToString());
 			yield return new WaitForSeconds (0.27f);
 		}
 	}

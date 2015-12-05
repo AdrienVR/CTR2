@@ -22,7 +22,7 @@ public class WeaponBoxScript : MonoBehaviour {
 	{
         //animation
 		m_selfCollider.enabled = false;
-        //Source.Play();
+		AudioManager.Instance.Play("boxExplosion");
 		StartCoroutine (TakeCoroutine());
 
         KartScript player = null;
