@@ -2,7 +2,10 @@
 	"0":["Keyboard1"],
 	"1":["Keyboard2"],
 	"2":["Keyboard3"],
-	"3":["Controller (XBOX 360 For Windows)", "Controller (Xbox 360 Wireless Receiver for Windows)", "XBOX 360 For Windows (Controller)"],
+	"3":["Controller (XBOX 360 For Windows)", 
+	"Controller (Xbox 360 Wireless Receiver for Windows)", 
+	"XBOX 360 For Windows (Controller)",
+	"Controller (Afterglow Gamepad for Xbox 360)"],
 	"4":["MotioninJoy Virtual Game Controller"]
 };{
 	"0": 

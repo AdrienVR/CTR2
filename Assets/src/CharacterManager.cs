@@ -60,6 +60,10 @@ public class CharacterManager : MonoBehaviour
                 return false;
             }
         }
+        for (int i = 0; i < m_playerStates.Count; i++)
+        {
+            m_playerStates[i] = false;
+        }
         return true;
     }
 
