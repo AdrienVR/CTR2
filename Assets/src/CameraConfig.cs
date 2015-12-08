@@ -53,7 +53,7 @@ public class CameraConfig : MonoBehaviour
         return cameraGo.GetComponent<CameraController>();
     }
 
-    private static void SetLayerRecursively(GameObject go, int layerNumber)
+    public static void SetLayerRecursively(GameObject go, int layerNumber)
     {
         if (go == null) return;
         foreach (Transform trans in go.GetComponentsInChildren<Transform>(true))

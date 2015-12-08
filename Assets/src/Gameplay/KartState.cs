@@ -6,6 +6,7 @@ public class KartState
     public bool IsArmed;
     public bool waiting;
     public AkuAkuBehavior AkuAkuEquiped;
+	public InvisibilityBehavior InvisibilityEquiped;
 
     public void Update()
     {

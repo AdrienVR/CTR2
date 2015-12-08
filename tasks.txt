@@ -1,0 +1,20 @@
+ARMES
+- Réparer toutes les armes (C)
+- ajouter arme invisibilité (J)(IN PROGRESS)
+- ajouter uka-uka (C)
+- ajouter turbo (krabouillator) (C)
+
+POINTS1
+- système de points (J)
+- UI points (+animation) (J)
+
+GAMEPLAY
+-dérapages (C+J)
+-positionnement du kart (collisions, rotation contre un mur) (C)
+-anim de mort (C)
+-copier-coller crash pour les autres persos (C)
+
+MENU
+- faire le menu pozz
+- corriger les bugs du menu (quand on fait retour ...)
+- implementer le choix des armes (menu config) (C)
