@@ -10,6 +10,7 @@ public class InvisibilityBehavior : WeaponBehavior
 	{
 		base.Initialize(owner);
 		CameraConfig.SetLayerRecursively(owner.gameObject, LayerMask.NameToLayer("layer_j" + (owner.PlayerIndex + 1)));
+		AudioManager.Instance.Play ("in_invisibility");
 		for(int i=0; i< Owner.transform.GetChild(0).childCount;i++)
 		{
 			Owner.transform.GetChild(0).GetChild(i).GetComponent<MeshRenderer>().enabled=false;
@@ -52,6 +53,7 @@ public class InvisibilityBehavior : WeaponBehavior
 			{
 				Owner.transform.GetChild(0).GetChild(i).GetComponent<MeshRenderer>().enabled=true;
 			}
+			AudioManager.Instance.Play ("out_invisibility");
 			CameraConfig.SetLayerRecursively(Owner.gameObject, LayerMask.NameToLayer("Default"));
 			Destroy(gameObject);
 			return;

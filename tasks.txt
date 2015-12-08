@@ -1,10 +1,11 @@
 ARMES
 - Réparer toutes les armes (C)
-- ajouter arme invisibilité (J)(IN PROGRESS)
+- ajouter arme invisibilité (J)(DONE)
 - ajouter uka-uka (C)
 - ajouter turbo (krabouillator) (C)
+- UI supers armes (J)(IN PROGRESS)
 
-POINTS1
+POINTS
 - système de points (J)
 - UI points (+animation) (J)
 
