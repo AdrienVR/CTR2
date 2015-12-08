@@ -75,14 +75,20 @@ public class UIPlayerManager : MonoBehaviour
         m_waitingForWeapon = true;
         m_weaponChoosed = false;
         m_chooseTimer = 0;
-        //m_loopSource.PlayOneShot(randomMusic);
+
+        AudioManager.Instance.PlayLoopingUI("randomBox");
+
         for (int i = 0; i < 24 && m_weaponChoosed == false; i++)
         {
             yield return new WaitForSeconds(Period);
             UpdateWeapon(WeaponManager.Instance.GetRandomBattleWeapon());
         }
+
+        AudioManager.Instance.StopLoopingUI();
+
         AssignWeapon();
         m_waitingForWeapon = false;
+
         AudioManager.Instance.Play("boxRing");
     }
     public void SetSuperWeapons()

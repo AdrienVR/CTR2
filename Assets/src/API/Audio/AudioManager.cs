@@ -25,8 +25,11 @@ public class AudioManager : MonoBehaviour
         s_instance = this;
         m_audioCategories = PrefabReferences.Instance.AudioCategoryManager.audioCategories;
 
-        m_loopSource = gameObject.AddComponent<AudioSource>();
-        m_loopSource.loop = true;
+        m_loopingUISource = gameObject.AddComponent<AudioSource>();
+        m_loopingUISource.loop = true;
+
+        m_loopingMusicSource = gameObject.AddComponent<AudioSource>();
+        m_loopingMusicSource.loop = true;
 
         m_categoryVolumes = new Dictionary<string, float>();
 		foreach(AudioCategory category in m_audioCategories)
@@ -76,8 +79,8 @@ public class AudioManager : MonoBehaviour
 					}
 					else
 					{
-						m_loopSource.clip = clip;
-						m_loopSource.Play();
+						m_loopingMusicSource.clip = clip;
+						m_loopingMusicSource.Play();
 						return;
 					}
 				}
@@ -86,12 +89,34 @@ public class AudioManager : MonoBehaviour
 		Debug.LogError(soundName + "not found in any category ! Sound not played...");
     }
 
-    public void StopLoopingSound()
+    public void PlayLoopingUI(string name)
     {
-        m_loopSource.Stop();
+        foreach (AudioCategory audioCategory in m_audioCategories)
+        {
+            foreach (AudioClip clip in audioCategory.clips)
+            {
+                if (clip.name == name)
+                {
+                    m_loopingUISource.clip = clip;
+                    m_loopingUISource.Play();
+                    return;
+                }
+            }
+        }
     }
 
-    private AudioSource m_loopSource;
+    public void StopLoopingUI()
+    {
+        m_loopingUISource.Stop();
+    }
+
+    public void StopLoopingMusic()
+    {
+        m_loopingMusicSource.Stop();
+    }
+
+    private AudioSource m_loopingMusicSource;
+    private AudioSource m_loopingUISource;
 
     private List<AudioCategory> m_audioCategories;
 
