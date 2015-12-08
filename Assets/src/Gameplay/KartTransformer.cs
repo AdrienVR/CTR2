@@ -28,6 +28,8 @@ public class KartTransformer
     public const float DistanceFromGroundCast = 6;
     public float GravityFactor = 9.81f;
 
+	public bool isInAir;
+
     public void Start()
     {
         m_groundLayerMask = 1 << LayerMask.NameToLayer("Ground");
@@ -47,7 +49,7 @@ public class KartTransformer
 
     private void UpdatePosition()
     {
-        bool isInAir = true;
+        isInAir = true;
         RaycastHit hitBottomLeft;
         if (Physics.Raycast(BottomLeftWheel.position + Vector3.up * 3, -Vector3.up, out hitBottomLeft, DistanceFromGroundCast, m_groundLayerMask))
         {
