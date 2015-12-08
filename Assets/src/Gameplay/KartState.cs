@@ -5,6 +5,7 @@ public class KartState
     public bool WeaponLocked = false;
     public bool IsArmed;
     public bool waiting;
+    public AkuAkuBehavior AkuAkuEquiped;
 
     public void Update()
     {

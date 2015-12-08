@@ -242,6 +242,11 @@ public class PlayerController : MonoBehaviour
         KartState.SetUnabilityToMove(0.666f);
         m_animator.Play("Collision");
     }
+    
+    public bool IsSuper()
+    {
+        return NbApples == 10;
+    }
 
     public void Die(PlayerController killer, string weapon)
     {

@@ -27,7 +27,7 @@ public class WeaponBoxScript : MonoBehaviour {
 
         if (other.tag != "Kart")
         {
-            if (other.tag == "weapon")
+            if (other.tag == "Weapon")
             {
                 player = other.GetComponent<WeaponBehavior>().Owner;
             }
