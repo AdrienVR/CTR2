@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour
     public float DeceleratingFactor;
     public float MaxSpeed;
 
+	public SkidTrace2 TraceL, TraceR;
+
 	public UIPlayerManager UIPlayerManager;
 
 	public int NbApplesTmp, NbApples;
@@ -56,6 +58,9 @@ public class PlayerController : MonoBehaviour
         KartRigidbody.Initialize();
 
         WeaponPrefab = new List<GameObject>();
+
+		TraceL = KartTransformer.BottomLeftParent.GetComponent<SkidTrace2> ();
+		TraceR = KartTransformer.BottomRightParent.GetComponent<SkidTrace2> ();
     }
 
     // Update is called once per frame
@@ -157,8 +162,31 @@ public class PlayerController : MonoBehaviour
         if (Controller.GetKeyDown("jump"))
         {
         }
+		
+		if (Controller.GetKey("jump") && KartTransformer.isInAir == false && KartTransformer.YAngle != 0)
+		{
+			ActiveTrace(true);
+		}
+		else
+		{
+			ActiveTrace(false);
+		}
 
     }
+
+	public void ActiveTrace(bool state)
+	{
+		if(TraceL != null && TraceR != null)
+		{
+			if(state == false)
+			{
+				TraceL.RemoveAll();
+				TraceR.RemoveAll();
+			}
+			TraceL.enabled = state;
+			TraceR.enabled = state;
+		}
+	}
 
     public void UpdateCamera()
     {

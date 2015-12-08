@@ -25,8 +25,8 @@ public class SkidTrace2 : MonoBehaviour
 		m_renderer.material = TraceMaterial;
 		
 		Vector3 localXAxis = (transform.position - SymetricalWheel.transform.position).normalized*WheelSize;
-		m_currentPts[0]=transform.position + localXAxis;
-		m_currentPts[1]=transform.position - localXAxis;
+		m_currentPts [0] = transform.position + localXAxis - transform.up * WheelSize;
+		m_currentPts[1]=transform.position - localXAxis - transform.up * WheelSize;
 	}
 
 	
@@ -37,8 +37,8 @@ public class SkidTrace2 : MonoBehaviour
 
 		m_previousPts [0] = m_currentPts [0];
 		m_previousPts [1] = m_currentPts [1];
-		m_currentPts[0]=transform.position + localXAxis;
-		m_currentPts[1]=transform.position - localXAxis;
+		m_currentPts[0]=transform.position + localXAxis - transform.up*0.3f;
+		m_currentPts[1]=transform.position - localXAxis - transform.up*0.3f;
 
 		// Creation of a the vertice table
 		Vector3[] vertices = new Vector3[4];
@@ -88,6 +88,13 @@ public class SkidTrace2 : MonoBehaviour
 		m_index++;
 		if (m_index > 9)
 			m_index = 0;
+	}
+
+	public void RemoveAll()
+	{
+		m_mesh = new Mesh();
+		m_mf.mesh = m_mesh;
+		m_vertices = new List<Vector3[]>();
 	}
 
 	private int[] c_triangles = new int[] {0,1,2,0,2,3};
