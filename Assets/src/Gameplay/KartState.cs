@@ -2,9 +2,9 @@
 
 public class KartState
 {
-    public bool armed;
+    public bool WeaponLocked = false;
+    public bool IsArmed;
     public bool waiting;
-    public bool armedEvolute;
 
     public void Update()
     {

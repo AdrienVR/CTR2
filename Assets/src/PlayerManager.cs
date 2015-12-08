@@ -43,9 +43,10 @@ public class PlayerManager : MonoBehaviour
 
             GameObject go = Instantiate(character.Prefab, spawnPoints[i].position, spawnPoints[i].rotation) as GameObject;
 
-            PlayerController pc = go.GetComponent<PlayerController>();
-            pc.PlayerIndex = i;
-            pc.CameraController = CameraConfig.Instance.InitializePlayer(go.transform, i, CurrentPlayers.Count);
+            PlayerController player = go.GetComponent<PlayerController>();
+            player.PlayerIndex = i;
+            player.CharacterSide = character.Side;
+            player.CameraController = CameraConfig.Instance.InitializePlayer(player, i, CurrentPlayers.Count);
         }
     }
 

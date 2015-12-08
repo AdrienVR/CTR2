@@ -34,18 +34,22 @@ public class CameraConfig : MonoBehaviour
     [SerializeField]
     public CameraArray[] PerspectiveCameras;
 
-    public CameraController InitializePlayer(Transform player, int playerIndex, int totalPlayers)
+    public CameraController InitializePlayer(PlayerController player, int playerIndex, int totalPlayers)
     {
         GameObject cameraGo = Instantiate(OrthographicCameras[totalPlayers - 1].Cameras[playerIndex]);
         Camera camera = cameraGo.GetComponent<Camera>();
 		GameObject canvasGo = Instantiate(ReferenceCanvas);
-		player.GetComponent<PlayerController> ().UIPlayerManager = canvasGo.GetComponent<UIPlayerManager> ();
+
+        UIPlayerManager playerUI = canvasGo.GetComponent<UIPlayerManager>();
+        player.UIPlayerManager = playerUI;
+        playerUI.Player = player;
+
         SetLayerRecursively(canvasGo, LayerMask.NameToLayer("layer2d_j" + (playerIndex + 1)));
         canvasGo.GetComponent<Canvas>().worldCamera = camera;
         canvasGo.transform.SetParent(cameraGo.transform);
 
         cameraGo = Instantiate(PerspectiveCameras[totalPlayers - 1].Cameras[playerIndex]);
-        cameraGo.transform.SetParent(player);
+        cameraGo.transform.SetParent(player.transform);
         return cameraGo.GetComponent<CameraController>();
     }
 

@@ -112,7 +112,7 @@ public class KartScript : MonoBehaviour
 
 	public bool IsArmed()
 	{
-		return kart_state.armed;
+		return kart_state.IsArmed;
 	}
 	
 	public void SetWeaponBox(WeaponBoxScript wp)
@@ -169,7 +169,6 @@ public class KartScript : MonoBehaviour
 	
 	public void setEvoluteWeapon(bool t)
 	{
-		kart_state.armedEvolute = t;
 	}
 	
 	public void SetWeapon(string w)
@@ -191,8 +190,8 @@ public class KartScript : MonoBehaviour
 			weapons = new List<string> ();
 			weapons.Add (w);
 		}
-		if (!kart_state.armed)
-			kart_state.armed= true;
+		if (!kart_state.IsArmed)
+			kart_state.IsArmed= true;
 		takenWeaponBox = null;
 	}
 	

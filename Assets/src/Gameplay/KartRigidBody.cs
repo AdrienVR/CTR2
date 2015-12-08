@@ -25,6 +25,11 @@ public class KartRigidBody
 
     public static int WallLayer = 1 << LayerMask.NameToLayer("Wall");
 
+    public void Initialize()
+    {
+        m_lastPosition = transform.position;
+    }
+
     // Update is called once per frame
     public void Update ()
     {
@@ -35,10 +40,13 @@ public class KartRigidBody
             return;
         }
 
+        Vector3 distance = transform.position - m_lastPosition;
+        m_speed = distance.magnitude / Time.deltaTime;
+        m_lastPosition = transform.position;
+
         Vector3 horizontalDirection = direction;
         horizontalDirection.y = 0;
 
-        m_speed = horizontalDirection.magnitude;
 
         RaycastHit hitDirection;
         if (Vector3.Dot(horizontalDirection, transform.forward) > 0)
@@ -125,6 +133,7 @@ public class KartRigidBody
 
     private float m_speed;
 
+    private Vector3 m_lastPosition;
     private Vector3 m_lastRotation;
 
 }

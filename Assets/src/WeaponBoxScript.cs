@@ -8,15 +8,13 @@ public class WeaponBoxScript : MonoBehaviour {
 	public AudioClip endMusic;
 	private int nbImgArmes;
 	private float timeLookingWeapon;
-    
-    public Collider SelfCollider;
-    public AudioSource LoopSource;
-    public AudioSource Source;
 
 	void Start()
 	{
 		m_selfCollider = GetComponent<Collider> ();
-	}
+        m_loopSource = GetComponent<AudioSource>();
+        m_animation = GetComponent<Animation>();
+    }
 
 	void OnTriggerEnter(Collider other)
 	{
@@ -25,9 +23,9 @@ public class WeaponBoxScript : MonoBehaviour {
 		AudioManager.Instance.Play("boxExplosion");
 		StartCoroutine (TakeCoroutine());
 
-        KartScript player = null;
+        PlayerController player = null;
 
-        if (other.tag != "kart")
+        if (other.tag != "Kart")
         {
             if (other.tag == "weapon")
             {
@@ -40,29 +38,12 @@ public class WeaponBoxScript : MonoBehaviour {
         }
         else
         {
-            player = other.GetComponent<KartScript>();
+            player = other.GetComponent<PlayerController>();
         }
 
-        Main.statistics.nbWeaponBox++;
-
-        if (player.IsArmed() || player.IsWaitingWeapon())
-			return;
-        player.setWaitingWeapon (true);
-        player.SetWeaponBox(this);
-
-		//animation of giving weapon
-		StartCoroutine(RandomWeaponSelection(player));
+        player.UIPlayerManager.SetWeapon();
 	}
 
-    private IEnumerator RandomWeaponSelection(KartScript player)
-    {
-        GetComponent<AudioSource>().PlayOneShot(randomMusic);
-        while (nbImgArmes<25 && nbImgArmes>0) {
-			yield return new WaitForSeconds (randomMusic.length*3/4);
-            ActivableWeapon weapon = WeaponManager.Instance.GetRandomBattleWeapon();
-        }
-		GetComponent<AudioSource>().PlayOneShot(endMusic);
-	}
 
 	public bool selectRandomWeapon()
 	{
@@ -75,13 +56,16 @@ public class WeaponBoxScript : MonoBehaviour {
 	
 	private IEnumerator TakeCoroutine()
     {
-        GetComponent<Collider>().enabled = false;
-        GetComponent<Animation>().Play ("boxDisappear");
+        m_selfCollider.enabled = false;
+        m_animation.Play("boxDisappear");
 		yield return new WaitForSeconds (2f);
-		GetComponent<Animation>().Play ("boxGrow");
+        m_animation.Play("boxGrow");
 		yield return new WaitForSeconds (1.3f);
-		GetComponent<Collider>().enabled = true;
+        m_selfCollider.enabled = true;
 	}
 
 	private Collider m_selfCollider;
+    private Animation m_animation;
+
+    private AudioSource m_loopSource;
 }

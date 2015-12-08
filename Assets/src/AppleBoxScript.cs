@@ -7,7 +7,8 @@ public class AppleBoxScript : MonoBehaviour
 	void Start()
 	{
 		m_selfCollider = GetComponent<Collider> ();
-	}
+        m_animation = GetComponent<Animation>();
+    }
 
 	void OnTriggerEnter(Collider other)
 	{
@@ -19,8 +20,7 @@ public class AppleBoxScript : MonoBehaviour
 		else if(other.tag == "Weapon") // si c'est une bombe ou autre
 		{
 			WeaponBehavior es = other.GetComponent <WeaponBehavior>();
-			GameObject owner = es.owner;
-			taker = owner.GetComponent<PlayerController>();
+			taker = es.Owner;
     	}
 		else
 		{
@@ -38,12 +38,13 @@ public class AppleBoxScript : MonoBehaviour
 	IEnumerator Take()
 	{
 
-		GetComponent<Animation>().Play ("boxDisappear");
+        m_animation.Play ("boxDisappear");
 		yield return new WaitForSeconds (2f);
-		GetComponent<Animation>().Play ("boxGrow");
+        m_animation.Play ("boxGrow");
 		yield return new WaitForSeconds (1.3f);
-		GetComponent<Collider>().enabled = true;
+        m_selfCollider.enabled = true;
 	}
-	
+
+    private Animation m_animation;
 	private Collider m_selfCollider;
 }

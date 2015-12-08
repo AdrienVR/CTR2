@@ -2,16 +2,26 @@
 using UnityEngine.UI;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
     [HideInInspector]
     public int PlayerIndex;
 
+    [HideInInspector]
+    public CharacterSide CharacterSide;
+
+    [HideInInspector]
+    public List<GameObject> WeaponPrefab;
+
     public KartTransformer KartTransformer;
 
     [HideInInspector]
     public KartState KartState;
+
+    [HideInInspector]
+    public ControllerBase Controller;
 
     [HideInInspector]
     public CameraController CameraController;
@@ -29,21 +39,23 @@ public class PlayerController : MonoBehaviour
 	public UIPlayerManager UIPlayerManager;
 
 	public int NbApplesTmp, NbApples;
-
-    public bool caca;
+    
 
     // Use this for initialization
     void Start()
     {
         KartState = new KartState();
         m_animator = GetComponent<Animator>();
-        m_controller = ControllerManager.Instance.GetController(PlayerIndex);
+        Controller = ControllerManager.Instance.GetController(PlayerIndex);
         KartRigidbody.transform = transform;
         KartRigidbody.position = transform.position;
         KartTransformer.KartRigidbody = KartRigidbody;
         KartTransformer.Start();
 
         KartRigidbody.KartTransformer = KartTransformer;
+        KartRigidbody.Initialize();
+
+        WeaponPrefab = new List<GameObject>();
     }
 
     // Update is called once per frame
@@ -56,11 +68,37 @@ public class PlayerController : MonoBehaviour
             UpdateGameplay();
         KartRigidbody.Update();
         KartState.Update();
+        UpdateWeapon();
     }
 
-    public void UpdateGameplay()
+    void UpdateWeapon()
     {
-        if (m_controller.GetKey("validate") || caca)
+        if (Controller.GetKeyDown("action"))
+        {
+            if (WeaponPrefab.Count > 0 && KartState.WeaponLocked == false)
+            {
+                GameObject weaponGo = WeaponPrefab[0];
+                WeaponPrefab.RemoveAt(0);
+                weaponGo = Instantiate(weaponGo);
+                WeaponBehavior wb = weaponGo.GetComponent<WeaponBehavior>();
+                wb.Initialize(this);
+
+                if (WeaponPrefab.Count == 0)
+                {
+                    UIPlayerManager.HideWeapon();
+                    KartState.IsArmed = false;
+                }
+                else
+                {
+                    UIPlayerManager.DecrementWeaponText();
+                }
+            }
+        }
+    }
+
+    void UpdateGameplay()
+    {
+        if (Controller.GetKey("validate"))
         {
             //Debug.Log(m_acceleratingTimer);
             if (m_acceleratingTimer < 1)
@@ -92,23 +130,23 @@ public class PlayerController : MonoBehaviour
             KartRigidbody.position -= transform.forward * SpeedCurve.Evaluate(-m_acceleratingTimer) * MaxSpeed;
         }
         // wheels turning
-        if ((m_controller.GetKey("stop") || m_controller.GetKey("validate")))
+        if ((Controller.GetKey("stop") || Controller.GetKey("validate")))
         {
-            if (m_controller.GetKey("right"))
-                KartTransformer.YAngle += 0.5f * m_controller.GetAxis("right") * TurnSpeed;
-            if (m_controller.GetKey("left"))
-                KartTransformer.YAngle -= 0.5f * m_controller.GetAxis("left") * TurnSpeed;
+            if (Controller.GetKey("right"))
+                KartTransformer.YAngle += 0.5f * Controller.GetAxis("right") * TurnSpeed;
+            if (Controller.GetKey("left"))
+                KartTransformer.YAngle -= 0.5f * Controller.GetAxis("left") * TurnSpeed;
         }
-        else if (m_controller.GetKey("stop") == false)
+        else if (Controller.GetKey("stop") == false)
         {
-            if (m_controller.GetKey("down") && m_controller.GetAxis("down") > 0.9f)
+            if (Controller.GetKey("down") && Controller.GetAxis("down") > 0.9f)
             {
                 if (m_acceleratingTimer > -1)
                     m_acceleratingTimer -= Time.deltaTime * AcceleratingFactor * 2;
-                if (m_controller.GetKey("right"))
-                    KartTransformer.YAngle -= 0.5f * m_controller.GetAxis("right") * TurnSpeed;
-                else if (m_controller.GetKey("left"))
-                    KartTransformer.YAngle += 0.5f * m_controller.GetAxis("left") * TurnSpeed;
+                if (Controller.GetKey("right"))
+                    KartTransformer.YAngle -= 0.5f * Controller.GetAxis("right") * TurnSpeed;
+                else if (Controller.GetKey("left"))
+                    KartTransformer.YAngle += 0.5f * Controller.GetAxis("left") * TurnSpeed;
             }
             else if (m_acceleratingTimer < 0)
             {
@@ -116,7 +154,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (m_controller.GetKeyDown("jump"))
+        if (Controller.GetKeyDown("jump"))
         {
         }
 
@@ -124,17 +162,17 @@ public class PlayerController : MonoBehaviour
 
     public void UpdateCamera()
     {
-        if (m_controller.GetKeyDown("inverseCamera"))
+        if (Controller.GetKeyDown("inverseCamera"))
         {
             CameraController.Reversed = -1f;
         }
 
-        if (m_controller.GetKeyUp("inverseCamera"))
+        if (Controller.GetKeyUp("inverseCamera"))
         {
             CameraController.Reversed = 1f;
         }
 
-        if (m_controller.GetKeyDown("switchCamera"))
+        if (Controller.GetKeyDown("switchCamera"))
         {
             if (CameraController.PositionForward == 1f)
                 CameraController.PositionForward = 0.85f;
@@ -177,7 +215,14 @@ public class PlayerController : MonoBehaviour
         m_animator.Play("Collision");
     }
 
+    public void Die(PlayerController killer, string weapon)
+    {
+        m_acceleratingTimer = 0;
+        AudioManager.Instance.Play("Ouille");
+        KartState.SetUnabilityToMove(1.75f);
+        m_animator.Play("Death");
+    }
+
     private Animator m_animator;
-    private ControllerBase m_controller;
     private float m_acceleratingTimer;
 }
