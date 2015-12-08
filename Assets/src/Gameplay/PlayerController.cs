@@ -134,13 +134,15 @@ public class PlayerController : MonoBehaviour
         {
             KartRigidbody.position -= transform.forward * SpeedCurve.Evaluate(-m_acceleratingTimer) * MaxSpeed;
         }
+
+        float yAngle = 0;
         // wheels turning
         if ((Controller.GetKey("stop") || Controller.GetKey("validate")))
         {
             if (Controller.GetKey("right"))
-                KartTransformer.YAngle += 0.5f * Controller.GetAxis("right") * TurnSpeed;
+                yAngle = 0.5f * Controller.GetAxis("right") * TurnSpeed;
             if (Controller.GetKey("left"))
-                KartTransformer.YAngle -= 0.5f * Controller.GetAxis("left") * TurnSpeed;
+                yAngle = - 0.5f * Controller.GetAxis("left") * TurnSpeed;
         }
         else if (Controller.GetKey("stop") == false)
         {
@@ -149,15 +151,17 @@ public class PlayerController : MonoBehaviour
                 if (m_acceleratingTimer > -1)
                     m_acceleratingTimer -= Time.deltaTime * AcceleratingFactor * 2;
                 if (Controller.GetKey("right"))
-                    KartTransformer.YAngle -= 0.5f * Controller.GetAxis("right") * TurnSpeed;
+                    yAngle = -0.5f * Controller.GetAxis("right") * TurnSpeed;
                 else if (Controller.GetKey("left"))
-                    KartTransformer.YAngle += 0.5f * Controller.GetAxis("left") * TurnSpeed;
+                    yAngle = 0.5f * Controller.GetAxis("left") * TurnSpeed;
             }
             else if (m_acceleratingTimer < 0)
             {
                 m_acceleratingTimer += Time.deltaTime * AcceleratingFactor * 2;
             }
         }
+
+        KartTransformer.YAngle += (yAngle * Time.deltaTime);
 
         if (Controller.GetKeyDown("jump"))
         {
