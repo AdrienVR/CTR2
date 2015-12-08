@@ -167,7 +167,7 @@ public class PlayerController : MonoBehaviour
         {
         }
 		
-		if (Controller.GetKey("jump") && KartTransformer.isInAir == false && KartTransformer.YAngle != 0)
+		if (Controller.GetKey("jump") && KartTransformer.isInAir == false && yAngle != 0)
 		{
 			ActiveTrace(true);
 		}

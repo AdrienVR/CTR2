@@ -17,7 +17,7 @@ public class AkuAkuBehavior : WeaponBehavior
             return;
         }
 
-        transform.SetParent(owner.transform);
+        transform.SetParent(owner.transform.GetChild(0));
         transform.localPosition = Vector3.zero;
 
         owner.KartState.AkuAkuEquiped = this;

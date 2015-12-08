@@ -34,8 +34,6 @@ public class KartTransformer
     {
         m_groundLayerMask = 1 << LayerMask.NameToLayer("Ground");
         m_wallLayerMask = 1 << LayerMask.NameToLayer("Wall");
-        m_back = (BottomRightWheel.position + BottomLeftWheel.position) * 0.5f;
-        m_front = (FrontRightWheel.position + FrontLeftWheel.position) * 0.5f;
     }
 
     public void Update()
@@ -107,6 +105,9 @@ public class KartTransformer
     private void UpdateXAngle()
     {
         RaycastHit hitBack;
+        m_back = (BottomRightWheel.position + BottomLeftWheel.position) * 0.5f;
+        m_front = (FrontRightWheel.position + FrontLeftWheel.position) * 0.5f;
+        //Debug.DrawRay(m_back + Vector3.up * 3, -Vector3.up * DistanceFromGroundCast, Color.blue);
         if (Physics.Raycast(m_back + Vector3.up * 3, -Vector3.up, out hitBack, DistanceFromGroundCast, m_groundLayerMask))
         {
             RaycastHit hitFront;
@@ -128,8 +129,6 @@ public class KartTransformer
         RaycastHit hitFront;
         if (Physics.Raycast(m_front + Vector3.up * 3, -Vector3.up, out hitFront, DistanceFromGroundCast, m_groundLayerMask))
         {
-            float y = hitBack.point.y - hitFront.point.y;
-            m_xAngle = YToAngleX.Evaluate(y);
         }
     }
 

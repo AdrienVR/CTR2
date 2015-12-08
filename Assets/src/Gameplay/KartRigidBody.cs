@@ -47,7 +47,7 @@ public class KartRigidBody
         Vector3 horizontalDirection = direction;
         horizontalDirection.y = 0;
 
-
+        /*
         RaycastHit hitDirection;
         if (Vector3.Dot(horizontalDirection, transform.forward) > 0)
         {
@@ -85,6 +85,11 @@ public class KartRigidBody
                 m_lastRotation = rotationEuler;
             }
         }
+        */
+
+        transform.position = position;
+        transform.rotation = Quaternion.Euler(rotationEuler);
+        m_lastRotation = rotationEuler;
 
         position = transform.position;
         rotationEuler = m_lastRotation;
