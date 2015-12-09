@@ -2,15 +2,12 @@
 
 public class MissileBehavior : WeaponBehavior
 {
-    public float DistanceBehindKart = 1.5f;
-
-    public float ChangingTargetDelay = 1;
-
-    public float RotationFactor = 5;
-
-    public float Speed = 20f;
-
-    public float HeightFromGround = 2;
+    public float DistanceBehindKart;
+    public float ChangingTargetDelay;
+    public float RotationFactor;
+    public float Speed;
+    public float HeightFromGround;
+    public float SuperMultiplicator = 1.4f;
 
     public override void Initialize(PlayerController owner)
     {
@@ -18,7 +15,8 @@ public class MissileBehavior : WeaponBehavior
 
         if (Owner.IsSuper())
         {
-            Speed *= 2;
+            Speed *= SuperMultiplicator;
+            RotationFactor *= SuperMultiplicator;
         }
         transform.forward = Owner.transform.forward;
 
@@ -33,9 +31,12 @@ public class MissileBehavior : WeaponBehavior
 
         if (m_changingTargetTimer < 0)
         {
+            m_target = null;
             float minDistance = float.MaxValue;
             foreach(PlayerController enemy in PlayerManager.Instance.GetEnemies(Owner))
             {
+                if (enemy.KartState.InvisibilityEquiped != null)
+                    continue;
                 float enemyDistance = (transform.position - enemy.transform.position).sqrMagnitude;
                 if (enemyDistance < minDistance)
                 {
@@ -46,8 +47,12 @@ public class MissileBehavior : WeaponBehavior
             m_changingTargetTimer = ChangingTargetDelay;
         }
 
-        Vector3 enemyDirection = (m_target.transform.position - transform.position);
-        enemyDirection.y = 0;
+        Vector3 enemyDirection = transform.forward;
+        if (m_target != null)
+        {
+            enemyDirection = (m_target.transform.position - transform.position);
+            enemyDirection.y = 0;
+        }
 
         RaycastHit hitGround;
         if (Physics.Raycast(transform.position + Vector3.up, -Vector3.up * 3, out hitGround, 3, s_groundLayerMask) == false)
