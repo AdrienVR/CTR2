@@ -10,6 +10,9 @@ public class PlayerController : MonoBehaviour
     public int PlayerIndex;
 
     [HideInInspector]
+    public Team Team;
+
+    [HideInInspector]
     public CharacterSide CharacterSide;
 
     [HideInInspector]
