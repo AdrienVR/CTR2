@@ -224,6 +224,7 @@ public class PlayerController : MonoBehaviour
 		else
 			NbApples = System.Math.Max(0, NbApples + n);
 
+
 	}
 
 	IEnumerator animApplesNb()
@@ -237,6 +238,10 @@ public class PlayerController : MonoBehaviour
 			UIPlayerManager.SetAppleText(NbApplesTmp.ToString());
 			yield return new WaitForSeconds (0.27f);
 		}
+		if (NbApples >= 10)
+			UIPlayerManager.SetSuperWeapons ();
+		else
+			UIPlayerManager.UnsetSuperWeapons ();
 	}
 
     public void CollisionStop()

@@ -7,12 +7,12 @@ public class UIPlayerManager : MonoBehaviour
     [HideInInspector]
     public PlayerController Player;
 
-    public GameObject WeaponBackground;
+	public GameObject WeaponBackground, AppleBackground;
     public Image WeaponImage;
     public Text WeaponText;
 	public Text PointText, AppleText, AppleText2;
 	public GameObject ArrivingApple;
-
+	public bool IsSuper;
     public float MinTimeSelection = 1.5f;
 
     public float Period = 0.1f;
@@ -94,18 +94,24 @@ public class UIPlayerManager : MonoBehaviour
     public void SetSuperWeapons()
     {
         m_superWeapons = true;
-        WeaponBackground.SetActive(true);
+		if(WeaponImage.IsActive())
+			WeaponBackground.SetActive(true);
+		AppleBackground.SetActive(true);
+		IsSuper = true;
     }
 
     public void UnsetSuperWeapons()
     {
         m_superWeapons = false;
         WeaponBackground.SetActive(false);
+		AppleBackground.SetActive(false);
+		IsSuper = false;
     }
 
     public void UpdateWeapon(ActivableWeapon weapon)
     {
         WeaponImage.gameObject.SetActive(true);
+		WeaponBackground.SetActive(IsSuper);
         if (m_superWeapons == true)
         {
             if (weapon.SuperSprite == null)
