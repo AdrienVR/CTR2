@@ -37,7 +37,7 @@ public class WeaponManager : MonoBehaviour
 
         lastRandomIndex = index;
 
-        return BattleWeapons[index];
+        return BattleWeapons[0];
     }
 
     public void SetRaceWeaponActivation(string name, bool active = true)
