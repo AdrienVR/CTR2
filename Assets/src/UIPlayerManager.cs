@@ -180,10 +180,24 @@ public class UIPlayerManager : MonoBehaviour
         if (m_waitingForWeapon == true)
             return;
 
+		StartCoroutine (BlinkWeapon ());
         WeaponBackground.SetActive(false);
 
         WeaponImage.gameObject.SetActive(false);
     }
+
+	IEnumerator BlinkWeapon()
+	{
+		for(int i=0;i<5;i++)
+		{
+			WeaponBackground.SetActive(IsSuper);
+			WeaponImage.gameObject.SetActive(true);
+			yield return new WaitForSeconds(0.1f);
+			WeaponBackground.SetActive(false);
+			WeaponImage.gameObject.SetActive(false);
+			yield return new WaitForSeconds(0.1f);
+		}
+	}
 
     private bool m_waitingForWeapon;
     private bool m_weaponChoosed;

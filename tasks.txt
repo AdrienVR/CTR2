@@ -3,7 +3,7 @@ ARMES
 - ajouter arme invisibilité (J)(DONE)
 - ajouter uka-uka (C)
 - ajouter turbo (krabouillator) (C)
-- UI supers armes (J)(IN PROGRESS)
+- UI supers armes (J)(DONE)
 
 POINTS
 - système de points (J)
