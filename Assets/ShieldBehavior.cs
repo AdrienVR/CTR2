@@ -3,6 +3,10 @@ using System.Collections;
 
 public class ShieldBehavior : WeaponBehavior
 {
+    public const float Lifetime = 12f;
+
+    public float Speed = 20f;
+    public bool Unlimited = false;
 
     public override void Initialize(PlayerController owner)
     {
@@ -20,6 +24,10 @@ public class ShieldBehavior : WeaponBehavior
 
         Owner.KartState.WeaponLocked = true;
         owner.KartState.ShieldBehavior = this;
+
+        m_rigidbody = GetComponent<Rigidbody>();
+
+        m_timer = Lifetime;
     }
 
     // Update is called once per frame
@@ -30,7 +38,24 @@ public class ShieldBehavior : WeaponBehavior
             Owner.KartState.WeaponLocked = false;
             Owner.KartState.ShieldBehavior = null;
             transform.parent = null;
+            transform.forward = Owner.transform.forward;
+            m_rigidbody.position += transform.forward * 2;
             m_detached = true;
+        }
+
+        if (Unlimited == false)
+        {
+            m_timer -= Time.deltaTime;
+
+            if (m_timer < 0)
+            {
+                Disappear();
+            }
+        }
+
+        if (m_detached)
+        {
+            m_rigidbody.position += transform.forward * Time.deltaTime * Speed;
         }
     }
 
@@ -58,5 +83,7 @@ public class ShieldBehavior : WeaponBehavior
         Destroy(gameObject);
     }
 
+    private Rigidbody m_rigidbody;
+    private float m_timer;
     private bool m_detached = false;
 }

@@ -308,6 +308,7 @@ public class PlayerController : MonoBehaviour
         if (KartState.ShieldBehavior != null)
         {
             KartState.ShieldBehavior.Disappear();
+            KartState.SetInvincibility(1.75f);
         }
         else if (KartState.IsInvincible() == false)
         {
@@ -320,6 +321,7 @@ public class PlayerController : MonoBehaviour
         m_acceleratingTimer = 0;
         AudioManager.Instance.Play("Ouille");
         KartState.SetUnabilityToMove(1.75f);
+        KartState.SetInvincibility(1.75f);
         m_animator.Play("Death");
 		if (killer != this)
 			killer.AddPoint ();
