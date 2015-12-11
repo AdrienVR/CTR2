@@ -1,7 +1,7 @@
 ARMES
 - Réparer toutes les armes (C)
 - ajouter arme invisibilité (J)(DONE)
-- ajouter uka-uka (C)
+- ajouter uka-uka (C)(DONE)
 - ajouter turbo (krabouillator) (C)
 - UI supers armes (J)(DONE)
 
@@ -14,7 +14,7 @@ GAMEPLAY
 -positionnement du kart (collisions, rotation contre un mur) (C)
 -anim de mort (C)
 -copier-coller crash pour les autres persos (C)
-- roues qui tournent
+- roues qui tournent (J)(DONE)
 
 MENU
 - faire le menu pozz

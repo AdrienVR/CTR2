@@ -4,12 +4,13 @@ using System.Collections;
 public class WheelRotation : MonoBehaviour
 {
 
-	public GameObject LeftWheel, RightWheel;
-	public Vector3 InitialLeftRotation;
+	public GameObject LeftWheel, RightWheel, Character;
+	public Vector3 InitialLeftRotation, InitialCharacterRotation;
 
 	public void Start()
 	{
 		InitialLeftRotation = LeftWheel.transform.localRotation.eulerAngles;
+		InitialCharacterRotation = Character.transform.localRotation.eulerAngles;
 	}
 
 	public void TurnRight()
@@ -18,6 +19,7 @@ public class WheelRotation : MonoBehaviour
 		{
 			LeftWheel.transform.localRotation = Quaternion.Euler(new Vector3(LeftWheel.transform.localRotation.x+m_coefRotation,0,0)+InitialLeftRotation);
 			RightWheel.transform.localRotation = LeftWheel.transform.localRotation;
+			//Character.transform.localRotation = Quaternion.Euler(new Vector3(0,Character.transform.localRotation.y+m_coefRotation,0)+InitialCharacterRotation);
 			m_coefRotation+=2*80*Time.deltaTime;
 		}
 	}
@@ -27,6 +29,7 @@ public class WheelRotation : MonoBehaviour
 		{
 			LeftWheel.transform.localRotation = Quaternion.Euler(new Vector3(LeftWheel.transform.localRotation.x+m_coefRotation,0,0)+InitialLeftRotation);
 			RightWheel.transform.localRotation = LeftWheel.transform.localRotation;
+			//Character.transform.localRotation = Quaternion.Euler(new Vector3(0,Character.transform.localRotation.y+m_coefRotation,0)+InitialCharacterRotation);
 			m_coefRotation-=2*80*Time.deltaTime;
 		}
 	}
