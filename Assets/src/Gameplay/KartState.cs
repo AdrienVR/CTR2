@@ -7,6 +7,7 @@ public class KartState
     public bool waiting;
     public AkuAkuBehavior AkuAkuEquiped;
 	public InvisibilityBehavior InvisibilityEquiped;
+    public ShieldBehavior ShieldBehavior;
 
     public void Update()
     {
@@ -49,9 +50,16 @@ public class KartState
         m_moveUnabilityTimer = duration;
     }
 
-    public void SetInvincibility(float duration)
+    public void SetInvincibility(float duration, bool reset = false)
     {
-        m_invincibilityTimer = duration;
+        if (reset)
+        {
+            m_invincibilityTimer = duration;
+        }
+        else
+        {
+            m_invincibilityTimer += duration;
+        }
     }
 
     private float m_shootUnabilityTimer;

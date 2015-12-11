@@ -6,13 +6,19 @@ public class AkuAkuBehavior : WeaponBehavior
 
     public float BaseLifetime = 7f;
 
+    public float AddingSpeed = 0.75f;
+
     public override void Initialize(PlayerController owner)
     {
         base.Initialize(owner);
 
+        float duration = 0;
+
         if (owner.KartState.AkuAkuEquiped != null)
         {
-            owner.KartState.AkuAkuEquiped.SetLifetime();
+            duration = owner.KartState.AkuAkuEquiped.SetLifetime();
+            owner.Boost(duration);
+            owner.KartState.SetInvincibility(duration, false);
             Destroy(gameObject);
             return;
         }
@@ -21,20 +27,25 @@ public class AkuAkuBehavior : WeaponBehavior
         transform.localPosition = Vector3.zero;
 
         owner.KartState.AkuAkuEquiped = this;
-        SetLifetime();
+        duration = SetLifetime();
+        owner.KartState.SetInvincibility(duration, true);
+
+        owner.Boost(duration);
 
         AudioManager.Instance.Play("akuaku", true);
     }
 
-    public void SetLifetime()
+    public float SetLifetime()
     {
         if (Owner.IsSuper())
         {
             m_lifetime += BaseLifetime * 2;
+            return BaseLifetime * 2;
         }
         else
         {
             m_lifetime += BaseLifetime;
+            return BaseLifetime;
         }
     }
 
@@ -60,7 +71,7 @@ public class AkuAkuBehavior : WeaponBehavior
         {
             if (player != Owner)
             {
-                player.Die(Owner, name);
+                player.Hit(Owner, name);
             }
         }
     }
