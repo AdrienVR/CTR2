@@ -8,10 +8,10 @@ public class UIPlayerManager : MonoBehaviour
     public PlayerController Player;
 
 	public GameObject WeaponBackground, AppleBackground;
-    public Image WeaponImage;
+    public Image WeaponImage, PointImage;
     public Text WeaponText;
 	public Text PointText, AppleText, AppleText2;
-	public GameObject ArrivingApple;
+	public GameObject ArrivingApple, PlusOneImg, LessOneImg;
 	public bool IsSuper;
     public float MinTimeSelection = 1.5f;
 
@@ -31,18 +31,49 @@ public class UIPlayerManager : MonoBehaviour
             }
         }
     }
-
-    // APPLES
+	
     public void SetAppleText(string appleNb)
 	{
 		AppleText.text = "x " + appleNb;
 		AppleText2.text = AppleText.text;
 	}
 
+	public void SetPointText(string pointNb)
+	{
+		PointText.text = pointNb;
+	}
 	public void AnimApple()
 	{
 		ArrivingApple.SetActive (true);
 		StartCoroutine (ArriveApple());
+	}
+	public void AnimPts(string pointNb, bool suicide)
+	{
+		GameObject ArrivingPts;
+		if (suicide == false)
+			ArrivingPts = PlusOneImg;
+		else
+			ArrivingPts = LessOneImg;
+		ArrivingPts.SetActive (true);
+		StartCoroutine (ArrivePts(pointNb, ArrivingPts));
+	}
+	IEnumerator ArrivePts(string pointNb, GameObject ArrivingPts)
+	{
+		for (float i=0f; i<1; i+=0.04f)
+		{
+			ArrivingPts.transform.position=Vector3.Lerp(new Vector3 (0, 0, 1),PointText.transform.position,i);
+			yield return new WaitForSeconds (0.005f);
+		}
+		//AudioManager.Instance.Play("miniBip");
+		ArrivingPts.SetActive (false);
+		Color old = PointText.color;
+		Color oldImg = PointImage.color;
+		SetPointText(pointNb);
+		PointText.color = Color.red;
+		PointImage.color = Color.red;
+		yield return new WaitForSeconds (0.3f);
+		PointText.color = old;
+		PointImage.color = oldImg;
 	}
 
 	IEnumerator ArriveApple()
@@ -95,7 +126,10 @@ public class UIPlayerManager : MonoBehaviour
     {
         m_superWeapons = true;
 		if(WeaponImage.IsActive())
+		{
+			UpdateWeapon(m_currentWeapon);
 			WeaponBackground.SetActive(true);
+		}
 		AppleBackground.SetActive(true);
 		IsSuper = true;
     }
@@ -110,7 +144,8 @@ public class UIPlayerManager : MonoBehaviour
 
     public void UpdateWeapon(ActivableWeapon weapon)
     {
-        WeaponImage.gameObject.SetActive(true);
+		m_currentWeapon = weapon;
+		WeaponImage.gameObject.SetActive(true);
 		WeaponBackground.SetActive(IsSuper);
         if (m_superWeapons == true)
         {
@@ -202,7 +237,7 @@ public class UIPlayerManager : MonoBehaviour
     private bool m_waitingForWeapon;
     private bool m_weaponChoosed;
     private float m_chooseTimer;
-
+	private ActivableWeapon m_currentWeapon;
     private bool m_superWeapons;
 
     private int m_currentMultiplicity;
