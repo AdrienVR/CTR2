@@ -55,7 +55,6 @@ public class AkuAkuBehavior : WeaponBehavior
         if (m_lifetime < 0)
         {
             AudioManager.Instance.PlayDefaultMapMusic();
-            Owner.SpeedCoefficient -= AddingSpeed;
             Owner.KartState.AkuAkuEquiped = null;
             Destroy(gameObject);
             return;
