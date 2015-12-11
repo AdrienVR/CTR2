@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
+
     [HideInInspector]
     public int PlayerIndex;
 
@@ -39,10 +40,18 @@ public class PlayerController : MonoBehaviour
     public float DeceleratingFactor;
     public float MaxSpeed;
 
+    [HideInInspector]
+    public float SpeedCoefficient = 1;
+
+    public AcceleratorBehavior Accelerator;
+
+    [HideInInspector]
 	public SkidTrace2 TraceL, TraceR;
 
-	public UIPlayerManager UIPlayerManager;
+    [HideInInspector]
+    public UIPlayerManager UIPlayerManager;
 
+    [HideInInspector]
 	public int NbApplesTmp, NbApples, NbPts;
 
     // Use this for initialization
@@ -280,6 +289,30 @@ public class PlayerController : MonoBehaviour
     public bool IsSuper()
     {
         return NbApples == 10;
+    }
+
+    public void Boost(float duration)
+    {
+        AcceleratorBehavior accelerator = Instantiate(Accelerator) as AcceleratorBehavior;
+        accelerator.Owner = this;
+        accelerator.SetBoost(duration);
+    }
+
+    public void PlayBoostAnimation()
+    {
+        m_animator.Play("Boost");
+    }
+
+    public void Hit(PlayerController killer, string weapon)
+    {
+        if (KartState.ShieldBehavior != null)
+        {
+            KartState.ShieldBehavior.Disappear();
+        }
+        else if (KartState.IsInvincible() == false)
+        {
+            Die(killer, weapon);
+        }
     }
 
     public void Die(PlayerController killer, string weapon)
