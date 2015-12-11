@@ -5,7 +5,18 @@ using System;
 public class KartTransformer
 {
     [HideInInspector]
-    public float YAngle;
+    public float YAngle
+    {
+        get
+        {
+            return m_yangle;
+        }
+        set
+        {
+            m_yangle = value;
+        }
+    }
+    private float m_yangle;
     [HideInInspector]
     [NonSerialized]
     public KartRigidBody KartRigidbody;
@@ -28,7 +39,8 @@ public class KartTransformer
     public const float DistanceFromGroundCast = 6;
     public float GravityFactor = 9.81f;
 
-	public bool isInAir;
+    [HideInInspector]
+    public bool isInAir;
 
     public void Start()
     {
@@ -59,7 +71,7 @@ public class KartTransformer
                 if (Physics.Raycast(FrontLeftWheel.position + Vector3.up * 3, -Vector3.up, out hitFrontLeft, DistanceFromGroundCast, m_groundLayerMask))
                 {
                     RaycastHit hitFrontRight;
-                    if (Physics.Raycast(FrontRightWheel.position+Vector3.up *3, -Vector3.up, out hitFrontRight, DistanceFromGroundCast, m_groundLayerMask))
+                    if (Physics.Raycast(FrontRightWheel.position + Vector3.up * 3, -Vector3.up, out hitFrontRight, DistanceFromGroundCast, m_groundLayerMask))
                     {
                         Vector3 newPosition = KartRigidbody.position;
                         newPosition.y = 0.25f * (hitBottomLeft.point.y + hitBottomRight.point.y + hitFrontLeft.point.y + hitFrontRight.point.y);
@@ -76,7 +88,7 @@ public class KartTransformer
                 isInAir = false;
             }
         }
-        if(isInAir)
+        if (isInAir)
         {
             Vector3 newPosition = KartRigidbody.position;
             newPosition.y -= GravityFactor * Time.deltaTime;

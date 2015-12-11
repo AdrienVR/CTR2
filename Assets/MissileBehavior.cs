@@ -88,7 +88,7 @@ public class MissileBehavior : WeaponBehavior
             if (player != Owner)
             {
 				Explode();
-                player.Die(Owner, name);
+                player.Hit(Owner, name);
             }
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Wall"))

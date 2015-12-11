@@ -39,11 +39,19 @@ public class PlayerController : MonoBehaviour
     public float DeceleratingFactor;
     public float MaxSpeed;
 
+    [HideInInspector]
+    public float SpeedCoefficient = 1;
+
+    public AcceleratorBehavior Accelerator;
+
+    [HideInInspector]
 	public SkidTrace2 TraceL, TraceR;
 
-	public UIPlayerManager UIPlayerManager;
+    [HideInInspector]
+    public UIPlayerManager UIPlayerManager;
 
-	public int NbApplesTmp, NbApples;
+    [HideInInspector]
+    public int NbApplesTmp, NbApples;
     
 
     // Use this for initialization
@@ -64,6 +72,8 @@ public class PlayerController : MonoBehaviour
 
 		TraceL = KartTransformer.BottomLeftParent.GetComponent<SkidTrace2> ();
 		TraceR = KartTransformer.BottomRightParent.GetComponent<SkidTrace2> ();
+
+        SpeedCoefficient = 1;
     }
 
     // Update is called once per frame
@@ -131,11 +141,11 @@ public class PlayerController : MonoBehaviour
         }
         if (m_acceleratingTimer > 0)
         {
-            KartRigidbody.position += transform.forward * SpeedCurve.Evaluate(m_acceleratingTimer) * MaxSpeed;
+            KartRigidbody.position += transform.forward * SpeedCurve.Evaluate(m_acceleratingTimer) * MaxSpeed * SpeedCoefficient;
         }
         else if (m_acceleratingTimer < 0)
         {
-            KartRigidbody.position -= transform.forward * SpeedCurve.Evaluate(-m_acceleratingTimer) * MaxSpeed;
+            KartRigidbody.position -= transform.forward * SpeedCurve.Evaluate(-m_acceleratingTimer) * MaxSpeed * SpeedCoefficient;
         }
 
         float yAngle = 0;
@@ -164,7 +174,10 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        KartTransformer.YAngle += (yAngle * Time.deltaTime);
+        if (yAngle != 0)
+        {
+            KartTransformer.YAngle += (yAngle * Time.deltaTime);
+        }
 
         if (Controller.GetKeyDown("jump"))
         {
@@ -254,17 +267,42 @@ public class PlayerController : MonoBehaviour
         KartState.SetUnabilityToMove(0.666f);
         m_animator.Play("Collision");
     }
+
+    public void Boost(float duration)
+    {
+        AcceleratorBehavior accelerator = Instantiate(Accelerator) as AcceleratorBehavior;
+        accelerator.Owner = this;
+        accelerator.SetBoost(duration);
+    }
+
+    public void PlayBoostAnimation()
+    {
+        m_animator.Play("Boost");
+    }
     
     public bool IsSuper()
     {
         return NbApples == 10;
     }
 
-    public void Die(PlayerController killer, string weapon)
+    public void Hit(PlayerController killer, string weapon)
+    {
+        if (KartState.ShieldBehavior != null)
+        {
+            KartState.ShieldBehavior.Disappear();
+        }
+        else if (KartState.IsInvincible() == false)
+        {
+            Die(killer, weapon);
+        }
+    }
+
+    private void Die(PlayerController killer, string weapon)
     {
         m_acceleratingTimer = 0;
         AudioManager.Instance.Play("Ouille");
         KartState.SetUnabilityToMove(1.75f);
+        KartState.SetInvincibility(1.75f, true);
         m_animator.Play("Death");
     }
 
