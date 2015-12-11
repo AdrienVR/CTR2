@@ -19,7 +19,6 @@ public class MissileBehavior : WeaponBehavior
             RotationFactor *= SuperMultiplicator;
         }
         transform.forward = Owner.transform.forward;
-
         m_rigidbody = GetComponent<Rigidbody>();
 
         transform.position = Owner.transform.position + Owner.transform.forward * DistanceBehindKart + Vector3.up * HeightFromGround;
@@ -28,7 +27,6 @@ public class MissileBehavior : WeaponBehavior
     void Update()
     {
         m_changingTargetTimer -= Time.deltaTime;
-
         if (m_changingTargetTimer < 0)
         {
             m_target = null;
@@ -38,15 +36,22 @@ public class MissileBehavior : WeaponBehavior
                 if (enemy.KartState.InvisibilityEquiped != null)
                     continue;
                 float enemyDistance = (transform.position - enemy.transform.position).sqrMagnitude;
+
                 if (enemyDistance < minDistance)
                 {
                     m_target = enemy;
                     minDistance = enemyDistance;
+					m_bipDelay = (enemyDistance/10000+0.15f)/1.5f;
                 }
             }
             m_changingTargetTimer = ChangingTargetDelay;
         }
-
+		m_bipTimer -= Time.deltaTime;
+		if(m_bipTimer <0)
+		{
+			AudioManager.Instance.Play("bipMissile2");
+			m_bipTimer = m_bipDelay;
+		}
         Vector3 enemyDirection = transform.forward;
         if (m_target != null)
         {
@@ -82,19 +87,25 @@ public class MissileBehavior : WeaponBehavior
         {
             if (player != Owner)
             {
+				Explode();
                 player.Die(Owner, name);
-                Destroy(gameObject);
             }
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Wall"))
         {
-            Destroy(gameObject);
+			Explode();
         }
     }
+
+	private void Explode()
+	{
+		AudioManager.Instance.Play("loudExplosion");
+		Destroy(gameObject);
+	}
 
     private static int s_groundLayerMask = 1 << LayerMask.NameToLayer("Ground");
 
     private Rigidbody m_rigidbody;
     private PlayerController m_target;
-    private float m_changingTargetTimer;
+	private float m_changingTargetTimer, m_bipTimer, m_bipDelay;
 }
