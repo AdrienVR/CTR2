@@ -66,14 +66,12 @@ public class UIPlayerManager : MonoBehaviour
 		}
 		//AudioManager.Instance.Play("miniBip");
 		ArrivingPts.SetActive (false);
-		Color old = PointText.color;
-		Color oldImg = PointImage.color;
 		SetPointText(pointNb);
 		PointText.color = Color.red;
 		PointImage.color = Color.red;
 		yield return new WaitForSeconds (0.3f);
-		PointText.color = old;
-		PointImage.color = oldImg;
+		PointText.color = Color.white;
+		PointImage.color = Color.white;
 	}
 
 	IEnumerator ArriveApple()
