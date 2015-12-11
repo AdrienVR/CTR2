@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
 
 	public UIPlayerManager UIPlayerManager;
 
-	public int NbApplesTmp, NbApples;
+	public int NbApplesTmp, NbApples, NbPts;
     
 
     // Use this for initialization
@@ -266,7 +266,22 @@ public class PlayerController : MonoBehaviour
         AudioManager.Instance.Play("Ouille");
         KartState.SetUnabilityToMove(1.75f);
         m_animator.Play("Death");
+		if (killer != this)
+			killer.AddPoint ();
+		else
+			LosePoint ();
     }
+
+	public void AddPoint()
+	{
+		NbPts++;
+		UIPlayerManager.AnimPts(NbPts.ToString(), false);
+	}
+	public void LosePoint()
+	{
+		NbPts--;
+		UIPlayerManager.AnimPts(NbPts.ToString(), true);
+	}
 
     private Animator m_animator;
     private float m_acceleratingTimer;
