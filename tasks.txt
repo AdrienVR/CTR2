@@ -6,14 +6,15 @@ ARMES
 - UI supers armes (J)(DONE)
 
 POINTS
-- système de points (J)
-- UI points (+animation) (J)
+- système de points (J)(DONE)
+- UI points (+animation) (J)(DONE)
 
 GAMEPLAY
 -dérapages (C+J)
 -positionnement du kart (collisions, rotation contre un mur) (C)
 -anim de mort (C)
 -copier-coller crash pour les autres persos (C)
+- roues qui tournent
 
 MENU
 - faire le menu pozz

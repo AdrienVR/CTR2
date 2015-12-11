@@ -44,7 +44,6 @@ public class PlayerController : MonoBehaviour
 	public UIPlayerManager UIPlayerManager;
 
 	public int NbApplesTmp, NbApples, NbPts;
-    
 
     // Use this for initialization
     void Start()
@@ -64,6 +63,7 @@ public class PlayerController : MonoBehaviour
 
 		TraceL = KartTransformer.BottomLeftParent.GetComponent<SkidTrace2> ();
 		TraceR = KartTransformer.BottomRightParent.GetComponent<SkidTrace2> ();
+		m_wheelRotation = GetComponent<WheelRotation> ();
     }
 
     // Update is called once per frame
@@ -119,9 +119,10 @@ public class PlayerController : MonoBehaviour
             }
         }
         else
-        {
+		{
             if (m_acceleratingTimer > 0)
             {
+				m_wheelRotation.Reset();
                 m_acceleratingTimer -= Time.deltaTime * DeceleratingFactor;
                 if (m_acceleratingTimer < 0)
                 {
@@ -143,9 +144,19 @@ public class PlayerController : MonoBehaviour
         if ((Controller.GetKey("stop") || Controller.GetKey("validate")))
         {
             if (Controller.GetKey("right"))
+			{
                 yAngle = 0.5f * Controller.GetAxis("right") * TurnSpeed;
-            if (Controller.GetKey("left"))
+				m_wheelRotation.TurnRight();
+			}
+            else if (Controller.GetKey("left"))
+			{
                 yAngle = - 0.5f * Controller.GetAxis("left") * TurnSpeed;
+				m_wheelRotation.TurnLeft();
+			}
+			else
+			{
+				m_wheelRotation.Reset();
+			}
         }
         else if (Controller.GetKey("stop") == false)
         {
@@ -154,12 +165,23 @@ public class PlayerController : MonoBehaviour
                 if (m_acceleratingTimer > -1)
                     m_acceleratingTimer -= Time.deltaTime * AcceleratingFactor * 2;
                 if (Controller.GetKey("right"))
+				{
                     yAngle = -0.5f * Controller.GetAxis("right") * TurnSpeed;
+					m_wheelRotation.TurnRight();
+				}
                 else if (Controller.GetKey("left"))
+				{
                     yAngle = 0.5f * Controller.GetAxis("left") * TurnSpeed;
+					m_wheelRotation.TurnLeft();
+				}
+				else
+				{
+					m_wheelRotation.Reset();
+				}
             }
             else if (m_acceleratingTimer < 0)
             {
+				m_wheelRotation.Reset();
                 m_acceleratingTimer += Time.deltaTime * AcceleratingFactor * 2;
             }
         }
@@ -285,4 +307,5 @@ public class PlayerController : MonoBehaviour
 
     private Animator m_animator;
     private float m_acceleratingTimer;
+	private WheelRotation m_wheelRotation;
 }
