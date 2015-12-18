@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 class PlayModeManager : MonoBehaviour
@@ -24,7 +25,9 @@ class PlayModeManager : MonoBehaviour
 
     void Start()
     {
+        s_instance = this;
         m_playMode = new Battle();
+        DontDestroyOnLoad(gameObject);
     }
 
     public void SelectBattle()
@@ -56,6 +59,23 @@ class PlayModeManager : MonoBehaviour
         {
             label.text = m_playMode.MaxScore.ToString();
         }
+    }
+
+    public void UpdateDeath(PlayerController deadPlayer, PlayerController killer)
+    {
+        if (killer.NbPts >= m_playMode.MaxScore)
+        {
+            killer.gameObject.AddComponent<Party>();
+            KartController.IA_enabled = true;
+            Main.statistics.endGame();
+            StartCoroutine(BackToMenu());
+        }
+    }
+
+    private IEnumerator BackToMenu()
+    {
+        yield return new WaitForSeconds(5);
+        Application.LoadLevel("mainmenu");
     }
 
     private PlayMode m_playMode;

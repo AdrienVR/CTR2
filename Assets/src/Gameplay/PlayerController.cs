@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour
 
     [HideInInspector]
     public float SpeedCoefficient = 1;
+    
 
     public AcceleratorBehavior Accelerator;
 
@@ -327,6 +328,9 @@ public class PlayerController : MonoBehaviour
 			killer.AddPoint ();
 		else
 			LosePoint ();
+
+        PlayModeManager.Instance.UpdateDeath(this, killer);
+
     }
 
 	public void AddPoint()
