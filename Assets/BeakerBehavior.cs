@@ -60,7 +60,6 @@ public class BeakerBehavior : WeaponBehavior
         else if (m_launched)
         {
             RaycastHit hitGround;
-            Debug.DrawRay(transform.position, -Vector3.up * 0.5f, Color.red);
             if (Physics.Raycast(transform.position, -Vector3.up, out hitGround, 0.5f, s_groundLayerMask))
             {
                 m_launched = false;
@@ -81,7 +80,7 @@ public class BeakerBehavior : WeaponBehavior
 
     private void Explode()
     {
-        AudioManager.Instance.Play("loudExplosion");
+        AudioManager.Instance.Play("beaker");
         m_renderer.enabled = false;
         Light.color = ExplosionColor;
         m_exploded = true;

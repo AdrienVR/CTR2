@@ -22,10 +22,8 @@ public class ShieldBehavior : WeaponBehavior
         transform.SetParent(owner.transform.GetChild(0));
         transform.localPosition = Vector3.zero;
 
-        Owner.KartState.WeaponLocked = true;
+        owner.KartState.WeaponLocked = true;
         owner.KartState.ShieldBehavior = this;
-
-        m_rigidbody = GetComponent<Rigidbody>();
 
         m_timer = Lifetime;
     }
@@ -39,7 +37,7 @@ public class ShieldBehavior : WeaponBehavior
             Owner.KartState.ShieldBehavior = null;
             transform.parent = null;
             transform.forward = Owner.transform.forward;
-            m_rigidbody.position += transform.forward * 2;
+            transform.position += transform.forward * 2 + Vector3.up * 1.55f;
             m_detached = true;
         }
 
@@ -55,7 +53,20 @@ public class ShieldBehavior : WeaponBehavior
 
         if (m_detached)
         {
-            m_rigidbody.position += transform.forward * Time.deltaTime * Speed;
+            transform.position += transform.forward * Time.deltaTime * Speed;
+
+            RaycastHit hitGround;
+            if (Physics.Raycast(transform.position + Vector3.up, -Vector3.up, out hitGround, 2.55f, s_groundLayerMask) == false)
+            {
+                if (Physics.Raycast(transform.position + Vector3.up, -Vector3.up, out hitGround, 200, s_groundLayerMask))
+                {
+                    transform.position = Vector3.Lerp(transform.position, hitGround.point + Vector3.up * 1.55f, Time.deltaTime * 5);
+                }
+            }
+            else
+            {
+                transform.position = hitGround.point + Vector3.up * 1.55f;
+            }
         }
     }
 
@@ -83,7 +94,8 @@ public class ShieldBehavior : WeaponBehavior
         Destroy(gameObject);
     }
 
-    private Rigidbody m_rigidbody;
+    private static int s_groundLayerMask = 1 << LayerMask.NameToLayer("Ground");
+    
     private float m_timer;
     private bool m_detached = false;
 }
