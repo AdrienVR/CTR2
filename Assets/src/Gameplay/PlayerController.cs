@@ -283,7 +283,7 @@ public class PlayerController : MonoBehaviour
     {
         m_acceleratingTimer = 0;
         AudioManager.Instance.Play("Ouille");
-        KartState.SetUnabilityToMove(0.666f);
+        //KartState.SetUnabilityToMove(0.666f);
         m_animator.Play("Collision");
     }
     

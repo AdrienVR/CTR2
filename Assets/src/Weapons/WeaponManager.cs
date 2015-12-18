@@ -32,7 +32,7 @@ public class WeaponManager : MonoBehaviour
     public ActivableWeapon GetRandomBattleWeapon()
     {
         int index = UnityEngine.Random.Range(0, BattleWeapons.Length);
-        while (index == lastRandomIndex)
+        while (index == lastRandomIndex || BattleWeapons[index].Active == false)
             index = UnityEngine.Random.Range(0, BattleWeapons.Length);
 
         lastRandomIndex = index;
