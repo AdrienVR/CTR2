@@ -2,8 +2,8 @@
 using System;
 
 [Serializable]
-public class CrossMenuButton{
-
+public class MenuButtonCross
+{
     public MenuButton Left;
     public MenuButton Right;
     public MenuButton Up;

@@ -3,7 +3,6 @@ using System.Collections;
 
 public class AppleBoxScript : MonoBehaviour 
 {
-
 	void Start()
 	{
 		m_selfCollider = GetComponent<Collider> ();

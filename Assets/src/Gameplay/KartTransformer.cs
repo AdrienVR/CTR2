@@ -42,12 +42,6 @@ public class KartTransformer
     [HideInInspector]
     public bool isInAir;
 
-    public void Start()
-    {
-        m_groundLayerMask = 1 << LayerMask.NameToLayer("Ground");
-        m_wallLayerMask = 1 << LayerMask.NameToLayer("Wall");
-    }
-
     public void Update()
     {
         UpdateZAngle();
@@ -61,17 +55,17 @@ public class KartTransformer
     {
         isInAir = true;
         RaycastHit hitBottomLeft;
-        if (Physics.Raycast(BottomLeftWheel.position + Vector3.up * 3, -Vector3.up, out hitBottomLeft, DistanceFromGroundCast, m_groundLayerMask))
+        if (Physics.Raycast(BottomLeftWheel.position + Vector3.up * 3, -Vector3.up, out hitBottomLeft, DistanceFromGroundCast, Consts.LayerMaskInt.Ground))
         {
             isInAir = false;
             RaycastHit hitBottomRight;
-            if (Physics.Raycast(BottomRightWheel.position + Vector3.up * 3, -Vector3.up, out hitBottomRight, DistanceFromGroundCast, m_groundLayerMask))
+            if (Physics.Raycast(BottomRightWheel.position + Vector3.up * 3, -Vector3.up, out hitBottomRight, DistanceFromGroundCast, Consts.LayerMaskInt.Ground))
             {
                 RaycastHit hitFrontLeft;
-                if (Physics.Raycast(FrontLeftWheel.position + Vector3.up * 3, -Vector3.up, out hitFrontLeft, DistanceFromGroundCast, m_groundLayerMask))
+                if (Physics.Raycast(FrontLeftWheel.position + Vector3.up * 3, -Vector3.up, out hitFrontLeft, DistanceFromGroundCast, Consts.LayerMaskInt.Ground))
                 {
                     RaycastHit hitFrontRight;
-                    if (Physics.Raycast(FrontRightWheel.position + Vector3.up * 3, -Vector3.up, out hitFrontRight, DistanceFromGroundCast, m_groundLayerMask))
+                    if (Physics.Raycast(FrontRightWheel.position + Vector3.up * 3, -Vector3.up, out hitFrontRight, DistanceFromGroundCast, Consts.LayerMaskInt.Ground))
                     {
                         Vector3 newPosition = KartRigidbody.position;
                         newPosition.y = 0.25f * (hitBottomLeft.point.y + hitBottomRight.point.y + hitFrontLeft.point.y + hitFrontRight.point.y);
@@ -83,7 +77,7 @@ public class KartTransformer
         else
         {
             RaycastHit hitFrontRight;
-            if (Physics.Raycast(FrontRightWheel.position + Vector3.up * 3, -Vector3.up, out hitFrontRight, DistanceFromGroundCast, m_groundLayerMask))
+            if (Physics.Raycast(FrontRightWheel.position + Vector3.up * 3, -Vector3.up, out hitFrontRight, DistanceFromGroundCast, Consts.LayerMaskInt.Ground))
             {
                 isInAir = false;
             }
@@ -101,12 +95,12 @@ public class KartTransformer
         Vector3 right = (BottomRightWheel.position + FrontRightWheel.position) * 0.5f;
         RaycastHit hitRight;
         //Debug.DrawRay(right, -Vector3.up * DistanceFromGroundCast, Color.blue);
-        if (Physics.Raycast(right + Vector3.up * 3, -Vector3.up, out hitRight, DistanceFromGroundCast, m_groundLayerMask))
+        if (Physics.Raycast(right + Vector3.up * 3, -Vector3.up, out hitRight, DistanceFromGroundCast, Consts.LayerMaskInt.Ground))
         {
             Vector3 left = (BottomLeftWheel.position + FrontLeftWheel.position) * 0.5f;
             //Debug.DrawRay(left + Vector3.up * 3, -Vector3.up * DistanceFromGroundCast, Color.red);
             RaycastHit hitLeft;
-            if (Physics.Raycast(left + Vector3.up * 3, -Vector3.up, out hitLeft, DistanceFromGroundCast, m_groundLayerMask))
+            if (Physics.Raycast(left + Vector3.up * 3, -Vector3.up, out hitLeft, DistanceFromGroundCast, Consts.LayerMaskInt.Ground))
             {
                 float y = hitRight.point.y - hitLeft.point.y;
                 m_zAngle = YtoAngleZ.Evaluate(y);
@@ -120,11 +114,11 @@ public class KartTransformer
         m_back = (BottomRightWheel.position + BottomLeftWheel.position) * 0.5f;
         m_front = (FrontRightWheel.position + FrontLeftWheel.position) * 0.5f;
         //Debug.DrawRay(m_back + Vector3.up * 3, -Vector3.up * DistanceFromGroundCast, Color.blue);
-        if (Physics.Raycast(m_back + Vector3.up * 3, -Vector3.up, out hitBack, DistanceFromGroundCast, m_groundLayerMask))
+        if (Physics.Raycast(m_back + Vector3.up * 3, -Vector3.up, out hitBack, DistanceFromGroundCast, Consts.LayerMaskInt.Ground))
         {
             RaycastHit hitFront;
             //Debug.DrawRay(m_front + Vector3.up * 3, -Vector3.up * DistanceFromGroundCast, Color.red);
-            if (Physics.Raycast(m_front + Vector3.up * 3, -Vector3.up, out hitFront, DistanceFromGroundCast, m_groundLayerMask))
+            if (Physics.Raycast(m_front + Vector3.up * 3, -Vector3.up, out hitFront, DistanceFromGroundCast, Consts.LayerMaskInt.Ground))
             {
                 float y = hitBack.point.y - hitFront.point.y;
                 m_xAngle = YToAngleX.Evaluate(y);
@@ -135,11 +129,11 @@ public class KartTransformer
     private void CheckCollision()
     {
         RaycastHit hitBack;
-        if (Physics.Raycast(m_back, WholeKart.forward, out hitBack, 1, m_wallLayerMask))
+        if (Physics.Raycast(m_back, WholeKart.forward, out hitBack, 1, Consts.LayerMaskInt.Wall))
         {
         }
         RaycastHit hitFront;
-        if (Physics.Raycast(m_front + Vector3.up * 3, -Vector3.up, out hitFront, DistanceFromGroundCast, m_groundLayerMask))
+        if (Physics.Raycast(m_front + Vector3.up * 3, -Vector3.up, out hitFront, DistanceFromGroundCast, Consts.LayerMaskInt.Ground))
         {
         }
     }
@@ -149,8 +143,4 @@ public class KartTransformer
 
     private float m_xAngle;
     private float m_zAngle;
-
-    private int m_groundLayerMask;
-    private int m_wallLayerMask;
-
 }

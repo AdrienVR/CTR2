@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public static class Yielders
 {
-
     static Dictionary<float, WaitForSeconds> _timeInterval = new Dictionary<float, WaitForSeconds>(100);
 
     static WaitForEndOfFrame _endOfFrame = new WaitForEndOfFrame();

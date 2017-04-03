@@ -5,24 +5,17 @@ using System;
 public class WeaponManager : MonoBehaviour
 {
     // Singleton
-    public static WeaponManager Instance
-    {
-        get
-        {
-            if (s_instance == null)
-            {
-                GameObject go = Instantiate(PrefabReferences.Instance.WeaponManager);
-                DontDestroyOnLoad(go);
-                s_instance = go.GetComponent<WeaponManager>();
-            }
-            return s_instance;
-        }
-
-    }
-    private static WeaponManager s_instance;
+    public static WeaponManager Instance;
 
     public ActivableWeapon[] BattleWeapons;
     public ActivableWeapon[] RaceWeapons;
+
+    void Awake()
+    {
+        if (!enabled)
+            return;
+        Instance = this;
+    }
 
     public void SetBattleWeaponActivation(string name, bool active = true)
     {

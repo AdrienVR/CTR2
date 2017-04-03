@@ -6,7 +6,7 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - TraceMaterial: {fileID: 2100000, guid: 5d8af31b0e83831458d05ae4143beabd, type: 2}
-  executionOrder: 0
+  executionOrder: -1
   icon: {instanceID: 0}
   userData: 
   assetBundleName: 

@@ -7,6 +7,11 @@ public class CameraController : MonoBehaviour
     public float Reversed = 1f;
     public Vector3 backward;
 
+    void Awake()
+    {
+        enabled = true;
+    }
+
     void Start()
     {
         m_parent = transform.parent;

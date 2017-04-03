@@ -1,4 +1,13 @@
-﻿using UnityEngine;
+﻿//#define DEBUG_VARS
+
+using UnityEngine;
+
+#if DEBUG_VARS
+using HideVar = UnityEngine.HideInInspector;
+#else
+public class HideVar : System.Attribute
+{ }
+#endif
 
 public class BeakerBehavior : WeaponBehavior
 {
@@ -9,26 +18,25 @@ public class BeakerBehavior : WeaponBehavior
     public float HeightAmplitude;
     public float LaunchingSpeed;
     public Light Light;
+    [HideVar]
     public bool ApplyEffect;
 
-    public override void Initialize(PlayerController owner)
+    public override void Initialize(bool backWard)
     {
-        base.Initialize(owner);
-
         m_renderer = GetComponent<Renderer>();
         m_rigidbody = GetComponent<Rigidbody>();
 
-        transform.forward = owner.transform.forward;
+        transform.forward = Owner.transform.forward;
 
-        if (Owner.Controller.GetKey("up"))
+        if (!backWard)
         {
-            m_rigidbody.position = owner.transform.position + transform.forward * 3f + Vector3.up;
+            m_rigidbody.position = Owner.transform.position + transform.forward * 3f + Vector3.up;
             m_initialHeight = m_rigidbody.position.y;
             m_launched = true;
         }
         else
         {
-            m_rigidbody.position = owner.transform.position - transform.forward * 3f;
+            m_rigidbody.position = Owner.transform.position - transform.forward * 3f;
         }
     }
 
@@ -60,7 +68,7 @@ public class BeakerBehavior : WeaponBehavior
         else if (m_launched)
         {
             RaycastHit hitGround;
-            if (Physics.Raycast(transform.position, -Vector3.up, out hitGround, 0.5f, s_groundLayerMask))
+            if (Physics.Raycast(transform.position, -Vector3.up, out hitGround, 0.5f, Consts.Layer.Ground))
             {
                 m_launched = false;
                 Destroy(m_rigidbody);
@@ -86,8 +94,6 @@ public class BeakerBehavior : WeaponBehavior
         m_exploded = true;
         m_explosionTimer = LightDuration;
     }
-
-    private static int s_groundLayerMask = 1 << LayerMask.NameToLayer("Ground");
 
     private float m_initialHeight;
     private bool m_launched = false;

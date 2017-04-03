@@ -26,14 +26,13 @@ public class KartScript : MonoBehaviour
 	public List<string> weapons = new List<string>();
 	
 	private bool baddie = false;
-	private ControllerBase controller;
 	private float facteurSens = 1f;
+    public KartInput m_input;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 		kc = GetComponent<KartController>();
 		kart_state = GetComponent<KartState>();
-		controller = ControllerManager.Instance.GetController(kart.numeroJoueur - 1);
 
 		
 		foreach (Transform child in transform){
@@ -52,12 +51,12 @@ public class KartScript : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		if (controller.GetKeyDown("action")) 
+		if (m_input.fire) 
 		{
 			if (!kart_state.AbleToShoot())
 				return;
 			facteurSens = 1;
-			if (controller.GetKey("down"))
+			if (m_input.vertical < 0)
 				facteurSens = -1;
 			
 			if (bomb == null)

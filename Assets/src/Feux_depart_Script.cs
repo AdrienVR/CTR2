@@ -34,7 +34,7 @@ public class Feux_depart_Script : MonoBehaviour {
 		yield return new WaitForSeconds (0.8f);
 		gt.texture = textureList [4];
 		AudioManager.Instance.Play("bip2");
-		AudioManager.Instance.PlayDefaultMapMusic();
+		AudioManager.Instance.Play(PlayModeManager.Instance.PlayingMap, true);
 		KartController.stop = false;
 
 		yield return new WaitForSeconds (0.8f);

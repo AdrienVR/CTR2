@@ -67,13 +67,6 @@ public class Main : MonoBehaviour
 #endif
 	}
 
-	void Start()
-	{
-
-		Debug.Log ("Starting with "+ ControllerManager.Instance.NumberOfController + " controllers.");
-
-	}
-
 	public static bool isPlayingAku()
 	{
 		bool b=false;

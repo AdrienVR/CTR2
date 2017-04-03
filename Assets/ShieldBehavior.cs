@@ -8,39 +8,43 @@ public class ShieldBehavior : WeaponBehavior
     public float Speed = 20f;
     public bool Unlimited = false;
 
-    public override void Initialize(PlayerController owner)
+    public override void Initialize(bool backWard)
     {
-        base.Initialize(owner);
+        
 
-        if (owner.KartState.AkuAkuEquiped != null)
+        if (Owner.KartState.AkuAkuEquiped != null)
         {
-            owner.KartState.AkuAkuEquiped.SetLifetime();
+            Owner.KartState.AkuAkuEquiped.SetLifetime();
             Destroy(gameObject);
             return;
         }
 
-        transform.SetParent(owner.transform.GetChild(0));
+        transform.SetParent(Owner.transform.GetChild(0));
         transform.localPosition = Vector3.zero;
 
-        owner.KartState.WeaponLocked = true;
-        owner.KartState.ShieldBehavior = this;
+        Owner.KartState.UsingWeapon = this;
+        Owner.KartState.TempBuffs["SingleHitProtection"] = 1;
 
         m_timer = Lifetime;
+    }
+
+    public override void Activate()
+    {
+        Owner.KartState.UsingWeapon = null;
+        transform.parent = null;
+        transform.forward = Owner.transform.forward;
+        transform.position += transform.forward * 2 + Vector3.up * 1.55f;
+        m_detached = true;
+    }
+
+    public override void OnHit()
+    {
+        Disappear();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Owner.Controller.GetKeyDown("action"))
-        {
-            Owner.KartState.WeaponLocked = false;
-            Owner.KartState.ShieldBehavior = null;
-            transform.parent = null;
-            transform.forward = Owner.transform.forward;
-            transform.position += transform.forward * 2 + Vector3.up * 1.55f;
-            m_detached = true;
-        }
-
         if (Unlimited == false)
         {
             m_timer -= Time.deltaTime;
@@ -56,9 +60,9 @@ public class ShieldBehavior : WeaponBehavior
             transform.position += transform.forward * Time.deltaTime * Speed;
 
             RaycastHit hitGround;
-            if (Physics.Raycast(transform.position + Vector3.up, -Vector3.up, out hitGround, 2.55f, s_groundLayerMask) == false)
+            if (Physics.Raycast(transform.position + Vector3.up, -Vector3.up, out hitGround, 2.55f, Consts.LayerMaskInt.Ground) == false)
             {
-                if (Physics.Raycast(transform.position + Vector3.up, -Vector3.up, out hitGround, 200, s_groundLayerMask))
+                if (Physics.Raycast(transform.position + Vector3.up, -Vector3.up, out hitGround, 200, Consts.LayerMaskInt.Ground))
                 {
                     transform.position = Vector3.Lerp(transform.position, hitGround.point + Vector3.up * 1.55f, Time.deltaTime * 5);
                 }
@@ -89,12 +93,9 @@ public class ShieldBehavior : WeaponBehavior
 
     public void Disappear()
     {
-        Owner.KartState.WeaponLocked = false;
-        Owner.KartState.ShieldBehavior = null;
+        Owner.KartState.UsingWeapon = null;
         Destroy(gameObject);
     }
-
-    private static int s_groundLayerMask = 1 << LayerMask.NameToLayer("Ground");
     
     private float m_timer;
     private bool m_detached = false;

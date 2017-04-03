@@ -1,33 +1,26 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 class PlayModeManager : MonoBehaviour
 {
-    public static PlayModeManager Instance
-    {
-        get
-        {
-            if (s_instance == null)
-            {
-                GameObject go = PrefabReferences.Instance.PlayerManager;
-                DontDestroyOnLoad(go);
-                s_instance = go.GetComponent<PlayModeManager>();
-            }
-            return s_instance;
-        }
-    }
+    public static PlayModeManager Instance;
 
-    private static PlayModeManager s_instance;
-
-    public MapSelector MapSelector;
+    public string PlayingMap;
     public Text[] ScoreText;
 
     void Start()
     {
-        s_instance = this;
+        if (!enabled)
+            return;
+        Instance = this;
+
         m_playMode = new Battle();
-        DontDestroyOnLoad(gameObject);
+#if UNITY_EDITOR
+        if (string.IsNullOrEmpty(PlayingMap))
+            PlayingMap = SceneManager.GetActiveScene().name;
+#endif
     }
 
     public void SelectBattle()
@@ -37,9 +30,8 @@ class PlayModeManager : MonoBehaviour
 
     public void StartBattle()
     {
-        DontDestroyOnLoad(gameObject);
-
-        Application.LoadLevel(MapSelector.SelectedMap);
+        SceneManager.LoadScene(PlayingMap);
+        AudioManager.Instance.StopLoopingMusic();
     }
 
     public void BattleScorePlus()
@@ -75,7 +67,7 @@ class PlayModeManager : MonoBehaviour
     private IEnumerator BackToMenu()
     {
         yield return new WaitForSeconds(5);
-        Application.LoadLevel("mainmenu");
+        SceneManager.LoadScene("mainmenu");
     }
 
     private PlayMode m_playMode;

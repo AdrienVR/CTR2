@@ -1,96 +1,38 @@
-﻿using System;
-using System.Collections;
+﻿
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(MenuAction))]
 public class Menu : MonoBehaviour
 {
-    public Menu LastMenu;
-    public MenuButton DefaultButton;
+    public MenuButton SelectedButton;
+    public MainMenuAnims Anim;
+    public EventTrigger[] Triggers;
 
-    public MenuAction MenuAction;
-
-    public MenuAnimator[] Animators;
-
-    public float ComingDuration;
-    public float LeavingDuration;
-
-    public MenuButton SelectedButton
+#if UNITY_EDITOR
+    void OnValidate()
     {
-        set
-        {
-            if (value != null)
-                m_lastSelected = value;
-        }
-        get
-        {
-            return m_lastSelected;
-        }
+        Triggers = GetComponentsInChildren<EventTrigger>();
+        for (int i = 0; i < Triggers.Length; i++)
+            Triggers[i].enabled = false;
+    }
+#endif // UNITY_EDITOR
+
+    protected virtual void OnEnable()
+    {
+        if (SelectedButton)
+            SelectedButton.OnActivate();
+        for (int i = 0; i < Triggers.Length; i++)
+            Triggers[i].enabled = true;
     }
 
-    public static Menu CurrentMenu
+    protected virtual void OnDisable()
     {
-        get { return s_currentMenu; }
+        var curButton = MainMenuManager.Instance.CurrentButton;
+        if (MainMenuManager.Instance.MovingForward)
+            SelectedButton = curButton;
+        if (curButton)
+            curButton.OnDeactivate();
+        for (int i = 0; i < Triggers.Length; i++)
+            Triggers[i].enabled = false;
     }
-
-    void Update()
-    {
-        if (m_effectiveTimer < ComingDuration)
-        {
-            m_effectiveTimer += Time.deltaTime;
-            return ;
-        }
-
-        if (BackAction())
-        {
-            MenuAction.OnHideBack();
-        }
-    }
-
-    public void DisableToMenu(Menu nextMenu)
-    {
-        m_effectiveTimer = 0;
-        gameObject.SetActive(true);
-        StartCoroutine(DisableCoroutine(nextMenu));
-    }
-
-    public void EnableMenu()
-    {
-        s_currentMenu = this;
-
-        m_effectiveTimer = 0;
-
-        if (DefaultButton != null)
-        {
-            DefaultButton.Select();
-            SelectedButton = DefaultButton;
-        }
-    }
-
-    private IEnumerator DisableCoroutine(Menu nextMenu)
-    {
-        foreach (MenuAnimator animator in Animators)
-        {
-            animator.PlayLeavingAnimation();
-        }
-
-        yield return new WaitForSeconds(LeavingDuration);
-
-        if (nextMenu != null)
-        {
-            nextMenu.MenuAction.OnDraw();
-        }
-        
-        gameObject.SetActive(false);
-    }
-
-    private static bool BackAction()
-    {
-        return ControllerManager.Instance.GetKeyDown("back") || Input.GetKeyDown(KeyCode.Backspace);
-    }
-
-    private static Menu s_currentMenu;
-
-    private MenuButton m_lastSelected;
-    private float m_effectiveTimer;
 }

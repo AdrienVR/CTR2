@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System;
 
-public class SelectorManager : MonoBehaviour
+public class SelectorManager : MenuButton
 {
+    public bool HorizontalLoop;
+    public bool VerticalLoop;
     [Serializable]
     public class LineSelectorParent
     {
@@ -11,28 +13,83 @@ public class SelectorManager : MonoBehaviour
 
     public LineSelectorParent[] Lines;
 
-    public Transform GetRightParent(ref int x, ref int y)
+    public override void UpdateInput(MenuInput _input)
     {
-        x = Mod((x + 1), Lines[y].Arrays.Length);
-        return Lines[y].Arrays[x];
     }
 
-    public Transform GetLeftParent(ref int x, ref int y)
+    public void MoveSelector(NavigationSelector _selector, MenuInput _direction)
     {
-        x = Mod((x - 1), Lines[y].Arrays.Length);
-        return Lines[y].Arrays[x];
+        if (_selector.PlayerIndex == 0 && !m_active)
+            return;
+
+        bool result = false;
+        if (! _selector.Locked)
+        {
+            switch (_direction)
+            {
+                case MenuInput.Up:
+                    result = MoveToUp(_selector);
+                    break;
+                case MenuInput.Down:
+                    result = MoveToDown(_selector);
+                    break;
+                case MenuInput.Left:
+                    result = MoveToLeft(_selector);
+                    break;
+                case MenuInput.Right:
+                    result = MoveToRight(_selector);
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (!result)
+        {
+            Move(_direction);
+        }
     }
 
-    public Transform GetUpParent(ref int x, ref int y)
+    public bool MoveToRight(NavigationSelector _selector)
     {
-        y = Mod((y - 1), Lines.Length);
-        return Lines[y].Arrays[x];
+        if (_selector.PlayerIndex == 0 && !HorizontalLoop && _selector.X + 1 >= Lines[_selector.Y].Arrays.Length)
+            return false;
+        _selector.X = Mod((_selector.X + 1), Lines[_selector.Y].Arrays.Length);
+        ApplySelection(_selector);
+        return true;
     }
 
-    public Transform GetDownParent(ref int x, ref int y)
+    public bool MoveToLeft(NavigationSelector _selector)
     {
-        y = Mod((y + 1), Lines.Length);
-        return Lines[y].Arrays[x];
+        if (_selector.PlayerIndex == 0 && !HorizontalLoop && _selector.X - 1 < 0)
+            return false;
+        _selector.X = Mod((_selector.X - 1), Lines[_selector.Y].Arrays.Length);
+        ApplySelection(_selector);
+        return true;
+    }
+
+    public bool MoveToUp(NavigationSelector _selector)
+    {
+        if (_selector.PlayerIndex == 0 && !VerticalLoop && _selector.Y - 1 < 0)
+            return false;
+        _selector.Y = Mod((_selector.Y - 1), Lines.Length);
+        ApplySelection(_selector);
+        return true;
+    }
+
+    public bool MoveToDown(NavigationSelector _selector)
+    {
+        if (_selector.PlayerIndex == 0 && !VerticalLoop && _selector.Y + 1 >= Lines.Length)
+            return false;
+        _selector.Y = Mod((_selector.Y + 1), Lines.Length);
+        ApplySelection(_selector);
+        return true;
+    }
+
+    private void ApplySelection(NavigationSelector _selector)
+    {
+        var newSelection = Lines[_selector.Y].Arrays[_selector.X];
+        _selector.CurrentSelection = newSelection.name;
+        _selector.transform.position = newSelection.position;
     }
 
     private int Mod(int x, int m)

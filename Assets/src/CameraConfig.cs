@@ -5,21 +5,7 @@ using UnityEngine;
 public class CameraConfig : MonoBehaviour
 {
     // Singleton
-    public static CameraConfig Instance
-    {
-        get
-        {
-            if (s_instance == null)
-            {
-                GameObject go = Instantiate(PrefabReferences.Instance.CameraConfig);
-                DontDestroyOnLoad(go);
-                s_instance = go.GetComponent<CameraConfig>();
-            }
-            return s_instance;
-        }
-
-    }
-    private static CameraConfig s_instance;
+    public static CameraConfig Instance;
 
     public GameObject ReferenceCanvas;
 
@@ -34,17 +20,44 @@ public class CameraConfig : MonoBehaviour
     [SerializeField]
     public CameraArray[] PerspectiveCameras;
 
+    void Awake()
+    {
+        if (!enabled)
+            return;
+        Instance = this;
+    }
+
+    [ContextMenu("SetCameraArray")]
+    void SetCameraArray()
+    {
+        OrthographicCameras = new CameraArray[4];
+        PerspectiveCameras = new CameraArray[4];
+        for (int i = 0; i < 4; i++)
+        {
+            int size = i + 1;
+            OrthographicCameras[i] = new CameraArray();
+            OrthographicCameras[i].Cameras = new GameObject[size];
+            PerspectiveCameras[i] = new CameraArray();
+            PerspectiveCameras[i].Cameras = new GameObject[size];
+            for (int j = 0; j < size; j++)
+            {
+                OrthographicCameras[i].Cameras[j] = GameObject.Find("CameraOrtho_" + (j + 1) + "_" + (i + 1));
+                PerspectiveCameras[i].Cameras[j] = GameObject.Find("CameraPers_" + (j + 1) + "_" + (i + 1));
+            }
+        }
+    }
+
     public CameraController InitializePlayer(PlayerController player, int playerIndex, int totalPlayers)
     {
         GameObject cameraGo = Instantiate(OrthographicCameras[totalPlayers - 1].Cameras[playerIndex]);
         Camera camera = cameraGo.GetComponent<Camera>();
-		GameObject canvasGo = Instantiate(ReferenceCanvas);
+        GameObject canvasGo = Instantiate(ReferenceCanvas);
 
         UIPlayerManager playerUI = canvasGo.GetComponent<UIPlayerManager>();
         player.UIPlayerManager = playerUI;
         playerUI.Player = player;
 
-        SetLayerRecursively(canvasGo, LayerMask.NameToLayer("layer2d_j" + (playerIndex + 1)));
+        SetLayerRecursively(canvasGo, Consts.Layer.layer2d_j1 + playerIndex);
         canvasGo.GetComponent<Canvas>().worldCamera = camera;
         canvasGo.transform.SetParent(cameraGo.transform);
 

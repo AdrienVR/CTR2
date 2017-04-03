@@ -7,11 +7,9 @@ public class AcceleratorBehavior : WeaponBehavior
 
     public float Duration = 2.5f;
 
-    public override void Initialize(PlayerController owner)
+    public override void Initialize(bool backWard)
     {
-        base.Initialize(owner);
-
-        if (owner.IsSuper())
+        if (Owner.IsSuper())
         {
             SetBoost(Duration);
         }

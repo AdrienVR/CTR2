@@ -30,6 +30,11 @@ The project began in June 2014 and should release a final version on December 14
 | ![Unity3D](https://raw.githubusercontent.com/AdrienVR/CTR2/master/unity.png "Unity3D") |
 |:----:|
 
+## DS3 Controller
+
+Please follow this tutorial to use your DS3 controller on PC : [YouTube tutorial](https://www.youtube.com/watch?v=TpSaOJJIun8)
+You will need to install programs included in this archive : [Link to Mega](https://mega.nz/#!2Z9UQRiL!PKL5iS0aJj6dEvqyDhYDmkFx8fQgXY4rtVnbABRx49s)
+
 ## Authors
 
 Adrien Vernotte  

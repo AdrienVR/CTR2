@@ -23,7 +23,7 @@ public class KartRigidBody
 
     public float CollisionMinSpeed = 0.1f;
 
-    public static int WallLayer = 1 << LayerMask.NameToLayer("Wall");
+    public static int WallLayer = 1 << Consts.Layer.Wall;
 
     public void Initialize()
     {

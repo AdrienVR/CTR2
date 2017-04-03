@@ -9,9 +9,9 @@ public class MissileBehavior : WeaponBehavior
     public float HeightFromGround;
     public float SuperMultiplicator = 1.4f;
 
-    public override void Initialize(PlayerController owner)
+    public override void Initialize(bool backWard)
     {
-        base.Initialize(owner);
+        
 
         if (Owner.IsSuper())
         {
@@ -60,7 +60,7 @@ public class MissileBehavior : WeaponBehavior
         }
 
         RaycastHit hitGround;
-        if (Physics.Raycast(transform.position + Vector3.up, -Vector3.up * 3, out hitGround, 3, s_groundLayerMask) == false)
+        if (Physics.Raycast(transform.position + Vector3.up, -Vector3.up * 3, out hitGround, 3, Consts.LayerMaskInt.Ground) == false)
         {
             // is in air
             enemyDirection.y = -10f;
@@ -91,7 +91,7 @@ public class MissileBehavior : WeaponBehavior
                 player.Hit(Owner, name);
             }
         }
-        else if (other.gameObject.layer == LayerMask.NameToLayer("Wall"))
+        else if (other.gameObject.layer == Consts.Layer.Wall)
         {
 			Explode();
         }
@@ -102,8 +102,6 @@ public class MissileBehavior : WeaponBehavior
 		AudioManager.Instance.Play("loudExplosion");
 		Destroy(gameObject);
 	}
-
-    private static int s_groundLayerMask = 1 << LayerMask.NameToLayer("Ground");
 
     private Rigidbody m_rigidbody;
     private PlayerController m_target;

@@ -8,31 +8,31 @@ public class AkuAkuBehavior : WeaponBehavior
 
     public float AddingSpeed = 0.75f;
 
-    public override void Initialize(PlayerController owner)
+    public override void Initialize(bool backWard)
     {
-        base.Initialize(owner);
+        
 
         float duration = 0;
 
-        if (owner.KartState.AkuAkuEquiped != null)
+        if (Owner.KartState.AkuAkuEquiped != null)
         {
-            duration = owner.KartState.AkuAkuEquiped.SetLifetime();
-            owner.Boost(duration);
-            owner.KartState.SetInvincibility(duration, false);
+            duration = Owner.KartState.AkuAkuEquiped.SetLifetime();
+            Owner.Boost(duration);
+            Owner.KartState.SetInvincibility(duration, false);
             Destroy(gameObject);
             return;
         }
 
-        transform.SetParent(owner.transform.GetChild(0));
+        transform.SetParent(Owner.transform.GetChild(0));
         transform.localPosition = Vector3.zero;
 
-        owner.KartState.AkuAkuEquiped = this;
+        Owner.KartState.AkuAkuEquiped = this;
         duration = SetLifetime();
-        owner.KartState.SetInvincibility(duration, true);
+        Owner.KartState.SetInvincibility(duration, true);
 
-        owner.Boost(duration);
+        Owner.Boost(duration);
 
-        AudioManager.Instance.Play("akuaku", true);
+        AudioManager.Instance.PlayOverrideMusic("akuaku");
     }
 
     public float SetLifetime()
@@ -54,7 +54,7 @@ public class AkuAkuBehavior : WeaponBehavior
         m_lifetime -= Time.deltaTime;
         if (m_lifetime < 0)
         {
-            AudioManager.Instance.PlayDefaultMapMusic();
+            AudioManager.Instance.StopOverrideMusic("akuaku");
             Owner.KartState.AkuAkuEquiped = null;
             Destroy(gameObject);
             return;

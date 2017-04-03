@@ -1,21 +1,9 @@
 ﻿using UnityEngine;
 using System.IO;
 
-public class WebManager : MonoBehaviour {
-
+public class WebManager : MonoBehaviour
+{
     const string relativePath = "Donation";
-
-    // Use this for initialization
-    void Start ()
-    {
-	
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-	
-	}
 
     public void OpenDonationLink()
     {

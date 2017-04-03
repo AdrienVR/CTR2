@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-//using System;
 
 // this class manages the mouvements
 
@@ -12,27 +9,24 @@ public class KartControllerRay : MonoBehaviour
 	public float turnCoeff = 45;
 	public float timeMaxAcceleration = 1;
 
-    private ControllerBase controller;
-
 	private Vector3 postForce;
+
+    public KartInput m_input;
 
 	// Use this for initialization
 	void Start ()
 	{
-		controller = ControllerManager.Instance.GetController(0);
 	}
 
 	public void UpdateGameplay()
 	{
 		Vector3 localForward = Vector3.forward;
-		if (controller.GetKey("stop"))
-		{}
-		else if(controller.GetKey("validate"))
+		if(m_input.moveForward && !m_input.stop)
 		{
 			m_accelerationTime += 2 * Time.deltaTime;
 			postForce = localForward*speedCoeff;
 		}
-		else if(controller.GetKey("down"))
+		else if(m_input.vertical < 0)
 		{
 			m_accelerationTime += 2 * Time.deltaTime;
 			postForce = -localForward*speedCoeff;
@@ -40,17 +34,17 @@ public class KartControllerRay : MonoBehaviour
 		// wheels turning
 		//if ((controller.GetKey("stop") || controller.GetKey("validate")))
 		{
-			if(controller.GetKey("right"))
+			if(m_input.horizontal > 0)
 			{
 				m_angle += 1;
 			}
-			else if(controller.GetKey("left"))
-			{
+			else if(m_input.horizontal < 0)
+            {
 				m_angle -= 1;
 			}
 		}
 		
-		if(controller.GetKey("jump") )//&& System.Math.Abs(Vector3.Angle(rigidbody.velocity,forwardNormal))>45)
+		if(m_input.jump)//&& System.Math.Abs(Vector3.Angle(rigidbody.velocity,forwardNormal))>45)
 		{
 			//Debug.Log("Angle : "+transform.localRotation.eulerAngles.x+","+transform.localRotation.eulerAngles.z);
 			//rigidbody.velocity = new Vector3(0,-26f,0);

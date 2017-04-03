@@ -6,21 +6,7 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     // Singleton
-    public static PlayerManager Instance
-    {
-        get
-        {
-            if (s_instance == null)
-            {
-                GameObject go = PrefabReferences.Instance.PlayerManager;
-                DontDestroyOnLoad(go);
-                s_instance = go.GetComponent<PlayerManager>();
-            }
-            return s_instance;
-        }
-    }
-
-    private static PlayerManager s_instance;
+    public static PlayerManager Instance;
 
     [Serializable]
     public class PlayableCharacter
@@ -32,7 +18,16 @@ public class PlayerManager : MonoBehaviour
 
     public PlayableCharacter[] PlayableCharacters;
 
-    public List<string> CurrentPlayers;
+    public int TotalPlayers = 2;
+
+    public List<string> CurrentPlayers = new List<string>(4);
+
+    void Awake()
+    {
+        if (!enabled)
+            return;
+        Instance = this;
+    }
 
     public List<PlayerController> GetEnemies(PlayerController player)
     {

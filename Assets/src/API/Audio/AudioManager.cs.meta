@@ -8,7 +8,7 @@ MonoImporter:
   - CategoriesManager: {fileID: 11490218, guid: c547738d66f7fd8459066a328c34599b,
       type: 2}
   - loopSource: {instanceID: 0}
-  executionOrder: 0
+  executionOrder: -20
   icon: {instanceID: 0}
   userData: 
   assetBundleName: 

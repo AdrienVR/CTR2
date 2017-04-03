@@ -73,6 +73,4 @@ Shader "Toon/Basic Outline" {
 			SetTexture [_MainTex] { combine primary }
 		}
 	}
-	
-	Fallback "Toon/Basic"
 }

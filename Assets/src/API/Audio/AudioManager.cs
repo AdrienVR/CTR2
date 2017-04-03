@@ -1,48 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class AudioManager : MonoBehaviour
 {
     // Singleton
-    public static AudioManager Instance {
-        get
-        {
-            if (s_instance == null)
-            {
-                GameObject go = new GameObject("AudioManager");
-                DontDestroyOnLoad(go);
-                s_instance = go.AddComponent<AudioManager>();
-                go.AddComponent<AudioListener>();
-            }
-            return s_instance;
-        }
+    public static AudioManager Instance;
 
+    public AudioCategoryManager AudioCategoryManager;
+    public AudioSource m_loopingUISource;
+    public AudioSource m_loopingMusicSource;
+
+    public List<AudioSource> m_sources = new List<AudioSource>(64);
+
+#if UNITY_EDITOR
+    void OnValidate()
+    {
+        m_loopingUISource.loop = true;
+        m_loopingMusicSource.loop = true;
     }
-    private static AudioManager s_instance;
+#endif
 
     void Awake() 
 	{
-        s_instance = this;
-        m_audioCategories = PrefabReferences.Instance.AudioCategoryManager.audioCategories;
-
-        m_loopingUISource = gameObject.AddComponent<AudioSource>();
-        m_loopingUISource.loop = true;
-
-        m_loopingMusicSource = gameObject.AddComponent<AudioSource>();
-        m_loopingMusicSource.loop = true;
+        if (!enabled)
+            return;
+        Instance = this;
+        m_audioCategories = AudioCategoryManager.audioCategories;
+        
 
         m_categoryVolumes = new Dictionary<string, float>();
 		foreach(AudioCategory category in m_audioCategories)
 		{
 			m_categoryVolumes[category.name] = 1;
-		}
-	}
-
-	public void PlayDefaultMapMusic()
-	{
-		if (Application.loadedLevelName == "plage")
-		{
-			Play("skullrock", true);
 		}
 	}
 
@@ -61,20 +51,49 @@ public class AudioManager : MonoBehaviour
 		}
 	}
 
-    public void Play(string soundName, bool loop = false)
+    public void PlayOverrideMusic(string soundName)
+    {
+        m_overridingMusic = soundName;
+        Play(soundName, true, true);
+    }
+
+    public void StopOverrideMusic(string soundName)
+    {
+        if (soundName == m_overridingMusic)
+            Play(m_currentMusic, true);
+    }
+
+    public void Play(string soundName, bool loop = false, bool _override = false)
 	{
-		foreach(AudioCategory audioCategory in m_audioCategories)
+        if (loop && !_override)
+            m_currentMusic = soundName;
+
+        foreach (AudioCategory audioCategory in m_audioCategories)
 		{
 			foreach(AudioClip clip in audioCategory.clips)
 			{
 				if (clip.name == soundName)
 				{
 					if (loop == false)
-					{
-						AudioSource source = gameObject.AddComponent<AudioSource>();
-						source.volume = m_categoryVolumes[audioCategory.name];
+                    {
+                        AudioSource source = null;
+                        for (int i  = 0; i < m_sources.Count;i++)
+                        {
+                            if (m_sources[i].enabled == false)
+                            {
+                                source = m_sources[i];
+                                source.enabled = true;
+                                break;
+                            }
+                        }
+                        if (source == null)
+                        {
+                            source = gameObject.AddComponent<AudioSource>();
+                            m_sources.Add(source);
+                        }
+                        source.volume = m_categoryVolumes[audioCategory.name];
 						source.PlayOneShot(clip);
-						Destroy(source, clip.length);
+                        StartCoroutine(DisableSourceIn(source, clip.length));
 						return;
 					}
 					else
@@ -86,7 +105,14 @@ public class AudioManager : MonoBehaviour
 				}
 			}
 		}
-		Debug.LogError(soundName + "not found in any category ! Sound not played...");
+		Debug.LogError(soundName + " not found in any category ! Sound not played...");
+    }
+
+    IEnumerator DisableSourceIn(AudioSource _source, float _duration)
+    {
+        yield return Yielders.Get(_duration);
+        _source.enabled = false;
+
     }
 
     public void PlayLoopingUI(string name)
@@ -104,6 +130,14 @@ public class AudioManager : MonoBehaviour
             }
         }
     }
+    public void PauseLoopingMusic()
+    {
+        m_loopingMusicSource.Pause();
+    }
+    public void ResumeLoopingMusic()
+    {
+        m_loopingMusicSource.Play();
+    }
 
     public void StopLoopingUI()
     {
@@ -115,8 +149,8 @@ public class AudioManager : MonoBehaviour
         m_loopingMusicSource.Stop();
     }
 
-    private AudioSource m_loopingMusicSource;
-    private AudioSource m_loopingUISource;
+    private string m_overridingMusic;
+    private string m_currentMusic;
 
     private List<AudioCategory> m_audioCategories;
 

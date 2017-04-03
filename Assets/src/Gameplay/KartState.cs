@@ -1,13 +1,17 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class KartState
 {
-    public bool WeaponLocked = false;
+    public Dictionary<string, float> TempBuffs = new Dictionary<string, float>(8)
+    {
+        { "SingleHitProtection", 0 }
+    };
+    public WeaponBehavior UsingWeapon;
     public bool IsArmed;
     public bool waiting;
     public AkuAkuBehavior AkuAkuEquiped;
 	public InvisibilityBehavior InvisibilityEquiped;
-    public ShieldBehavior ShieldBehavior;
 
     public void Update()
     {

@@ -23,12 +23,13 @@ public class UIPlayerManager : MonoBehaviour
             return;
 
         m_chooseTimer += Time.deltaTime;
-        if (Player.Controller.GetKeyDown("action"))
+    }
+
+    public void SelectWeapon()
+    {
+        if (m_chooseTimer > MinTimeSelection)
         {
-            if (m_chooseTimer > MinTimeSelection)
-            {
-                m_weaponChoosed = true;
-            }
+            m_weaponChoosed = true;
         }
     }
 	

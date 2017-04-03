@@ -1,203 +1,177 @@
+
 using UnityEngine;
-using System.Collections.Generic;
-using System.IO;
+using XInputDotNetPure;
+
+public enum MenuInput
+{
+    None,
+    Up,
+    Down,
+    Left,
+    Right,
+    Validation,
+    Cancel,
+    Start,
+}
+
+public class GamePadStateHolder
+{
+    public GamePadState State;
+}
 
 public class ControllerManager : MonoBehaviour
 {
     // Singleton
-    public static ControllerManager Instance
-    {
-        get
-        {
-            if (s_instance == null)
-            {
-                GameObject go = new GameObject("ControllerManager");
-                DontDestroyOnLoad(go);
-                s_instance = go.AddComponent<ControllerManager>();
-            }
-            return s_instance;
-        }
-    }
+    public static ControllerManager Instance;
 
-    private static ControllerManager s_instance;
+    public System.Action<MenuInput, int> OnMenuInput;
+
+    public const int c_maxControllers = 4;
+    public int maxControllers = c_maxControllers;
+
+    public bool UpdateMenuInput;
+    public int ControllersCount;
+    public float RepeatMenuEventDelayFirst = 1f;
+    public float RepeatMenuEventDelay = 0.2f;
+
+    public GamePadStateHolder[] GamePadStates = new GamePadStateHolder[c_maxControllers];
+    public GamePadStateHolder[] LastGamePadStates = new GamePadStateHolder[c_maxControllers];
+
+    bool playerIndexSet = false;
+    int playerIndex;
+
+    MenuInput[] m_lastInput = new MenuInput[c_maxControllers];
+
+    private float[] m_repeatDelay = new float[c_maxControllers];
+    private float[] m_timer = new float[c_maxControllers];
 
     void Awake()
     {
-        if (s_instance == null)
-            s_instance = this;
-        else
-            Destroy(gameObject);
+        if (!enabled)
+            return;
+        Instance = this;
 
-        m_allControllers = new List<ControllerBase>();
-        m_allControllers.Add(new ControllerBase("Keyboard1"));
-        m_allControllers.Add(new ControllerBase("Keyboard2"));
-        m_allControllers.Add(new ControllerBase("Keyboard3"));
-        while (Input.GetJoystickNames().Length != m_instantiatedControllers)
+        for (int i = 0; i < maxControllers; ++i)
+            m_repeatDelay[i] = RepeatMenuEventDelayFirst;
+        maxControllers = Input.GetJoystickNames().Length;
+
+        for (int i = 0; i < c_maxControllers; ++i)
         {
-            Update();
+            GamePadStates[i] = new GamePadStateHolder();
+            LastGamePadStates[i] = new GamePadStateHolder();
         }
     }
 
     void Update()
     {
-        if (Input.GetJoystickNames().Length != m_instantiatedControllers)
-            InitJoysticks();
-        foreach (ControllerBase controller in m_allControllers)
+        ControllersCount = 0;
+
+        for (int i = 0; i < maxControllers; ++i)
         {
-            controller.UpdateInternal();
-        }
-    }
-
-    public int NumberOfController
-    {
-        get { return Instance.m_instantiatedControllers; }
-    }
-
-    public ControllerBase GetController(int i)
-    {
-        if (i > m_allControllers.Count - 1)
-            return m_allControllers[m_allControllers.Count - 1];
-        return m_allControllers[i];
-    }
-
-    private void InitJoysticks()
-    {
-        m_nControllers = Input.GetJoystickNames().Length;
-
-        if (m_instantiatedControllers > m_nControllers)
-        {
-            m_allControllers.RemoveAt(m_instantiatedControllers--);
-            ControllerResources.controllers = m_instantiatedControllers;
-        }
-        else if (m_instantiatedControllers < m_nControllers)
-        {
-            //if (Input.GetJoystickNames()[m_instantiatedControllers].Trim() == "")
-              //  return;
-            m_allControllers.Insert(m_instantiatedControllers, new ControllerBase(Input.GetJoystickNames()[m_instantiatedControllers]));
-            m_instantiatedControllers++;
-            ControllerResources.controllers = m_instantiatedControllers;
+            LastGamePadStates[i].State = GamePadStates[i].State;
+            var state = GamePad.GetState((PlayerIndex)i);
+            GamePadStates[i].State = state;
+            if (state.IsConnected)
+                ++ControllersCount;
         }
 
-        Debug.Log("Now " + m_nControllers + " controllers detected");
-    }
+        if (!UpdateMenuInput)
+            return;
 
+        MenuInput input;
 
-    public float GetAxis(string actionName)
-    {
-        foreach (ControllerBase controller in m_allControllers)
+        for (int i = 0; i < maxControllers; ++i)
         {
-            if (controller.GetAxis(actionName) != 0)
+            input = MenuInput.None;
+            var lastState = LastGamePadStates[i].State;
+            var state = GamePadStates[i].State;
+            if (state.DPad.Up == ButtonState.Pressed)
             {
-                return controller.GetAxis(actionName);
+                input = MenuInput.Up;
             }
-        }
-        return 0;
-    }
-
-    public float GetAxis(string actionName, int controllerIndex)
-    {
-        return GetController(controllerIndex).GetAxis(actionName);
-    }
-
-    public bool GetKey(string actionName)
-    {
-        bool result = false;
-        foreach (ControllerBase controller in m_allControllers)
-        {
-            result |= controller.GetKey(actionName);
-        }
-        return result;
-    }
-
-    public bool GetKey(string actionName, int controllerIndex)
-    {
-        return GetController(controllerIndex).GetKey(actionName);
-    }
-
-    public bool GetKeyDown(string actionName)
-    {
-        bool result = false;
-        foreach (ControllerBase controller in m_allControllers)
-        {
-            result |= controller.GetKeyDown(actionName);
-        }
-        return result;
-    }
-
-    public bool GetKeyDown(string actionName, int controllerIndex)
-    {
-        return GetController(controllerIndex).GetKeyDown(actionName);
-    }
-
-    public bool GetKeyUp(string actionName)
-    {
-        bool result = false;
-        foreach (ControllerBase controller in m_allControllers)
-        {
-            result |= controller.GetKeyUp(actionName);
-        }
-        return result;
-    }
-
-    public bool GetKeyUp(string actionName, int controllerIndex)
-    {
-        return GetController(controllerIndex).GetKeyUp(actionName);
-    }
-
-    // TODO
-    public static void Test(int i)
-    {
-        var dictionary = new Dictionary<string, string>();
-        dictionary["perls"] = "dot";
-        dictionary["net"] = "perls";
-        dictionary["dot"] = "net";
-        Instance.Write(dictionary, Path.Combine(Application.streamingAssetsPath, "controller_" + i + ".bin"));
-
-        dictionary = Read(Path.Combine(Application.streamingAssetsPath, "controller_" + i + ".bin"));
-        foreach (var pair in dictionary)
-        {
-            Debug.Log(pair);
-        }
-    }
-
-    private void Write(Dictionary<string, string> dictionary, string file)
-    {
-        using (FileStream fs = File.OpenWrite(file))
-        using (BinaryWriter writer = new BinaryWriter(fs))
-        {
-            // Put count.
-            writer.Write(dictionary.Count);
-            // Write pairs.
-            foreach (var pair in dictionary)
+            else if (state.DPad.Down == ButtonState.Pressed)
             {
-                writer.Write(pair.Key);
-                writer.Write(pair.Value);
+                input = MenuInput.Down;
+            }
+            else if (state.DPad.Right == ButtonState.Pressed)
+            {
+                input = MenuInput.Right;
+            }
+            else if (state.DPad.Left == ButtonState.Pressed)
+            {
+                input = MenuInput.Left;
+            }
+            else if (state.Buttons.A == ButtonState.Pressed)
+            {
+                input = MenuInput.Validation;
+            }
+            else if (state.Buttons.B == ButtonState.Pressed)
+            {
+                input = MenuInput.Cancel;
+            }
+            else if (state.Buttons.Start == ButtonState.Pressed)
+            {
+                input = MenuInput.Start;
+            }
+            else if (i == 0)
+            {
+                if (Input.GetKey(KeyCode.UpArrow))
+                    input = MenuInput.Up;
+                else if (Input.GetKey(KeyCode.DownArrow))
+                    input = MenuInput.Down;
+                else if (Input.GetKey(KeyCode.RightArrow))
+                    input = MenuInput.Right;
+                else if (Input.GetKey(KeyCode.LeftArrow))
+                    input = MenuInput.Left;
+                else if (Input.GetKey(KeyCode.KeypadEnter))
+                    input = MenuInput.Validation;
+                else if (Input.GetKey(KeyCode.Return))
+                    input = MenuInput.Validation;
+                else if (Input.GetKey(KeyCode.Backspace))
+                    input = MenuInput.Cancel;
+                else if (Input.GetKey(KeyCode.Escape))
+                    input = MenuInput.Start;
+            }
+            if (input != MenuInput.None && OnMenuInput != null)
+            {
+                if (input != m_lastInput[i])
+                {
+                    m_lastInput[i] = input;
+                    OnMenuInput(input, i);
+                }
+                else
+                {
+                    m_timer[i] += Time.deltaTime;
+
+                    if (m_timer[i] > m_repeatDelay[i])
+                    {
+                        m_timer[i] = 0;
+                        OnMenuInput(input, i);
+                        m_repeatDelay[i] = RepeatMenuEventDelay;
+                    }
+                }
+            }
+            else
+            {
+                m_lastInput[i] = input;
+                m_timer[i] = 0;
+                m_repeatDelay[i] = RepeatMenuEventDelayFirst;
             }
         }
     }
 
-    static Dictionary<string, string> Read(string file)
+    [ContextMenu("P2 Validation")]
+    void ReplicateForP2()
     {
-        var result = new Dictionary<string, string>();
-        using (FileStream fs = File.OpenRead(file))
-        using (BinaryReader reader = new BinaryReader(fs))
-        {
-            // Get count.
-            int count = reader.ReadInt32();
-            // Read in all pairs.
-            for (int i = 0; i < count; i++)
-            {
-                string key = reader.ReadString();
-                string value = reader.ReadString();
-                result[key] = value;
-            }
-        }
-        return result;
+        OnMenuInput(MenuInput.Validation, 1);
     }
-    
-    private List<ControllerBase> m_allControllers = new List<ControllerBase>();
 
-    private int m_nControllers;
-    private int m_instantiatedControllers;
-
+    public bool GetYDown(int _index)
+    {
+        return GamePadStates[_index].State.Buttons.Y == ButtonState.Pressed && LastGamePadStates[_index].State.Buttons.Y == ButtonState.Released;
+    }
+    public bool GetYUp(int _index)
+    {
+        return GamePadStates[_index].State.Buttons.Y == ButtonState.Released && LastGamePadStates[_index].State.Buttons.Y == ButtonState.Pressed;
+    }
 }
