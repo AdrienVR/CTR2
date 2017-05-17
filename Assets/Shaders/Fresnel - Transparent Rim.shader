@@ -1,4 +1,6 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
 //Copyright (c) 2014 Kyle Halladay
 //
@@ -62,7 +64,7 @@ Shader "FresnelPack/Transparent Rim Unlit"
 			vOUT vert(vIN v)
 			{
 				vOUT o;
-				o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.pos = UnityObjectToClipPos(v.vertex);
 
 				o.posWorld = mul(unity_ObjectToWorld, v.vertex);
 				o.normWorld = normalize(mul( (float3x3)unity_ObjectToWorld, v.normal));

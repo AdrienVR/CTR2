@@ -52,61 +52,61 @@ public class KartRigidBody
         if (Vector3.Dot(horizontalDirection, transform.forward) > 0)
         {
             Vector3 rayDirection = horizontalDirection * RayCastLength;
-            if (Physics.Raycast(KartTransformer.FrontLeftWheel.position, rayDirection, out hitDirection, RayCastLength, WallLayer))
+            if (KartTransformer.FrontWheels.leftWheel.isGrounded)//Physics.Raycast(KartTransformer.FrontLeftWheel.position, rayDirection, out hitDirection, RayCastLength, WallLayer))
             {
-                CheckForwardSlippage(horizontalDirection, hitDirection);
+                CheckForwardSlippage(horizontalDirection, Vector3.zero);
             }
-            else if (Physics.Raycast(KartTransformer.FrontRightWheel.position, rayDirection, out hitDirection, RayCastLength, WallLayer))
+            else if (KartTransformer.FrontWheels.leftWheel.isGrounded)//Physics.Raycast(KartTransformer.FrontRightWheel.position, rayDirection, out hitDirection, RayCastLength, WallLayer))
             {
-                CheckForwardSlippage(horizontalDirection, hitDirection);
+                CheckForwardSlippage(horizontalDirection, Vector3.zero);
             }
             else
             {
-                transform.position = position;
-                transform.rotation = Quaternion.Euler(rotationEuler);
+                //transform.position = position;
+                //transform.rotation = Quaternion.Euler(rotationEuler);
                 m_lastRotation = rotationEuler;
             }
         }
         else
         {
             Vector3 forwardDirection = transform.forward * -RayCastLength;
-            if (Physics.Raycast(KartTransformer.BottomLeftWheel.position, forwardDirection, out hitDirection, RayCastLength, WallLayer))
+            if (KartTransformer.FrontWheels.leftWheel.isGrounded)//Physics.Raycast(KartTransformer.FrontLeftWheel.position, rayDirection, out hitDirection, RayCastLength, WallLayer))
             {
-                CheckBackwardSlippage(horizontalDirection, hitDirection);
+                CheckForwardSlippage(horizontalDirection, Vector3.zero);
             }
-            else if (Physics.Raycast(KartTransformer.BottomRightWheel.position, forwardDirection, out hitDirection, RayCastLength, WallLayer))
+            else if (KartTransformer.FrontWheels.leftWheel.isGrounded)//Physics.Raycast(KartTransformer.FrontRightWheel.position, rayDirection, out hitDirection, RayCastLength, WallLayer))
             {
-                CheckBackwardSlippage(horizontalDirection, hitDirection);
+                CheckForwardSlippage(horizontalDirection, Vector3.zero);
             }
             else
             {
-                transform.position = position;
-                transform.rotation = Quaternion.Euler(rotationEuler);
+                //transform.position = position;
+                //transform.rotation = Quaternion.Euler(rotationEuler);
                 m_lastRotation = rotationEuler;
             }
         }
         
 
-        transform.position = position;
-        transform.rotation = Quaternion.Euler(rotationEuler);
+        //transform.position = position;
+        //transform.rotation = Quaternion.Euler(rotationEuler);
         m_lastRotation = rotationEuler;
 
         position = transform.position;
         rotationEuler = m_lastRotation;
     }
     
-    private void CheckForwardSlippage(Vector3 horizontalDirection, RaycastHit hitDirection)
+    private void CheckForwardSlippage(Vector3 horizontalDirection, Vector3 normalDir)
     {
-        float dot = Vector3.Dot(horizontalDirection.normalized, hitDirection.normal.normalized);
+        float dot = Vector3.Dot(horizontalDirection.normalized, normalDir.normalized);
 
         if (dot > SlippageAngle)
         {
-            dot = Vector3.Dot(horizontalDirection, hitDirection.normal.normalized);
-            Vector3 inWallDirection = horizontalDirection - hitDirection.normal.normalized * (dot);
+            dot = Vector3.Dot(horizontalDirection, normalDir.normalized);
+            Vector3 inWallDirection = horizontalDirection - normalDir.normalized * (dot);
             position = transform.position + inWallDirection;
 
-            transform.position = position;
-            transform.rotation = Quaternion.Euler(rotationEuler);
+            //transform.position = position;
+            //transform.rotation = Quaternion.Euler(rotationEuler);
             m_lastRotation = rotationEuler;
         }
         else if (m_speed > CollisionMinSpeed)
@@ -125,8 +125,8 @@ public class KartRigidBody
             Vector3 inWallDirection = horizontalDirection - hitDirection.normal.normalized * (dot);
             position = transform.position + inWallDirection;
 
-            transform.position = position;
-            transform.rotation = Quaternion.Euler(rotationEuler);
+            //transform.position = position;
+            //transform.rotation = Quaternion.Euler(rotationEuler);
             m_lastRotation = rotationEuler;
         }
     }

@@ -20,6 +20,8 @@ public class CameraConfig : MonoBehaviour
     [SerializeField]
     public CameraArray[] PerspectiveCameras;
 
+    public LayerMask CameraPerspectiveBaseMask;
+
     void Awake()
     {
         if (!enabled)
@@ -43,6 +45,18 @@ public class CameraConfig : MonoBehaviour
             {
                 OrthographicCameras[i].Cameras[j] = GameObject.Find("CameraOrtho_" + (j + 1) + "_" + (i + 1));
                 PerspectiveCameras[i].Cameras[j] = GameObject.Find("CameraPers_" + (j + 1) + "_" + (i + 1));
+            }
+        }
+    }
+
+    [ContextMenu("SetMasks Persp cullingMask")]
+    void SetMasks()
+    {
+        for(int i = 0; i < PerspectiveCameras.Length; i ++)
+        {
+            for (int j = 0; j < PerspectiveCameras[i].Cameras.Length; j++)
+            {
+                PerspectiveCameras[i].Cameras[j].GetComponent<Camera>().cullingMask = CameraPerspectiveBaseMask.value | 1 << (Consts.Layer.layer_j1 + j);
             }
         }
     }

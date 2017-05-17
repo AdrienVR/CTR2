@@ -10,127 +10,79 @@ Material:
   m_Shader: {fileID: 4800000, guid: 73b4e31fdb2976145809241bf8eea33d, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
+  disabledShaderPasses: []
   m_SavedProperties:
-    serializedVersion: 2
+    serializedVersion: 3
     m_TexEnvs:
-    - first:
-        name: _BlueTex
-      second:
+    - _BlueTex:
         m_Texture: {fileID: 2800000, guid: f3f602b7f7bc9064f96d3ee47a9a2cef, type: 3}
         m_Scale: {x: 100, y: 100}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _BumpMap
-      second:
+    - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _Control
-      second:
+    - _Control:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _GreenTex
-      second:
+    - _GreenTex:
         m_Texture: {fileID: 2800000, guid: cc2e33b99a64b1f4b90e8f1b317bee64, type: 3}
         m_Scale: {x: 200, y: 200}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _MainTex
-      second:
+    - _MainTex:
         m_Texture: {fileID: 2800000, guid: 8be5131be3fc6894d82bedbe1b906602, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _Mask
-      second:
+    - _Mask:
         m_Texture: {fileID: 2800000, guid: 9b83f7472f63a7f4f83523f7f196a9b8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _MaskTex
-      second:
+    - _MaskTex:
         m_Texture: {fileID: 2800000, guid: 9b83f7472f63a7f4f83523f7f196a9b8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _Over
-      second:
+    - _Over:
         m_Texture: {fileID: 2800000, guid: cc2e33b99a64b1f4b90e8f1b317bee64, type: 3}
         m_Scale: {x: 100, y: 100}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _RedTex
-      second:
+    - _RedTex:
         m_Texture: {fileID: 2800000, guid: f3f602b7f7bc9064f96d3ee47a9a2cef, type: 3}
         m_Scale: {x: 75, y: 75}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _Splat0
-      second:
+    - _Splat0:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _Splat1
-      second:
+    - _Splat1:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _Splat2
-      second:
+    - _Splat2:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _Splat3
-      second:
+    - _Splat3:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _Under
-      second:
+    - _Under:
         m_Texture: {fileID: 2800000, guid: f3f602b7f7bc9064f96d3ee47a9a2cef, type: 3}
         m_Scale: {x: 100, y: 100}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - first:
-        name: _Bias
-      second: 8.401786
-    - first:
-        name: _Caca
-      second: 1
-    - first:
-        name: _Cutoff
-      second: 0.1
-    - first:
-        name: _Edge
-      second: 0.18
-    - first:
-        name: _Fall
-      second: -0.50000006
-    - first:
-        name: _InvFade
-      second: 1
+    - _Bias: 8.401786
+    - _Caca: 1
+    - _Cutoff: 0.1
+    - _Edge: 0.18
+    - _Fall: -0.50000006
+    - _InvFade: 1
     m_Colors:
-    - first:
-        name: _Color
-      second: {r: 0.8, g: 0.8, b: 0.8, a: 1}
-    - first:
-        name: _ColorB
-      second: {r: 0.35294116, g: 0.35294116, b: 0.35294116, a: 1}
-    - first:
-        name: _ColorG
-      second: {r: 0.7058823, g: 0.7058823, b: 0.7058823, a: 1}
-    - first:
-        name: _ColorR
-      second: {r: 0.5661765, g: 0.54366726, b: 0.36218643, a: 0}
-    - first:
-        name: _TintColor
-      second: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _Color: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    - _ColorB: {r: 0.35294116, g: 0.35294116, b: 0.35294116, a: 1}
+    - _ColorG: {r: 0.7058823, g: 0.7058823, b: 0.7058823, a: 1}
+    - _ColorR: {r: 0.5661765, g: 0.54366726, b: 0.36218643, a: 0}
+    - _TintColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}

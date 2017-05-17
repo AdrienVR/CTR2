@@ -19,6 +19,14 @@ namespace Consts
         public const int layer2d_common = 16;
         public const int Ground = 17;
         public const int Wall = 18;
+        public const int Pause = 19;
+        public const int Wheel = 20;
+        public const int Kart = 21;
+    }
+
+    public class Vector3
+    {
+        public static readonly UnityEngine.Vector3 one = new UnityEngine.Vector3(1,1,1);
     }
 
     public class LayerMaskInt

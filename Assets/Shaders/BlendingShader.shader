@@ -54,6 +54,7 @@
             half3 c = lerp(main.rgb, cf, minv);
 
             o.Albedo = c.rgb;
+			o.Specular = 0;
             o.Alpha = main.a;
         }
         ENDCG

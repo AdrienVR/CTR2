@@ -7,34 +7,26 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Marron
-  m_Shader: {fileID: 4800000, guid: 054a31a99d11e49d110086ba44295342, type: 3}
+  m_Shader: {fileID: 4800000, guid: 91fe5c1637ae66b4c9624a1c906a682a, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
+  disabledShaderPasses: []
   m_SavedProperties:
-    serializedVersion: 2
+    serializedVersion: 3
     m_TexEnvs:
-    - first:
-        name: _MainTex
-      second:
+    - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _Ramp
-      second:
+    - _Ramp:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - first:
-        name: _Outline
-      second: 0.0045000007
+    - _Outline: 0.0045000007
     m_Colors:
-    - first:
-        name: _Color
-      second: {r: 0.1397059, g: 0.11060286, b: 0.058553204, a: 1}
-    - first:
-        name: _OutlineColor
-      second: {r: 0, g: 0, b: 0, a: 1}
+    - _Color: {r: 0.1397059, g: 0.11060286, b: 0.058553204, a: 1}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}

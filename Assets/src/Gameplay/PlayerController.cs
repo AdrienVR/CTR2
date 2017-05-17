@@ -35,6 +35,8 @@ public class PlayerController : MonoBehaviour
     public float DeceleratingFactor;
     public float MaxSpeed;
 
+    public float MaxTorque = 100;
+
     [HideInInspector]
     public float SpeedCoefficient = 1;
 
@@ -58,6 +60,12 @@ public class PlayerController : MonoBehaviour
     {
         m_wheelRotation = GetComponentInChildren<WheelRotation>();
     }
+
+    [ContextMenu("SetPrefabParentNull")]
+    void SetPrefabParentNull()
+    {
+        UnityEditor.PrefabUtility.DisconnectPrefabInstance(gameObject);
+    }
 #endif
 
     // Use this for initialization
@@ -78,15 +86,17 @@ public class PlayerController : MonoBehaviour
 
         WeaponPrefab = new List<GameObject>();
 
-        TraceL = KartTransformer.BottomLeftParent.GetComponent<SkidTrace2>();
-        TraceR = KartTransformer.BottomRightParent.GetComponent<SkidTrace2>();
+        TraceL = GetComponentsInChildren<SkidTrace2>()[0];
+        TraceR = GetComponentsInChildren<SkidTrace2>()[1];
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (gamePadState.State.IsConnected == false)
+            return;
         m_input.UpdateInput();
-        KartTransformer.Update();
+        //KartTransformer.Update();
         UpdateCamera();
 
         if (KartState.CanMove())
@@ -152,6 +162,10 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+
+        KartTransformer.BackWheels.leftWheel.motorTorque = m_acceleratingTimer * MaxTorque;
+        KartTransformer.BackWheels.rightWheel.motorTorque = m_acceleratingTimer * MaxTorque;
+
         if (m_acceleratingTimer > 0)
         {
             KartRigidbody.position += transform.forward * SpeedCurve.Evaluate(m_acceleratingTimer) * MaxSpeed;
@@ -196,6 +210,9 @@ public class PlayerController : MonoBehaviour
         }
 
         KartTransformer.YAngle += (yAngle * Time.deltaTime);
+
+        KartTransformer.FrontWheels.leftWheel.transform.localRotation = Quaternion.Euler(0, m_acceleratingTimer * MaxTorque, 0);
+        KartTransformer.FrontWheels.rightWheel.transform.localRotation = Quaternion.Euler(0, m_acceleratingTimer * MaxTorque, 0);
 
         if (m_input.jump)
         {

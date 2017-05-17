@@ -1,4 +1,5 @@
-﻿
+﻿//#define PLAYERMANAGER_DEBUG
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,10 +12,44 @@ public class PlayerManager : MonoBehaviour
     [Serializable]
     public class PlayableCharacter
     {
+        [HideInInspector]
         public string Name;
-        public CharacterSide Side;
         public GameObject Prefab;
+        public CharacterSide Side;
+#if PLAYERMANAGER_DEBUG
+        public Mesh CharacterMesh;
+        public Material CharacterMaterial;
+        public Material KartMaterial;
+        public Vector3 CharacterRotation;
+        public Vector3 CharacterScale;
+#else
+        [HideInInspector]
+        public Mesh CharacterMesh;
+        [HideInInspector]
+        public Material CharacterMaterial;
+        [HideInInspector]
+        public Material KartMaterial;
+        [HideInInspector]
+        public Vector3 CharacterRotation;
+        [HideInInspector]
+        public Vector3 CharacterScale;
+#endif
+
+        public void OnValidate()
+        {
+            Name = Prefab.name;
+            CharacterMesh = Prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
+            CharacterMaterial = Prefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+            CharacterRotation = Prefab.GetComponentInChildren<MeshFilter>().transform.localRotation.eulerAngles;
+            CharacterScale = Prefab.GetComponentInChildren<MeshFilter>().transform.localScale;
+            KartMaterial = Prefab.GetComponentsInChildren<MeshRenderer>()[1].sharedMaterial;
+        }
     }
+
+    public GameObject KartPlayerPrefab;
+    public MeshRenderer[] PrefabRenderers;
+
+    public bool DestroyPrefabInstances;
 
     public PlayableCharacter[] PlayableCharacters;
 
@@ -28,6 +63,43 @@ public class PlayerManager : MonoBehaviour
             return;
         Instance = this;
     }
+
+#if UNITY_EDITOR
+    void OnValidate()
+    {
+        if (GameObjectUtils.IsPrefabAsset(gameObject))
+            return;
+        PrefabRenderers = KartPlayerPrefab.GetComponentsInChildren<MeshRenderer>();
+        foreach(PlayableCharacter character in PlayableCharacters)
+        {
+            character.OnValidate();
+        }
+    }
+
+    [ContextMenu("Update Character Prefabs")]
+    void UpdateCharacterPrefabs()
+    {
+        OnValidate();
+        foreach (PlayableCharacter character in PlayableCharacters)
+        {
+            GameObject go = Instantiate(KartPlayerPrefab) as GameObject;
+
+            go.name = character.Name;
+            go.GetComponentInChildren<MeshFilter>().sharedMesh = character.CharacterMesh;
+            go.GetComponentInChildren<MeshRenderer>().sharedMaterial = character.CharacterMaterial;
+            go.GetComponentInChildren<MeshFilter>().transform.localRotation = Quaternion.Euler(character.CharacterRotation);
+            go.GetComponentInChildren<MeshFilter>().transform.localScale = character.CharacterScale;
+            go.GetComponentsInChildren<MeshRenderer>()[1].sharedMaterial = character.KartMaterial;
+            
+            GameObject prefab = UnityEditor.PrefabUtility.CreatePrefab("Assets/Prefabs/Characters/" + go.name + ".prefab", go);
+            UnityEditor.PrefabUtility.ConnectGameObjectToPrefab(go, prefab);
+            character.Prefab = prefab;
+            if (DestroyPrefabInstances)
+                DestroyImmediate(GameObject.Find(character.Name));
+        }
+        OnValidate();
+    }
+#endif
 
     public List<PlayerController> GetEnemies(PlayerController player)
     {
@@ -68,6 +140,18 @@ public class PlayerManager : MonoBehaviour
     }
 
     private PlayableCharacter GetPlayableCharacter(string name)
+    {
+        foreach (PlayableCharacter character in PlayableCharacters)
+        {
+            if (character.Name == name)
+            {
+                return character;
+            }
+        }
+        return null;
+    }
+
+    private PlayableCharacter GetPlayableCharacterFromPrefab(string name)
     {
         foreach (PlayableCharacter character in PlayableCharacters)
         {
