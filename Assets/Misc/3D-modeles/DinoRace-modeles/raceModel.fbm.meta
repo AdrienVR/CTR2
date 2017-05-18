@@ -1,8 +1,15 @@
 fileFormatVersion: 2
+<<<<<<< 477f3e4a7c27c6e2a1ccdada5655c0d1a5ea76de
 guid: 01a9fb181e84c5749a3e080a4736e714
 folderAsset: yes
 timeCreated: 1485104895
 licenseType: Free
+=======
+guid: 39fe3959afb30ce46ad177b6820e665d
+folderAsset: yes
+timeCreated: 1495011846
+licenseType: Pro
+>>>>>>> testing new kart physic
 DefaultImporter:
   userData: 
   assetBundleName: 

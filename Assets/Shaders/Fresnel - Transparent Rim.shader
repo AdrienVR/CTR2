@@ -1,6 +1,11 @@
+<<<<<<< 477f3e4a7c27c6e2a1ccdada5655c0d1a5ea76de
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+=======
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+>>>>>>> testing new kart physic
 
 //Copyright (c) 2014 Kyle Halladay
 //
