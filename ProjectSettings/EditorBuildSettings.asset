@@ -6,10 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/maps/plage.unity
+    guid: f6bf12e7073c13e4d97945ddbb26e51e
+  - enabled: 1
     path: Assets/maps/mainmenu.unity
+    guid: aa0593f2238af114ca1e5a3ca78940aa
   - enabled: 1
-    path: Assets/Maps/plage.unity
+    path: Assets/maps/parking.unity
+    guid: e9abd9f3b0a9d98459b4f769d2806529
   - enabled: 1
-    path: Assets/Maps/parking.unity
-  - enabled: 1
-    path: Assets/Maps/dinoRace.unity
+    path: Assets/maps/dinoRace.unity
+    guid: 7fa02e4e130f30843b3ae623e754f9d4

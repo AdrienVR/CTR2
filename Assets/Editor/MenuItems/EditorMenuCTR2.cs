@@ -8,25 +8,31 @@ public class EditorMenuCTR2
     [MenuItem("CTR2/Open the Main Menu")]
     static void OpenMainMenu()
     {
-        EditorSceneManager.OpenScene("Assets/Maps/mainmenu.unity");
+        OpenScene("Assets/Maps/mainmenu.unity");
     }
 
     [MenuItem("CTR2/Open the beach scene")]
     static void OpenBeach()
     {
-        EditorSceneManager.OpenScene("Assets/Maps/plage.unity");
+        OpenScene("Assets/Maps/plage.unity");
     }
 
     [MenuItem("CTR2/Open the parking scene")]
     static void OpenParking()
     {
-        EditorSceneManager.OpenScene("Assets/Maps/parking.unity");
+        OpenScene("Assets/Maps/parking.unity");
     }
 
     [MenuItem("CTR2/Open prefabs scene")]
     static void OpenPrefabs()
     {
-        EditorSceneManager.OpenScene("Assets/Maps/prefabs.unity");
+        OpenScene("Assets/Maps/prefabs.unity");
+    }
+
+    static void OpenScene(string _scene)
+    {
+        EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+        EditorSceneManager.OpenScene(_scene);
     }
 
     [MenuItem("Documentation/CTR2 on Github")]

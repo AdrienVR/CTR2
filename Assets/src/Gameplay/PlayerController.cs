@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
     public AcceleratorBehavior Accelerator;
 
     [HideInInspector]
-    public SkidTrace2 TraceL, TraceR;
+    public SlidingTrace TraceL, TraceR;
 
     [HideInInspector]
     public UIPlayerManager UIPlayerManager;
@@ -86,8 +86,8 @@ public class PlayerController : MonoBehaviour
 
         WeaponPrefab = new List<GameObject>();
 
-        TraceL = GetComponentsInChildren<SkidTrace2>()[0];
-        TraceR = GetComponentsInChildren<SkidTrace2>()[1];
+        TraceL = GetComponentsInChildren<SlidingTrace>()[0];
+        TraceR = GetComponentsInChildren<SlidingTrace>()[1];
     }
 
     // Update is called once per frame
