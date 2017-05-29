@@ -126,7 +126,7 @@ public class KartControl : MonoBehaviour {
 
     private List<RaycastHit> m_touchingWheelsInfos = new List<RaycastHit>(c_maxSupportedCollisions);
 
-    private float m_curDotFriction;
+    public float m_curDotFriction;
 
 #if KART_DEBUG
     [ContextMenu("OnValidate")]
@@ -286,7 +286,7 @@ public class KartControl : MonoBehaviour {
 
         Vector3 lhs;
         Vector3 rhs;
-        
+
         Vector3 normal = Vector3.zero;
 
         if (m_wheelOnGroundCount == 4)
@@ -301,8 +301,7 @@ public class KartControl : MonoBehaviour {
             rhs = m_touchingWheelsInfos[2].point - m_touchingWheelsInfos[0].point;
             normal = Vector3.Cross(lhs, rhs);
         }
-
-        if (normal.y <= 0 && m_CenterInfo.distance != 2)
+        else if (m_CenterInfo.distance != 2)
         {
             normal = m_CenterInfo.normal;
         }
@@ -311,12 +310,20 @@ public class KartControl : MonoBehaviour {
             normal = Vector3.up;
         }
 
+        if (normal.y < 0)
+            normal = m_normal;
+
+
         Debug.DrawRay(m_transform.position, m_transform.forward, Color.blue);
         Vector3 dir = Vector3.ProjectOnPlane(m_transform.forward, normal);
         Debug.DrawRay(m_transform.position, dir, Color.red);
         Debug.DrawRay(m_transform.position, normal, Color.yellow);
         m_transform.LookAt(m_transform.position + dir, normal);
+
+        m_normal = normal;
     }
+
+    private Vector3 m_normal;
 
     private void UpdateVelocity()
     {
@@ -326,7 +333,10 @@ public class KartControl : MonoBehaviour {
 
         if (m_curDotFriction > 0 && m_speed > 0)
         {
+            float y = m_velocity.y;
             Vector3 forwardVelocity = m_forward * Vector3.Dot(m_forward, m_velocity);
+            forwardVelocity.y = m_velocity.y;
+            forwardVelocity = forwardVelocity.normalized * m_velocity.magnitude;
             m_velocity = Vector3.Lerp(m_velocity, forwardVelocity, m_curDotFriction);
         }
     }
@@ -370,8 +380,6 @@ public class KartControl : MonoBehaviour {
         UpdateAirFriction();
     }
 
-    Quaternion m_airRotation;
-
     private void UpdateAirFriction()
     {
         Vector3 velocityDir = m_velocity.normalized;
@@ -379,7 +387,7 @@ public class KartControl : MonoBehaviour {
         {
             if (m_acceleration.y > 0)
                 m_acceleration.y = 0;
-            m_acceleration -= velocityDir * m_airFrictionAcc * Time.deltaTime;
+            m_acceleration -= velocityDir * m_airFrictionAcc * m_dt;
             if (Vector3.Dot(velocityDir, m_acceleration) < 0)
                 m_acceleration = Vector3.zero;
         }
@@ -388,6 +396,8 @@ public class KartControl : MonoBehaviour {
     }
 
     private bool m_slidingInput;
+    
+    public float m_frictionDownSpeed = 5;
 
     private void UpdateSliding()
     {
@@ -414,7 +424,6 @@ public class KartControl : MonoBehaviour {
 
         if (m_slidingInput && m_touchGround && m_speed > 5)
         {
-            m_curDotFriction = 0;
             if (!m_sliding)
             {
                 m_sliding = true;
@@ -424,6 +433,13 @@ public class KartControl : MonoBehaviour {
                     m_sliddingRight = false;
 
                 m_trace.enabled = true;
+                m_slidingStateTimer = 0;
+            }
+            if (m_curDotFriction > 0)
+            {
+                m_curDotFriction -= m_dt * m_frictionDownSpeed;
+                if (m_curDotFriction < 0)
+                    m_curDotFriction = 0;
             }
             m_slidingDir = m_sliddingRight ? m_transform.right : m_transform.rotation * -Vector3.right;
             m_acceleration += m_slidingAcc * m_slidingDir * m_slidingCoef * m_speed * Mathf.Abs(m_angularVelocity) * m_dt;
@@ -432,20 +448,26 @@ public class KartControl : MonoBehaviour {
 
             m_currentMaxAngularVelocity = sliding * m_maxAngularVelocity;
             m_angularAcceleration = sliding * (m_sliddingRight ? m_currentMaxAngularAcc : -m_currentMaxAngularAcc);
+            m_slidingStateTimer += m_dt;
         }
         else
         {
-            m_curDotFriction = m_dotFriction;
-
-            m_angularAcceleration = gamePadState.State.ThumbSticks.Left.X * m_currentMaxAngularAcc;
-
             if (m_sliding)
             {
                 m_sliding = false;
                 m_trace.RemoveAll();
                 m_trace.enabled = false;
                 m_maxSliding = 0;
+                m_slidingStateTimer = 0;
             }
+
+            if (m_curDotFriction < m_dotFriction)
+            {
+                m_curDotFriction = m_slidingUp.Evaluate(m_slidingStateTimer);
+            }
+
+            m_angularAcceleration = gamePadState.State.ThumbSticks.Left.X * m_currentMaxAngularAcc;
+            m_slidingStateTimer += m_dt;
         }
 
         if (m_sliding)
@@ -459,6 +481,9 @@ public class KartControl : MonoBehaviour {
             m_currentMaxAngularAcc = m_maxAngularAcceleration;
         }
     }
+
+    public AnimationCurve m_slidingUp;
+    private float m_slidingStateTimer;
 
     private void UpdateGroundControl()
     {
@@ -540,7 +565,7 @@ public class KartControl : MonoBehaviour {
 
         if (_wheel && hitBool)
             m_touchingWheelsInfos.Add(hit);
-        //m_rigidBody.AddForceAtPosition(Vector3.up * (1 - dist) * m_dampingForce * Time.deltaTime, _wheel.position, ForceMode.VelocityChange);
+        //m_rigidBody.AddForceAtPosition(Vector3.up * (1 - dist) * m_dampingForce * m_dt, _wheel.position, ForceMode.VelocityChange);
         return hit;
     }
 

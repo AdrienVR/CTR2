@@ -1056,7 +1056,7 @@ MonoBehaviour:
   m_airFrictionAcc: 30
   m_minAccelerationAirFriction: 50
   m_airRotationControl: 9000
-  m_dotFriction: 0
+  m_dotFriction: 1
   m_angularBySpeed:
     serializedVersion: 2
     m_Curve:
@@ -1106,11 +1106,37 @@ MonoBehaviour:
   m_jumpAmplitude: 150
   m_rotationFriction: 0.775
   m_friction: 0.03
+  m_curDotFriction: 0
   m_specialDebug:
   - {fileID: 102943305731729408}
   - {fileID: 102545287348212468}
   - {fileID: 102233534853203442}
   - {fileID: 102999634027180320}
+  m_frictionDownSpeed: 5
+  m_slidingUp:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0.5
+      outSlope: 0.5
+      tangentMode: 34
+    - serializedVersion: 2
+      time: 0.08
+      value: 0.04
+      inSlope: 2.028544
+      outSlope: 2.028544
+      tangentMode: 34
+    - serializedVersion: 2
+      time: 0.35
+      value: 1.0004138
+      inSlope: 1.7782258
+      outSlope: -0.0006365776
+      tangentMode: 65
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!114 &114244791318759738
 MonoBehaviour:
   m_ObjectHideFlags: 1
