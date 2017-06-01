@@ -111,7 +111,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1577734796501112
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,7 +128,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1634119143290268
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,7 +178,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1774129519163790
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,7 +412,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1958090536776236}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.22, z: 0}
+  m_LocalPosition: {x: 0, y: -0.452, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4922221304209328}
@@ -631,7 +631,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1282531307140754}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_MotionVectors: 1
@@ -1047,7 +1047,8 @@ MonoBehaviour:
   m_wheelOffsetLength: 1.75
   m_wheelHeight: -0.49
   m_groundOffset: 1
-  m_raycastMaxDist: 1
+  m_wheelRaycastDist: 0.6
+  m_centerRaycastDist: 2.5
   m_gravity: -25
   m_speed: 0
   m_repulsion: 0.2
@@ -1112,6 +1113,8 @@ MonoBehaviour:
   - {fileID: 102545287348212468}
   - {fileID: 102233534853203442}
   - {fileID: 102999634027180320}
+  m_raycastHelp: 0.1
+  m_gravityThreshold: 0.15
   m_frictionDownSpeed: 5
   m_slidingUp:
     serializedVersion: 2

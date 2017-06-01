@@ -101,9 +101,10 @@ MonoBehaviour:
   m_far: 0
   m_smallOffset: {x: 0, y: 1.9, z: -5.05}
   m_bigOffset: {x: 0, y: 2.82, z: -7.869999}
-  m_smoothSpeedPosition: 30
+  m_smoothSpeedPosition: 20
   m_smoothSpeedRotation: 10
   m_angleX: 15.42
+  m_dt: 0.01223
 --- !u!124 &124760433035037532
 Behaviour:
   m_ObjectHideFlags: 1
